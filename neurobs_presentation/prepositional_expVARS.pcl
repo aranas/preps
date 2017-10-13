@@ -1,0 +1,21 @@
+# --------------------- VARIABLES INITIATION ----------------------------
+int 	word_duration 				= 500; 				#short word duration
+int 	gap_duration 				= 150;					#duration between words
+int 	blank_after_last_word 	= 500; 	#duration of pause after last word in sentence
+
+
+string s_StimFile;
+string s_OutFile;
+
+int	totTrials 					= 12;
+
+array <string> asTrialInputData[totTrials][0];
+array <string> asCondition[totTrials];
+array <string> asAttachment[totTrials];
+array <string> asPairNumber[totTrials];
+array <string> asAnswer[totTrials];
+array <string> asQuestion[totTrials];
+array <int>		asTrigger[11];
+array <int>		asTiming[9];
+	
+	
