@@ -1,0 +1,48 @@
+ItemFile 1 P:\3011210.01\Limesurvey\Stimuli\StimuliA.txt
+
+Property id	3
+Property verb	6
+
+Constraint id	MinDist 50
+Constraint verb MinDist 50
+
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A1.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A2.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A3.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A4.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A5.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A6.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A7.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A8.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A9.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A10.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A11.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A12.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A13.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A14.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A15.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A16.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A17.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A18.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A19.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A20.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A21.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A22.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A23.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A24.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A25.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A26.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A27.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A28.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A29.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A30.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A31.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A32.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A33.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A34.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A35.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A36.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A37.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A38.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A39.txt
+OutputFile P:\3011210.01\Limesurvey\Stimuli\A40.txt
