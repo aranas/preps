@@ -1,0 +1,18 @@
+<row>
+    <qid><![CDATA[enterquestionidhere]]></qid>
+    <code><![CDATA[A1]]></code>
+    <answer><![CDATA[Verb]]></answer>
+    <assessment_value><![CDATA[0]]></assessment_value>
+    <sortorder><![CDATA[1]]></sortorder>
+    <language><![CDATA[de]]></language>
+    <scale_id><![CDATA[0]]></scale_id>
+   </row>
+   <row>
+    <qid><![CDATA[enterquestionidhere]]></qid>
+    <code><![CDATA[A2]]></code>
+    <answer><![CDATA[Nomen]]></answer>
+    <assessment_value><![CDATA[0]]></assessment_value>
+    <sortorder><![CDATA[2]]></sortorder>
+    <language><![CDATA[de]]></language>
+    <scale_id><![CDATA[0]]></scale_id>
+   </row>

@@ -1,0 +1,49 @@
+<row>
+    <qid><![CDATA[enterquestionidhere]]></qid>
+    <parent_qid><![CDATA[0]]></parent_qid>
+    <sid><![CDATA[entersurveyidhere]]></sid>
+    <gid><![CDATA[entergroupidhere]]></gid>
+    <type><![CDATA[L]]></type>
+    <title><![CDATA[entercodehere]]></title>
+    <question><![CDATA[<p>enterquestionhere</p>
+<syntaxhighlight enclose="div" lang="php"> <script type="text/javascript" charset="utf-8">
+setTimeout(function() { alert("Bitte antworten Sie schneller!"); }, 10000);
+ $(document).ready(function(){
+		$('#movenextbtn, #movesubmitbtn').hide();
+	});
+</script> </syntaxhighlight>]]></question>
+    <preg/>
+    <help/>
+    <other><![CDATA[N]]></other>
+    <mandatory><![CDATA[Y]]></mandatory>
+    <question_order><![CDATA[enterquestionorderhere]]></question_order>
+    <language><![CDATA[de]]></language>
+    <scale_id><![CDATA[0]]></scale_id>
+    <same_default><![CDATA[0]]></same_default>
+    <relevance><![CDATA[1]]></relevance>
+   </row>
+<row>
+    <qid><![CDATA[enterquestion2idhere]]></qid>
+    <parent_qid><![CDATA[0]]></parent_qid>
+    <sid><![CDATA[entersurveyidhere]]></sid>
+    <gid><![CDATA[entergroupidhere]]></gid>
+    <type><![CDATA[A]]></type>
+    <title><![CDATA[enterpcodehere]]></title>
+    <question><![CDATA[<p>enterquestionhere</p>
+<syntaxhighlight enclose="div" lang="php"> <script type="text/javascript" charset="utf-8">
+setTimeout(function() { alert("Bitte antworten Sie schneller!"); }, 10000);
+ $(document).ready(function(){
+		$('#movenextbtn, #movesubmitbtn').hide();
+	});
+</script> </syntaxhighlight>]]></question>
+    <preg/>
+    <help><![CDATA[Wie normal erscheint Ihnen dieser Satz?]]></help>
+    <other><![CDATA[N]]></other>
+    <mandatory><![CDATA[Y]]></mandatory>
+    <question_order><![CDATA[enterquestionorder2here]]></question_order>
+    <language><![CDATA[de]]></language>
+    <scale_id><![CDATA[0]]></scale_id>
+    <same_default><![CDATA[0]]></same_default>
+    <relevance><![CDATA[1]]></relevance>
+    <modulename/>
+   </row>
