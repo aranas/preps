@@ -1,4 +1,4 @@
-Abstract for the project
+Abstract for the "preps" project
 ========================
 
 Neurolinguistic decoding during sentence processing: Exploring the syntax-semantic interface
