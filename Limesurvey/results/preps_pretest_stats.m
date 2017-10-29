@@ -7,7 +7,7 @@
 % column4 "type of measurement" = either 1 (answer given) or 2 (time)
 % column5... = one column per subject
 path    = '/project/3011210.01/Limesurvey/responses/';
-data    = csvread(strcat(path,'Bresponses.csv'),1); %skip header in first row
+data    = csvread(strcat(path,'Aresponses.csv'),1); %skip header in first row
 [n,m]   = size(data);
 nsubj   = m-4;
 %% Preparing data
@@ -27,9 +27,9 @@ Vplaus_d           = data(find(data(:,3) == 2 & data(:,4)==1 & data(:,2)==2),:);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %unambiguous sentences
 %List B sentences
-unamb_code      = [165,189,159,174,157,160,197,163,171,162,192,198,182,169,181,152,154,161,173,188,167,180,183,1100,177,176,153,199,175];
+unamb_code      = [189,159,174,157,160,171,162,192,198,169,181,152,154,173,188,167,180,1100,177,153,199,175,156,164,168,170,179,186,194,196];
 %List A sentences
-%unamb_code      = [129,138,150,114,132,121,142,120,140,131,18,149,128,15,147];
+%unamb_code      = [129,138,150,132,121,142,140,131,18,149,128,15,147,12,16,17,112,117,119,122,123,126,137];
 ind             = find(ismember(Nattach_d(:,1),unamb_code'));
 Nattach_unamb   = Nattach_d(ind,:);
 %percentage of correct answers on unambiguous items per subject
@@ -56,7 +56,7 @@ sum(tmp(:))/length(tmp(:))
 Nattach_correct    = sum(Nattach_d(:,5:end),2)/nsubj;
 Vattach_correct    = 1-(sum(Vattach_d(:,5:end),2)/nsubj);
 %items with below average accuracy
-threshhold         = mean([Vattach_correct; Nattach_correct]);
+threshhold         = 0.8%mean([Vattach_correct; Nattach_correct]);
 items_fail         = Nattach_d(Nattach_correct < threshhold,1);
 items_fail         = [items_fail; Vattach_d(Vattach_correct < threshhold,1)];
 %RTs binned per hit/miss per subject
