@@ -1,3 +1,4 @@
+
 library(plotly)
 library(reshape)
 library("RColorBrewer")
@@ -10,17 +11,18 @@ stimuli$fullID  <- as.character(interaction(stimuli[,c(13,3)],sep = ""))
 responses       <- read.csv(file="all_responses.csv",head=TRUE,sep=";",stringsAsFactors=FALSE)
 names           <- responses$surveynum
 
+responses <- read.csv(file="all_responses.csv",head=TRUE,sep=";")
 
-df.responses                <- as.data.frame(t(responses[,-1]))
-colnames(df.responses)      <- names
-df.responses$age            <- as.numeric(df.responses$age)
-subset_time                 <- grep("ime$",names(df.responses),value = TRUE)
-df.responses[,subset_time]  <- lapply(df.responses[,subset_time], function(x) as.numeric(gsub(",",".",x)))
-df.responses[sapply(df.responses, is.character)] <- lapply(df.responses[sapply(df.responses, is.character)], 
-                                                           as.factor)
 
-summary(df.responses$age)
-summary((df.responses$interviewtime)/60)
+names <- responses$surveynum
+
+df.responses <- as.data.frame(t(responses[,-1]))
+colnames(df.responses) <- names
+df.responses$age <- as.numeric(df.responses$age)
+#output mean age + sd of participants
+#output mean time for survey taken
+
+
 
 #find outlier (who did not pass the test?)
 #number of wrong answers per participant x/4
@@ -58,4 +60,12 @@ p <- plot_ly(type = 'box') %>%
          yaxis=list(title="RTs (seconds)"))
 
 
+
+
+subset_attach <- grep("^NA[1-9]*$",names(df.responses),value = TRUE)
+idx           <- match(subset_attach,names(df.responses))
+df.Nattach    <- df.responses[,subset_attach]
+subset_attach <- grep("^VA[1-9]*$",names(df.responses),value = TRUE)
+idx           <- match(subset_attach,names(df.responses))
+df.Vattach    <- df.responses[,subset_attach]
 
