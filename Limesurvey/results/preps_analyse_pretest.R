@@ -32,30 +32,32 @@ sentences_unambiguous <- stimuli[(stimuli$Unambiguous.==1),4:12]
 count_correct = apply(df.responses[,subset_unambiguous], 1, function(x) sum(x == "Nomen"))
 count_correct/length(subset_unambiguous)
 #Biases: Reaction Times total and per attachment
-subset_time   <- grep("^[VN]A[0-9]*Time$",names(df.responses),value = TRUE)
-df.rts        <- df.responses[,subset_time]
-y1            <- rowMeans(df.rts[,grep("^VA",names(df.rts))])
+
+subset_timeV   <- grep("^VA[0-9]*Time$",names(df.responses),value = TRUE)
+subset_timeN   <- grep("^NA[0-9]*Time$",names(df.responses),value = TRUE)
+df.rtsV        <- df.responses[,subset_timeV]
+df.rtsN        <- df.responses[,subset_timeN]
+subset_attachV <- grep("^VA[0-9]*$",names(df.responses),value = TRUE)
+subset_attachN <- grep("^NA[0-9]*$",names(df.responses),value = TRUE)
+df.attachV     <- df.responses[,subset_attachV]
+df.attachN     <- df.responses[,subset_attachN]
+df.rtscorrectV <- df.
+
+y1            <- rowMeans(df.rtsV[,grep("^VA",names(df.rts))])
 y2            <- rowMeans(df.rts[,grep("^NA",names(df.rts))])
 y3            <- rowMeans(df.rts)
+df.rts_means  <- data.frame(names(y1),y1,y2,y3)
+colnames(df.rts_means) <- c("subject","Verb","Noun","All")
+df.rts_means  <- melt(df.rts_means)
+colnames(df.rts_means) <- c("Subject","Attachment","RTs")
 
-p <- plot_ly(type = 'box') %>%
-  add_boxplot(y = y1, jitter = 0.3, pointpos = -1.8, boxpoints = 'all',
-              marker = list(color = pastel_colors[1]),
-              line = list(color = pastel_colors[1]),
-              name = "Verb attachment",
-              hoverinfo= row.names(df.rts)) %>%
-  add_boxplot(y = y2, jitter = 0.3, pointpos = -1.8, boxpoints = 'all',
-              marker = list(color = pastel_colors[2]),
-              line = list(color = pastel_colors[2]),
-              name = "Noun attachment") %>%
-  add_boxplot(y = y3, name = "All trials", boxpoints = 'suspectedoutliers',
-              marker = list(color = pastel_colors[3],
-                            outliercolor = set_colors[1],
-                            line = list(outliercolor = set_colors[1],
-                                        outlierwidth = 2)),
-              line = list(color = pastel_colors[3])) %>%
-  layout(title = "Reaction times across items & subjects (data points are subject averages)",
-         yaxis=list(title="RTs (seconds)"))
+p <- ggplot(df.rts_means, aes(x = Attachment, y = RTs, color = Attachment, subject = Subject)) +
+    geom_boxplot() +
+    geom_jitter(size = 2) +
+    ggtitle("RTs averaged over items")
+
+p <- ggplotly(p,tooltip = c("subject"))
+p
 
 
 
