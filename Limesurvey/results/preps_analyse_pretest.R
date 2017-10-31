@@ -34,7 +34,7 @@ df.responses  <- df.responses[,c("subjects",ind_items),with=FALSE]
 ind             <- grep("^[VN]A[0-9]*$",colnames(df.responses),value = TRUE)
 df.respAttach   <- df.responses[,c("subjects",ind),with=FALSE]
 df.respAttach   <- melt(df.respAttach,id="subjects",value.name="response_attachment",variable.name='items')
-ind             <- grep("VA[0-9]*Time$",colnames(df.responses),value = TRUE)
+ind             <- grep("^[VN]A[0-9]*Time$",colnames(df.responses),value = TRUE)
 df.respTime     <- df.responses[,c("subjects",ind),with=FALSE]
 df.respTime     <- melt(df.respTime,id="subjects",value.name="rt_attachment",variable.name='items')
 ind             <- grep("P[VN]A[0-9]*]$",colnames(df.responses),value = TRUE)
@@ -46,6 +46,9 @@ df.respPTime    <- melt(df.respPTime,id="subjects",value.name="rt_plausibility",
 df.responses    <- cbind(df.respAttach,df.respTime[,3],df.respPAttach[,3],df.respPTime[,3])
 df.responses$hits <- as.numeric((grepl("N",df.responses$items) & df.responses$response_attachment == "Nomen") | 
                       (grepl("V",df.responses$items) & df.responses$response_attachment == "Verb"))
+df.responses    <- df.responses %>%
+                    mutate(attachment = ifelse(grepl("N",items),"Noun","Verb"))
+                                                                       
 #############ANALYSIS#################
 summary(df.subjectinfo$age)
 summary((df.subjectinfo$interviewtime)/60)
@@ -62,40 +65,33 @@ df.subjectinfo %>%
 subset_unambiguous <- stimuli$fullID[(stimuli$Unambiguous.==1)]
 sentences_unambiguous <- stimuli[(stimuli$Unambiguous.==1),4:12]
 
-out_percentcorrect <- df.responses %>%
-                      filter(items %in% subset_unambiguous) %>%
-                      group_by(subjects) %>%
-                        summarise(accuracy = mean(hits))
+df.responses %>%
+  filter(items %in% subset_unambiguous) %>%
+    group_by(subjects) %>%
+      summarise(accuracy = mean(hits))
 
 #Biases: Reaction Times total and per attachment
-
-subset_timeV   <- grep("^VA[0-9]*Time$",names(df.responses),value = TRUE)
-subset_timeN   <- grep("^NA[0-9]*Time$",names(df.responses),value = TRUE)
-df.rtsV        <- df.responses[,subset_timeV]
-df.rtsN        <- df.responses[,subset_timeN]
-subset_attachV <- grep("^VA[0-9]*$",names(df.responses),value = TRUE)
-subset_attachN <- grep("^NA[0-9]*$",names(df.responses),value = TRUE)
-df.attachV     <- df.responses[,subset_attachV]
-df.attachN     <- df.responses[,subset_attachN]
-df.rtscorrectV <- df.
-#first rearrange data.frame so that subjects, per attachment, per Rts, per correct (1/0)
-#then compute summary as in average over trials
-#then plot graph based on summary
-y1            <- rowMeans(df.rtsV[,grep("^VA",names(df.rts))])
-y2            <- rowMeans(df.rts[,grep("^NA",names(df.rts))])
-y3            <- rowMeans(df.rts)
-df.rts_means  <- data.frame(names(y1),y1,y2,y3)
-colnames(df.rts_means) <- c("subject","Verb","Noun","All")
-df.rts_means  <- melt(df.rts_means)
-colnames(df.rts_means) <- c("Subject","Attachment","RTs")
-
-p <- ggplot(df.rts_means, aes(x = Attachment, y = RTs, color = Attachment, subject = Subject)) +
+summary_rts <- df.responses %>%
+                 group_by(subjects,attachment,hits) %>%
+                   summarise(mean_rt = mean(rt_attachment)) 
+                      
+p <- ggplot(summary_rts, aes(x = factor(hits), y = mean_rt, subject = subjects)) +
     geom_boxplot() +
+    facet_wrap(~attachment) +
     geom_jitter(size = 2) +
     ggtitle("RTs averaged over items")
+p <- ggplotly(p,tooltip = c("subjects","mean_rt"))
 
-p <- ggplotly(p,tooltip = c("subject"))
-p
+# Assess material
+mean_accuracy <- df.responses %>%
+                    group_by(items) %>%
+                      summarise(percent_correct = round(sum(hits)/13,digits=2)) %>%
+                        summarise(mean_correct = mean(percent_correct))
 
+items_reject  <- df.responses %>%
+                  group_by(items) %>%
+                    summarise(percent_correct = round(sum(hits)/13,digits=2)) %>%
+                     filter(percent_correct <= unlist(mean_accuracy))
+stimuli[(stimuli$fullID %in% items_reject$items),c(4:12,15)]
 
 
