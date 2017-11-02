@@ -8,10 +8,10 @@ library(dplyr)
 pastel_colors = brewer.pal(8, "Pastel1")
 set_colors = brewer.pal(8, "Set1")
 #load stimulus file
-stimuli         <- read.csv(file="stimuliA.csv",head=TRUE,sep=",",na.strings = c("","NAN"), stringsAsFactors = FALSE)
+stimuli         <- read.csv(file="stimuliB.csv",head=TRUE,sep=",",na.strings = c("","NAN"), stringsAsFactors = FALSE)
 stimuli$fullID  <- as.character(interaction(stimuli[,c(13,3)],sep = ""))
 #load response file
-file_names = list.files(pattern="^results")
+file_names = list.files(pattern="^results",path = "Bresponses",full.names = TRUE)
 temp <- lapply(file_names,read.csv,sep=",",na.strings = c("","NAN"), stringsAsFactors = TRUE)
 df.responses <- Reduce(function(x,y) merge(x,y,all=TRUE,sort=TRUE),temp)
 
@@ -51,7 +51,6 @@ df.responses    <- df.responses %>%
 summary(df.subjectinfo$age)
 summary((df.subjectinfo$interviewtime)/60)
 
-
 #find outlier (who did not pass the test?)
 #number of wrong answers per participant x/4
 
@@ -60,6 +59,14 @@ df.subjectinfo %>%
     mutate(number_correct = rowSums(!is.na(.[,2:ncol(.)]))) %>%
       select(subjects,number_correct)
 
+avg_rts <- df.responses %>%
+                        group_by(subjects) %>%
+                        summarise(mean_rt = mean(rt_attachment)) 
+outlier <- boxplot(avg_arts[,2])$out
+outlier_indx <- avg_rts$subjects[which(round(avg_rts$mean_rt,digits=2) %in% round(outlier,digits=2))]
+#Remove Outlier
+df.responses <- df.responses %>%
+                filter(!(subjects %in% outlier_indx))
 #average accuracy of unambiguous items
 subset_unambiguous <- stimuli$fullID[(stimuli$Unambiguous.==1)]
 sentences_unambiguous <- stimuli[(stimuli$Unambiguous.==1),4:12]
@@ -70,16 +77,17 @@ df.responses %>%
       summarise(accuracy = mean(hits))
 
 #Biases: Reaction Times total and per attachment
+
 summary_rts <- df.responses %>%
                  group_by(subjects,attachment,hits) %>%
                    summarise(mean_rt = mean(rt_attachment)) 
                       
-p <- ggplot(summary_rts, aes(x = hits, y = mean_rt, subject = subjects)) +
+p <- ggplot(summary_rts, aes(x = factor(hits), y = mean_rt,subject = subjects,fill=factor(hits))) +
     geom_boxplot() +
     facet_wrap(~attachment) +
     geom_jitter(size = 2) +
     ggtitle("RTs averaged over items")
-p <- ggplotly(p,tooltip = c("subjects","mean_rt"))
+p <- ggplotly(p,tooltip = c("subject","mean_rt"))
 p
 # Assess material
 mean_accuracy <- df.responses %>%
@@ -94,15 +102,9 @@ acc_per_item <- df.responses %>%
 items_reject  <- df.responses %>%
                   group_by(items) %>%
                     summarise(percent_correct = round(sum(hits)/subjectnum,digits=2)) %>%
-                     filter(percent_correct <= 0.8)
-stimuli[(stimuli$fullID %in% items_reject$items),c(4:12,15)]
+                     filter(percent_correct <= 0.4)
+stimuli_reject <- stimuli[(stimuli$fullID %in% items_reject$items),c(4:12,15)]
+merge(stimuli_reject,items_reject,by.x = "fullID",by.y = "items")
 
 
-
-subset_attach <- grep("^NA[1-9]*$",names(df.responses),value = TRUE)
-idx           <- match(subset_attach,names(df.responses))
-df.Nattach    <- df.responses[,subset_attach]
-subset_attach <- grep("^VA[1-9]*$",names(df.responses),value = TRUE)
-idx           <- match(subset_attach,names(df.responses))
-df.Vattach    <- df.responses[,subset_attach]
 
