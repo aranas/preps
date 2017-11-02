@@ -1,64 +1,101 @@
 
 library(plotly)
 library(reshape)
-library("RColorBrewer")
+library(RColorBrewer)
+library(data.table)
+library(dplyr)
+#Create color scheme
 pastel_colors = brewer.pal(8, "Pastel1")
 set_colors = brewer.pal(8, "Set1")
 #load stimulus file
-stimuli         <- read.csv(file="stimuliA.csv",head=TRUE,sep=",",na.strings = "NAN", stringsAsFactors = FALSE)
+stimuli         <- read.csv(file="stimuliA.csv",head=TRUE,sep=",",na.strings = c("","NAN"), stringsAsFactors = FALSE)
 stimuli$fullID  <- as.character(interaction(stimuli[,c(13,3)],sep = ""))
 #load response file
-responses       <- read.csv(file="all_responses.csv",head=TRUE,sep=";",stringsAsFactors=FALSE)
-names           <- responses$surveynum
+file_names = list.files(pattern="^results")
+temp <- lapply(file_names,read.csv,sep=",",na.strings = c("","NAN"), stringsAsFactors = TRUE)
+df.responses <- Reduce(function(x,y) merge(x,y,all=TRUE,sort=TRUE),temp)
 
-responses <- read.csv(file="all_responses.csv",head=TRUE,sep=";")
 
+subjectnum      <- nrow(df.responses)
+#transpose and fix column names and classes
+df.responses                <- setDT(df.responses,keep.rownames = TRUE)
+colnames(df.responses)[1]   <- "subjects"
+df.responses                <- Filter(function(x) !(all(x=="")), df.responses) #delete blank columns
 
-names <- responses$surveynum
+#Split all item specific data from subject specific data
+ind_items   <- grep("[VN]A[0-9]",colnames(df.responses),value = TRUE)
+df.subjectinfo <- df.responses
+df.subjectinfo[,ind_items] <- NULL
+df.responses  <- df.responses[,c("subjects",ind_items),with=FALSE]
 
-df.responses <- as.data.frame(t(responses[,-1]))
-colnames(df.responses) <- names
-df.responses$age <- as.numeric(df.responses$age)
-#output mean age + sd of participants
-#output mean time for survey taken
-
+#reshape items
+ind             <- grep("^[VN]A[0-9]*$",colnames(df.responses),value = TRUE)
+df.respAttach   <- df.responses[,c("subjects",ind),with=FALSE]
+df.respAttach   <- melt(df.respAttach,id="subjects",value.name="response_attachment",variable.name='items')
+ind             <- grep("^[VN]A[0-9]*Time$",colnames(df.responses),value = TRUE)
+df.respTime     <- df.responses[,c("subjects",ind),with=FALSE]
+df.respTime     <- melt(df.respTime,id="subjects",value.name="rt_attachment",variable.name='items')
+ind             <- grep("\\.$",colnames(df.responses),value = TRUE)
+df.respPAttach  <- df.responses[,c("subjects",ind),with=FALSE]
+df.respPAttach  <- melt(df.respPAttach,id="subjects",value.name="rating_plausibility",variable.name='items')
+ind             <- grep("P[VN]A[0-9]*Time$",colnames(df.responses),value = TRUE)
+df.respPTime    <- df.responses[,c("subjects",ind),with=FALSE]
+df.respPTime    <- melt(df.respPTime,id="subjects",value.name="rt_plausibility",variable.name='items')
+df.responses    <- cbind(df.respAttach,df.respTime[,3],df.respPAttach[,3],df.respPTime[,3])
+df.responses$hits <- as.numeric((grepl("N",df.responses$items) & df.responses$response_attachment == "Nomen") | 
+                      (grepl("V",df.responses$items) & df.responses$response_attachment == "Verb"))
+df.responses    <- df.responses %>%
+                    mutate(attachment = ifelse(grepl("N",items),"Noun","Verb"))
+                                                                       
+#############ANALYSIS#################
+summary(df.subjectinfo$age)
+summary((df.subjectinfo$interviewtime)/60)
 
 
 #find outlier (who did not pass the test?)
 #number of wrong answers per participant x/4
-subset_test   <- grep("correct[0-9]*Time$",names(df.responses),value=TRUE)
-apply(df.responses[,subset_test], 1, function(x) sum(is.na(x)))
+
+df.subjectinfo %>%
+  select(subjects,starts_with("correct")) %>%
+    mutate(number_correct = rowSums(!is.na(.[,2:ncol(.)]))) %>%
+      select(subjects,number_correct)
+
 #average accuracy of unambiguous items
 subset_unambiguous <- stimuli$fullID[(stimuli$Unambiguous.==1)]
 sentences_unambiguous <- stimuli[(stimuli$Unambiguous.==1),4:12]
-count_correct = apply(df.responses[,subset_unambiguous], 1, function(x) sum(x == "Nomen"))
-count_correct/length(subset_unambiguous)
+
+df.responses %>%
+  filter(items %in% subset_unambiguous) %>%
+    group_by(subjects) %>%
+      summarise(accuracy = mean(hits))
+
 #Biases: Reaction Times total and per attachment
-subset_time   <- grep("^[VN]A[0-9]*Time$",names(df.responses),value = TRUE)
-df.rts        <- df.responses[,subset_time]
-y1            <- rowMeans(df.rts[,grep("^VA",names(df.rts))])
-y2            <- rowMeans(df.rts[,grep("^NA",names(df.rts))])
-y3            <- rowMeans(df.rts)
+summary_rts <- df.responses %>%
+                 group_by(subjects,attachment,hits) %>%
+                   summarise(mean_rt = mean(rt_attachment)) 
+                      
+p <- ggplot(summary_rts, aes(x = hits, y = mean_rt, subject = subjects)) +
+    geom_boxplot() +
+    facet_wrap(~attachment) +
+    geom_jitter(size = 2) +
+    ggtitle("RTs averaged over items")
+p <- ggplotly(p,tooltip = c("subjects","mean_rt"))
+p
+# Assess material
+mean_accuracy <- df.responses %>%
+                    group_by(items) %>%
+                      summarise(percent_correct = round(sum(hits)/subjectnum,digits=2)) %>%
+                        summarise(mean_correct = mean(percent_correct))
+acc_per_item <- df.responses %>%
+                  group_by(items) %>%
+                    summarise(percent_correct = round(sum(hits)/subjectnum,digits=2))
 
-p <- plot_ly(type = 'box') %>%
-  add_boxplot(y = y1, jitter = 0.3, pointpos = -1.8, boxpoints = 'all',
-              marker = list(color = pastel_colors[1]),
-              line = list(color = pastel_colors[1]),
-              name = "Verb attachment",
-              hoverinfo= row.names(df.rts)) %>%
-  add_boxplot(y = y2, jitter = 0.3, pointpos = -1.8, boxpoints = 'all',
-              marker = list(color = pastel_colors[2]),
-              line = list(color = pastel_colors[2]),
-              name = "Noun attachment") %>%
-  add_boxplot(y = y3, name = "All trials", boxpoints = 'suspectedoutliers',
-              marker = list(color = pastel_colors[3],
-                            outliercolor = set_colors[1],
-                            line = list(outliercolor = set_colors[1],
-                                        outlierwidth = 2)),
-              line = list(color = pastel_colors[3])) %>%
-  layout(title = "Reaction times across items & subjects (data points are subject averages)",
-         yaxis=list(title="RTs (seconds)"))
 
+items_reject  <- df.responses %>%
+                  group_by(items) %>%
+                    summarise(percent_correct = round(sum(hits)/subjectnum,digits=2)) %>%
+                     filter(percent_correct <= 0.8)
+stimuli[(stimuli$fullID %in% items_reject$items),c(4:12,15)]
 
 
 
