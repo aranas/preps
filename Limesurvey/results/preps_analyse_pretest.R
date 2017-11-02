@@ -10,16 +10,12 @@ set_colors = brewer.pal(8, "Set1")
 stimuli         <- read.csv(file="stimuliA.csv",head=TRUE,sep=",",na.strings = c("","NAN"), stringsAsFactors = FALSE)
 stimuli$fullID  <- as.character(interaction(stimuli[,c(13,3)],sep = ""))
 #load response file
-responses       <- read.csv(file="all_responses.csv",head=TRUE,sep=";", na.strings = c("","NA"),stringsAsFactors=FALSE)
+file_names = list.files(pattern="^results")
+temp <- lapply(file_names,read.csv,sep=",",na.strings = c("","NAN"), stringsAsFactors = TRUE)
+df.responses <- Reduce(function(x,y) merge(x,y,all=TRUE,sort=TRUE),temp)
+
+subjectnum      <- nrow(df.responses)
 #transpose and fix column names and classes
-names                       <- responses$surveynum
-df.responses                <- as.data.frame(t(responses[,-1]))
-colnames(df.responses)      <- names
-df.responses$age            <- as.numeric(df.responses$age)
-subset_time                 <- grep("ime$",names(df.responses),value = TRUE)
-df.responses[,subset_time]  <- lapply(df.responses[,subset_time], function(x) as.numeric(gsub(",",".",x)))
-df.responses[sapply(df.responses, is.character)] <- lapply(df.responses[sapply(df.responses, is.character)], 
-                                                           as.factor)
 df.responses                <- setDT(df.responses,keep.rownames = TRUE)
 colnames(df.responses)[1]   <- "subjects"
 df.responses                <- Filter(function(x) !(all(x=="")), df.responses) #delete blank columns
@@ -37,7 +33,7 @@ df.respAttach   <- melt(df.respAttach,id="subjects",value.name="response_attachm
 ind             <- grep("^[VN]A[0-9]*Time$",colnames(df.responses),value = TRUE)
 df.respTime     <- df.responses[,c("subjects",ind),with=FALSE]
 df.respTime     <- melt(df.respTime,id="subjects",value.name="rt_attachment",variable.name='items')
-ind             <- grep("P[VN]A[0-9]*]$",colnames(df.responses),value = TRUE)
+ind             <- grep("\\.$",colnames(df.responses),value = TRUE)
 df.respPAttach  <- df.responses[,c("subjects",ind),with=FALSE]
 df.respPAttach  <- melt(df.respPAttach,id="subjects",value.name="rating_plausibility",variable.name='items')
 ind             <- grep("P[VN]A[0-9]*Time$",colnames(df.responses),value = TRUE)
@@ -75,23 +71,27 @@ summary_rts <- df.responses %>%
                  group_by(subjects,attachment,hits) %>%
                    summarise(mean_rt = mean(rt_attachment)) 
                       
-p <- ggplot(summary_rts, aes(x = factor(hits), y = mean_rt, subject = subjects)) +
+p <- ggplot(summary_rts, aes(x = hits, y = mean_rt, subject = subjects)) +
     geom_boxplot() +
     facet_wrap(~attachment) +
     geom_jitter(size = 2) +
     ggtitle("RTs averaged over items")
 p <- ggplotly(p,tooltip = c("subjects","mean_rt"))
-
+p
 # Assess material
 mean_accuracy <- df.responses %>%
                     group_by(items) %>%
-                      summarise(percent_correct = round(sum(hits)/13,digits=2)) %>%
+                      summarise(percent_correct = round(sum(hits)/subjectnum,digits=2)) %>%
                         summarise(mean_correct = mean(percent_correct))
+acc_per_item <- df.responses %>%
+                  group_by(items) %>%
+                    summarise(percent_correct = round(sum(hits)/subjectnum,digits=2))
+
 
 items_reject  <- df.responses %>%
                   group_by(items) %>%
-                    summarise(percent_correct = round(sum(hits)/13,digits=2)) %>%
-                     filter(percent_correct <= unlist(mean_accuracy))
+                    summarise(percent_correct = round(sum(hits)/subjectnum,digits=2)) %>%
+                     filter(percent_correct <= 0.8)
 stimuli[(stimuli$fullID %in% items_reject$items),c(4:12,15)]
 
 
