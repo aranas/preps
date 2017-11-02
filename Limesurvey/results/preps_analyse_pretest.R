@@ -106,5 +106,51 @@ items_reject  <- df.responses %>%
 stimuli_reject <- stimuli[(stimuli$fullID %in% items_reject$items),c(4:12,15)]
 merge(stimuli_reject,items_reject,by.x = "fullID",by.y = "items")
 
+#binomial distribution 
+x <- seq(0,20,by = 1)
+y <- dbinom(x,20,0.5)
+plot(x,y)
+#text mit uft8 ausgeben
+##Plausibility analysieren
+#first extract contingency table
+plausibility_counts <- df.responses %>%
+                        group_by(attachment) %>%
+                        count(rating_plausibility)
+plausibility_counts <- cbind(plausibility_counts[plausibility_counts$attachment=="Noun",3],
+                             plausibility_counts[plausibility_counts$attachment=="Verb",3])
+colnames(plausibility_counts) <- c("Noun","Verb")
+#chi-square test
+chisq.test(plausibility_counts)
+#reduce dimensionality
+plausibility_counts <- rbind(c(sum(plausibility_counts[c(1,2),1]),
+                                sum(plausibility_counts[c(1,2),2])),
+                             c(sum(plausibility_counts[c(4,5),1]),
+                                sum(plausibility_counts[c(4,5),2])))
 
+# Group RTs by plausibility ratings and attachment
+summary_rts <- df.responses %>%
+  group_by(items,attachment,rating_plausibility) %>%
+  summarise(mean_rt = mean(rt_attachment)) 
+
+p <- ggplot(summary_rts, aes(x = factor(rating_plausibility), y = mean_rt,items = items,fill=factor(rating_plausibility))) +
+  geom_boxplot() +
+  facet_wrap(~attachment) +
+  ggtitle("RT distribution over items per plausibility bin")
+p <- ggplotly(p,tooltip = c("items","mean_rt"))
+p
+
+
+summary_rts <- df.responses %>%
+  group_by(items,rating_plausibility) %>%
+  summarise(mean_hits = mean(hits)) 
+
+p <- ggplot(summary_rts, aes(x = factor(rating_plausibility), y = mean_hits,items = items,fill=factor(rating_plausibility))) +
+  geom_boxplot() +
+  geom_jitter() +
+  ggtitle("Hit distribution over items per plausibility bin")
+p <- ggplotly(p,tooltip = c("items","y"))
+p
+# items that have low accuracy but partner has high accuracy might be repaired
+# items where both have very low accuracy, attachment should be switched if makes sense
+# Otherwise form completely new sentence
 
