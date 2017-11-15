@@ -1,6 +1,7 @@
 ---
 author: "Sophie Arana"
 title: "Pre-test results exploration"
+runtime: shiny
 output:
   html_document:
     df_print: paged
@@ -21,6 +22,8 @@ library(plyr)
 library(dplyr)
 library(kableExtra)
 library(knitr)
+library(shiny)
+library(DT)
 options(knitr.table.format="html")
 #Create color scheme
 pastel_colors = brewer.pal(8, "Pastel1")
@@ -33,6 +36,8 @@ All following graphs are based the results of the Limesurvey online pre-test. 40
 ```{r}
 stimuli         <- read.csv(file="stimuliB.csv",head=TRUE,sep=",",na.strings = c("","NAN"), stringsAsFactors = FALSE,encoding="UTF-8")
 stimuli$fullID  <- as.character(interaction(stimuli[,c(13,3)],sep = ""))
+stimuli$Condition <- as.factor(stimuli$Condition)
+colnames(stimuli) <- c("Type","Pair","ID","Det.","N0","Verb","Det.2","N1","Prep.","Det.3","Adj.","N2","Attachment","Unambiguous","fullID")
 #load response file
 file_names = list.files(pattern="^results",path = "Bresponses",full.names = TRUE)
 temp <- lapply(file_names,read.csv,sep=",",na.strings = c("","NAN"), stringsAsFactors = TRUE)
@@ -91,8 +96,8 @@ Outlier subjects were identified according to three scores:
 Unambiguous sentences:
 ```{r}
 #average accuracy of unambiguous items
-subset_unambiguous <- stimuli$fullID[(stimuli$Unambiguous.==1)]
-sentences_unambiguous <- stimuli[(stimuli$Unambiguous.==1),4:12]
+subset_unambiguous <- stimuli$fullID[(stimuli$Unambiguous==1)]
+sentences_unambiguous <- stimuli[(stimuli$Unambiguous==1),4:12]
 sentences_unambiguous
 ```
   
@@ -102,7 +107,7 @@ least_correct = 3
 threshhold_acc = 0.69
 avg_rts <- df.responses %>%
                         group_by(subjects) %>%
-                        summarise(mean_rt = mean(rt_attachment)) 
+                        summarise(mean_rt = mean(rt_attachment,na.rm=TRUE)) 
 boxplot(avg_rts[,2])
 outlier <- boxplot(avg_rts[,2])$out
 
@@ -114,15 +119,16 @@ test_correct   <- df.subjectinfo %>%
 avg_unambiguous <-df.responses %>%
                     filter(items %in% subset_unambiguous) %>%
                       group_by(subjects) %>%
-                        summarise(accuracy_unambiguous = mean(hits))
+                        summarise(acc_unambiguous = mean(hits,na.rm=TRUE))
 
 summ <- join_all(list(avg_rts,test_correct,avg_unambiguous),by='subjects')
-summ
+DT::datatable(summ) %>% formatRound(columns=colnames(summ),digits=2)
 
 ```
 ```{r}
 outlier_indx <- avg_rts$subjects[which(round(avg_rts$mean_rt,digits=2) %in% round(outlier,digits=2))]
 outlier_indx <- c(outlier_indx,summ$subjects[which(summ$number_correct < least_correct | summ$accuracy < threshhold_acc)])
+outlier_indx <- unique(outlier_indx)
 #Remove Outlier
 df.responses <- df.responses %>%
                 filter(!(subjects %in% outlier_indx))
@@ -132,7 +138,7 @@ Number of removed outliers: `r length(outlier_indx)`
 
 # Is there a Verb bias?
 ##Average reaction times per subject, split for verb/noun and hit(1)/miss(0)
-```{r message=FALSE}
+```{r message=FALSE, warning=FALSE}
 summary_rts <- df.responses %>%
                  group_by(subjects,attachment,hits) %>%
                    summarise(mean_rt = mean(rt_attachment)) 
@@ -150,13 +156,18 @@ p
 Percentage of Verb responses per subject
 ```{r}
 attachment_percent <- df.responses %>%
+  na.omit %>%
   group_by(subjects,response_attachment) %>%
     summarise(percent = length(response_attachment)/162) 
-plot(attachment_percent[attachment_percent$response_attachment=="Verb",c(1,3)])
+percent_VAresponses <- attachment_percent[attachment_percent$response_attachment=="Verb",]
+percent_NAresponses <- attachment_percent[attachment_percent$response_attachment=="Nomen",]
+#ggplot(attachment_percent, aes(percent, fill = response_attachment)) + 
+#  geom_density(alpha = 0.2)
+ggplot(attachment_percent, aes(percent, fill = response_attachment)) + geom_histogram(alpha = 0.5, aes(y = ..density..), position = 'identity')
 ```
 
 ```{r echo=FALSE}
-t.test( attachment_percent$percent[attachment_percent$response_attachment=="Nomen"], attachment_percent$percent[attachment_percent$response_attachment=="Verb"],paired=TRUE)
+t.test( percent_NAresponses$percent,percent_VAresponses$percent,paired=TRUE)
 ```
 
 #Assess items
@@ -164,33 +175,29 @@ Binomial distribution of probabilities if chance-performane is 50%
 ```{r}
 x <- seq(0,20,by = 1)
 y <- dbinom(x,20,0.5)
-plot(x,y)
+plot(x,y,main="Probability distribution assuming per item probability of 50%",
+      xlab="Number of correct answers per items (out of 20 answers)", ylab = "Probability")
+
 ```
-Reject stimuli with less than 75% correct responses
+  
+## Reject stimuli with too few correct responses
 ```{r}
-threshold = 0.75
-mean_accuracy <- df.responses %>%
-                    group_by(items) %>%
-                      summarise(percent_correct = round(sum(hits)/length(file_names),digits=2)) %>%
-                        summarise(mean_correct = mean(percent_correct))
+numericInput("threshold", "Choose accuracy threshold to reject items", 0.75)
+
 acc_per_item <- df.responses %>%
                   group_by(items) %>%
-                    summarise(percent_correct = round(sum(hits)/length(file_names),digits=2))
+                    summarise(acc = mean(hits,na.rm = TRUE))
+mean_accuracy <- acc_per_item %>%
+                    summarise(mean_correct = mean(acc,na.rm = TRUE))
 
+df.stim_acc <- merge(stimuli,acc_per_item,by.x="fullID",by.y="items")
+DT::renderDataTable({
+  items_reject <- df.stim_acc %>% arrange(Verb) %>% filter(acc <= input$threshold)
+  #datatable(items_reject[,c(1,2,5:12,16)],
+  #          filter = 'top',
+  #          options = list("pageLength" = 10))
 
-items_reject  <- df.responses %>%
-                  group_by(items) %>%
-                    summarise(percent_correct = round(sum(hits)/length(file_names),digits=2)) %>%
-                     filter(percent_correct <= threshold)
-stimuli_reject <- stimuli[(stimuli$fullID %in% items_reject$items),c(4:12,15)]
-
-```
-Leads to rejection of `r nrow(stimuli_reject)` sentences  
-Of which `r length(grep("^[VN]A1",stimuli_reject$fullID))` are Type 1 items.  
-And `r length(grep("^[VN]A2",stimuli_reject$fullID))` are Type 2 items.
-```{r}
-out <- merge(stimuli_reject,items_reject,by.x = "fullID",by.y = "items")
-out %>% arrange(Verb)
+  }) 
 ```
 
 #Analyse Plausibility ratings
