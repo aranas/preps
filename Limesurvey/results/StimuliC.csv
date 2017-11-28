@@ -1,0 +1,147 @@
+Condition,Pair number,ID,Determiner,N0,Verb,Determiner,N1,Preposition,Determiner,Adjective,N2,"Attachment (verb attached - VA, noun attached - NA",Unambiguous?,verb_number
+1,101,1101,Der,Bänker,belästigt,die,Sekretärin,mit,der,kubanischen,Zigarre,VA,0,21
+1,101,1101,Der,Bänker,engagiert,die,Sekretärin,mit,der,kubanischen,Zigarre,NA,1,58
+1,102,1102,Der,Demonstrant,beobachtet,den,Polizisten,mit,dem,schwarzen,Schlagstock,NA,1,28
+1,102,1102,Der,Demonstrant,verprügelt,den,Polizisten,mit,dem,schwarzen,Schlagstock,VA,0,143
+1,103,1103,Der,Produzent,beliefert,die,Fabriken,mit,den,seltenen,Teilen,VA,0,22
+1,103,1103,Der,Produzent,zählt,die,Fabriken,mit,den,seltenen,Teilen,NA,0,159
+1,104,1104,Die,Ärztin,berät,die,Schwangeren,mit,einer,neuartigen,Milchpumpe,NA,0,30
+1,104,1104,Die,Ärztin,versorgt,die,Schwangeren,mit,einer,neuartigen,Milchpumpe,VA,0,148
+1,105,1105,Der ,Unternehmer,besänftigt,den,Geldanleger,mit,den,klugen,Sprüchen,VA,0,33
+1,105,1105,Der ,Unternehmer,bevorzugt,den,Geldanleger,mit,den,klugen,Sprüchen,NA,0,45
+1,106,1106,Die,Cousine,erneuert,den,Raumduft,mit,einem,handlichen,Nachfüller,VA,0,64
+1,106,1106,Die,Cousine,verschenkt,den,Raumduft,mit,einem,handlichen,Nachfüller,NA,1,145
+1,107,1107,Der,Bote,befördert,die,Kisten,mit,dem,gelben,Etikett,NA,1,14
+1,107,1107,Der,Bote,markiert,die,Kisten,mit,dem,gelben,Etikett,VA,0,104
+1,108,1108,Die,Alte,ruft,den,Enkel,mit,der,ungesunden,Schokolade,NA,0,112
+1,108,1108,Die,Alte,tröstet,den,Enkel,mit,der,ungesunden,Schokolade,VA,0,122
+1,109,1109,Der,Chemiker,verschließt,den,Flakon,mit,einem,praktischen,Pumpspender,VA,0,146
+1,109,1109,Die,Familie,versieht,den,Brief,mit,einer,höflichen,Beschwerde,VA,1,147
+1,110,1110,Die,Chefin,gratuliert,dem,Mitarbeiter,mit,der,faltbaren,Karte,VA,0,187
+1,110,1110,Die,Nichte,gratuliert,der,Patentante,mit,der,riesigen,Torte,VA,0,187
+1,111,1111,Der,Maler,begutachtet,die,Wand,mit,der,frischen,Farbe,NA,1,169
+1,111,1111,Der,Maler,bemalt,die,Wand,mit,der,frischen,Farbe,VA,0,174
+1,112,1112,Der,Schamane,begutachtet,die,Maske,mit,der,braunen,Kreide,NA,1,169
+1,112,1112,Der,Schamane,bemalt,die,Maske,mit,der,braunen,Kreide,VA,0,174
+1,113,1113,Der,Arzt,entdeckt,den,Säugling,mit,einem,flauschigen,Teddy,NA,1,179
+1,113,1113,Der,Arzt,ermuntert,den,Säugling,mit,einem,flauschigen,Teddy,VA,0,182
+1,114,1114,Der,Sanitäter,entdeckt,den ,Kranken,mit,einem,kuscheligen,Bären,NA,1,179
+1,114,1114,Der,Sanitäter,ermuntert,den ,Kranken,mit,einem,kuscheligen,Bären,VA,0,182
+1,115,1115,Die,Blinde,ertastet,das,Wesen,mit,den,zarten,Fingern,VA,0,185
+1,115,1115,Die,Blinde,verehrt,das,Wesen,mit,den,zarten,Fingern,NA,0,204
+1,116,1116,Die,Kaiserin,ertastet,das,Geschöpf,mit,den,feinen,Händen,VA,0,185
+1,116,1116,Die,Kaiserin,verehrt,das,Geschöpf,mit,den,feinen,Händen,NA,0,204
+1,117,1117,Der ,Pirat,erschlägt,den ,Kapitän,mit,einem,massiven,Knüppel,VA,0,183
+1,117,1117,Der ,Pirat,erspäht,den ,Kapitän,mit,einem,massiven,Knüppel,NA,1,184
+1,118,1118,Der ,Rüpel,erschlägt,den ,Haudegen,mit,einem,schweren,Ast,VA,0,183
+1,118,1118,Der ,Rüpel,erspäht,den ,Haudegen,mit,einem,schweren,Ast,NA,1,184
+1,119,1119,Der ,Zauberer,schmückt,das,Huhn,mit,den,besonderen,Federn,VA,0,196
+1,119,1119,Der ,Zauberer,verzaubert,das,Huhn,mit,den,besonderen,Federn,NA,0,212
+1,120,1120,Der ,Prinz,schmückt,das,Ross,mit,den,glitzernden,Strähnen,VA,0,196
+1,120,1120,Der ,Prinz,verzaubert,das,Ross,mit,den,glitzernden,Strähnen,NA,0,212
+1,121,1121,Der ,Trainer,behandelt,den,Athleten,mit,der,veralteten,Technik,VA,0,170
+1,121,1121,Der ,Trainer,verurteilt,den,Athleten,mit,der,veralteten,Technik,NA,0,210
+1,122,1122,Der ,Guru,behandelt,den,Gläubigen,mit,der,erfundenen,Zeremonie,VA,0,170
+1,122,1122,Der ,Guru,verurteilt,den,Gläubigen,mit,der,erfundenen,Zeremonie,NA,0,210
+1,123,1123,Die,Köchin,verabscheut,die,Besucher,mit,dem,fettigen,Essen,NA,1,201
+1,123,1123,Die,Köchin,verpflegt,die,Besucher,mit,dem,fettigen,Essen,VA,0,208
+1,124,1124,Die,Frisöse,verabscheut,die,Kunden,mit,dem,schmierigen,Haargel,NA,1,201
+1,124,1124,Die,Frisöse,verpflegt,die,Kunden,mit,dem,schmierigen,Haargel,VA,0,208
+1,125,1125,Der,Raucher,mustert,den,Passanten,mit,der,stinkenden,Zigarette,NA,1,191
+1,125,1125,Der,Raucher,stört,den,Passanten,mit,der,stinkenden,Zigarette,VA,0,198
+1,126,1126,Der,Obdachlose,mustert,den,Unbekannten,mit,seiner,widerlichen,Jacke,NA,1,191
+1,126,1126,Der,Obdachlose,stört,den,Unbekannten,mit,seiner,widerlichen,Jacke,VA,0,198
+1,127,1127,Der ,Junggeselle,erfreut,die ,Angebetete,mit,einem,hübschen,Kleid,VA,0,181
+1,127,1127,Der ,Junggeselle,wählt,die ,Angebetete,mit,einem,hübschen,Kleid,NA,1,213
+1,128,1128,Der ,Kandidat,erfreut,die ,Kandidatin,mit,einem,strahlenden,Lächeln,VA,0,181
+1,128,1128,Der ,Kandidat,wählt,die ,Kandidatin,mit,einem,strahlenden,Lächeln,NA,0,213
+1,129,1129,Der,Bäcker,liebt,das,Brot,mit,den,knusprigen,Kernen,NA,1,190
+1,129,1129,Der,Bäcker,veredelt,das,Brot,mit,den,knusprigen,Kernen,VA,0,203
+1,130,1130,Der,Genießer,liebt,die,Mahlzeit,mit,dem,exotischen,Salz,NA,1,190
+1,130,1130,Der,Genießer,veredelt,die,Mahlzeit,mit,dem,exotischen,Salz,VA,0,203
+2,62,262,Die,Soldaten,bekriegen,die,Indianer,mit,den,vergifteten,Pfeilen,NA,0,173
+2,62,262,Die,Indianer,bekriegen,die,Soldaten,mit,den,vergifteten,Pfeilen,VA,0,173
+2,63,263,Der,Tiger,bekämpft,den,Büffel,mit,den,breiten,Tatzen,VA,0,172
+2,63,263,Der,Büffel,bekämpft,den,Tiger,mit,den,breiten,Tatzen,NA,0,172
+2,64,264,Der ,Hausmeister,erschreckt,den,Greis,mit,dem,klappernden,Gebiss,NA,0,67
+2,64,264,Der ,Greis,erschreckt,den,Hausmeister,mit,dem,klappernden,Gebiss,VA,0,67
+2,65,265,Der,Kurier,ohrfeigt,den,Butler,mit,dem ,silbernen,Tablett,NA,0,192
+2,65,265,Der,Butler,ohrfeigt,den,Kurier,mit,dem ,silbernen,Tablett,VA,0,192
+2,66,266,Der,Verlierer,verhaut,den,Sieger,mit,der,begehrten,Trophäe,NA,0,206
+2,66,266,Der,Sieger,verhaut,den,Verlierer,mit,der,begehrten,Trophäe,VA,0,206
+2,67,267,Die,Studenten,drohen,den,Dozenten,mit,den,zensierten,Klausuren,NA,0,178
+2,67,267,Die,Dozenten,drohen,den,Studenten,mit,den,zensierten,Klausuren,VA,0,178
+2,68,268,Der,Räuber,vermöbelt,den,Opa,mit,der,metallenen,Krücke,NA,0,207
+2,68,268,Der,Opa,vermöbelt,den,Räuber,mit,der,metallenen,Krücke,VA,0,207
+2,69,269,Das,Kind,verängstigt,das,Insekt,mit,dem,giftigen,Stachel,NA,0,202
+2,69,269,Das,Insekt,verängstigt,das,Kind,mit,dem,giftigen,Stachel,VA,0,202
+2,70,270,Die,Wilde,bedroht,die,Kuh,mit,der,brennenden,Fackel,VA,0,165
+2,70,270,Die,Kuh,bedroht,die,Wilde,mit,der,brennenden,Fackel,NA,0,165
+2,71,271,Die,Reisegruppe,ruft,die,Leiterin,mit,dem,großen,Megaphon,NA,0,112
+2,71,271,Die,Leiterin,ruft,die,Reisegruppe,mit,dem,großen,Megaphon,VA,0,112
+2,72,272,Der,Torwart,stößt,den,Stürmer,mit,seinem,ledernen,Handschuh ,VA,0,199
+2,72,272,Der,Stürmer,stößt,den,Torwart,mit,seinem,ledernen,Handschuh ,NA,0,199
+2,73,273,Das,Rind,attackiert,das,Publikum,mit,den,spitzen,Hörnern,VA,0,163
+2,73,273,Das,Publikum,attackiert,das,Rind,mit,den,spitzen,Hörnern,NA,0,163
+2,74,274,Das,Fräulein,beschützt,das,Einhorn,mit,dem,leuchtenden,Horn,NA,0,175
+2,74,274,Das,Einhorn,beschützt,das,Fräulein,mit,dem,leuchtenden,Horn,VA,0,175
+2,75,275,Die,Sträunerin,verscheucht,die,Hexe,mit,ihrer,fetten,Warze,NA,0,209
+2,75,275,Die,Hexe,verscheucht,die,Sträunerin,mit,ihrer,fetten,Warze,VA,0,209
+2,76,276,Der,Richter,beeindruckt,den,Gauner,mit,seiner,dunklen,Robe,VA,0,166
+2,76,276,Der,Gauner,beeindruckt,den,Richter,mit,seiner,dunklen,Robe,NA,0,166
+2,77,277,Der,Chinese,verführt,den,Besuch,mit,seinen,hölzernen,Stäbchen,VA,0,205
+2,77,277,Der,Besuch,verführt,den,Chinesen,mit,seinen,hölzernen,Stäbchen,NA,0,205
+2,78,278,Der,Zuschauer,streift,den,Fechter,mit,dem,stumpfen,Degen,NA,0,200
+2,78,278,Der,Fechter,streift,den,Zuschauer,mit,dem,stumpfen,Degen,VA,0,200
+2,79,279,Der,Winzer,dankt,dem,Abnehmer,mit,dem,erlesenen,Wein,VA,0,177
+2,79,279,Der,Abnehmer,dankt,dem,Winzer,mit,dem,erlesenen,Wein,NA,0,177
+2,80,280,Der,Radler,behindert,den,Bauer,mit,dem,dreckigen,Trecker,NA,0,171
+2,80,280,Der,Bauer,behindert,den,Radler,mit,dem,dreckigen,Trecker,VA,0,171
+2,81,281,Der ,Pensionär,animiert,den ,Chor,mit,seinem,alten,Krückstock,VA,0,162
+2,81,281,Der ,Chor,animiert,den,Pensionär,mit,seinem,alten,Krückstock,NA,0,162
+2,82,282,Der ,Violinist,begleitet,den,Sänger,mit,seiner,kostbaren ,Violine,VA,0,168
+2,82,282,Der ,Sänger,begleitet,den,Violinist,mit,seiner,kostbaren ,Violine,NA,0,168
+2,83,283,Der,König,empfängt,den,Knecht,mit,seinem,prächtigen,Zepter,VA,0,56
+2,83,283,Der,Knecht,empfängt,den,König,mit,seinem,prächtigen,Zepter,NA,0,56
+2,84,284,Das,Publikum,entzückt ,das,Ensemble,mit,dem,schallenden,Applaus,VA,0,180
+2,84,284,Das,Ensemble,entzückt ,das,Publikum,mit,dem,schallenden,Applaus,NA,0,180
+2,85,285,Der,Ninja,schützt,den,Meister,mit,den,uralten,Weisheiten,VA,0,197
+2,85,285,Der,Meister,schützt,den,Ninja,mit,den,uralten,Weisheiten,NA,0,197
+2,86,286,Die,Tänzerin,imponiert,der,Jury,mit,ihrem,wallenden,Tutu,VA,0,92
+2,86,286,Die,Jury,imponiert,der,Tänzerin,mit,ihrem,wallenden,Tutu,NA,0,92
+2,87,287,Der,Pfau,verwirrt,den,Koala,mit,seinem,auffälligen,Gefieder,VA,0,188
+2,87,287,Der,Koala,verwirrt,den,Pfau,mit,seinem,auffälligen,Gefieder,NA,0,188
+2,88,288,Der,Pfarrer,unterstützt,den,Bund,mit,seiner,tröstenden,Predigt,VA,0,128
+2,88,288,Der,Bund,unterstützt,den,Pfarrer,mit,seiner,tröstenden,Predigt,NA,0,128
+2,89,289,Die,Schwangere,verblüfft,die,Hebamme,mit,ihrer,jahrelangen,Erfahrung,NA,0,130
+2,89,289,Die,Hebamme,verblüfft,die,Schwangere,mit,ihrer,jahrelangen,Erfahrung,VA,0,130
+2,90,290,Der,Igel,verletzt,den,Fuchs,mit,den,kleinen,Stacheln,VA,0,137
+2,90,290,Der,Fuchs,verletzt,den,Igel,mit,den,kleinen,Stacheln,NA,0,137
+2,91,291,Das,Volk,vertreibt,das,Militär,mit,den,grässlichen,Waffen,NA,0,152
+2,91,291,Das,Militär,vertreibt,das,Volk,mit,den,grässlichen,Waffen,VA,0,152
+2,92,292,Die,Präsidentin,folgt,der,Fraktion,mit,ihren,deutlichen,Aussagen,VA,0,80
+2,92,292,Die,Fraktion,folgt,der,Präsidentin,mit,ihren,deutlichen,Aussagen,NA,0,80
+2,93,293,Die,Krake,reizt,die,Beute,mit,den,flinken,Tentakeln,VA,0,194
+2,93,293,Die,Beute,reizt,die,Krake,mit,den,flinken,Tentakeln,NA,0,194
+2,94,294,Der,Wolf,rammt,den,Elch,mit,seinem,enormen,Geweih,NA,0,193
+2,94,294,Der,Elch,rammt,den,Wolf,mit,seinem,enormen,Geweih,VA,0,193
+2,95,295,Der,Samurai,verwundet,den,Alligator,mit,dem,antiken,Schwert,VA,0,211
+2,95,295,Der,Alligator,verwundet,den,Samurai,mit,dem,antiken,Schwert,NA,0,211
+2,96,296,Der,Seehund,beäugt,den,Krebs,mit,seinen,niedlichen,Kulleraugen,VA,0,164
+2,96,296,Der,Krebs,beäugt,den,Seehund,mit,seinen,niedlichen,Kulleraugen,NA,0,164
+2,97,297,Die ,Muschel,bezwingt,die,Möwe,mit,ihrer,harten,Schale,VA,0,176
+2,97,297,Die ,Möwe,bezwingt,die,Muschel,mit,ihrer,harten,Schale,NA,0,176
+2,98,298,Die,Wühlmaus,befühlt,die,Schnecke,mit,den,wendigen,Fühlern,NA,0,167
+2,98,298,Die,Schnecke,befühlt,die,Wühlmaus,mit,den,wendigen,Fühlern,VA,0,167
+2,99,299,Die,Miezekatze,liebkost,die,Bäuerin,mit,den,rosa,Pfoten,VA,0,189
+2,99,299,Die,Bäuerin,liebkost,die,Miezekatze,mit,den,rosa,Pfoten,NA,0,189
+2,100,2100,Der,Delphin,schikaniert,den,Badegast,mit,den,kräftigen,Flossen,VA,0,195
+2,100,2100,Der,Badegast,schikaniert,den,Delphin,mit,den,kräftigen,Flossen,NA,0,195
+2,101,2101,Der,Mechaniker,erzürnt,den,Eigentümer,mit,dem,schmutzigen,Werkzeug,VA,0,186
+2,101,2101,Der,Eigentümer,erzürnt,den,Mechaniker,mit,dem,schmutzigen,Werkzeug,NA,0,186
+2,102,2102,Die,Mücke,quält,die,Urlauberin,mit,dem,aggressiven,Mückenspray,NA,0,187
+2,102,2102,Die,Urlauberin,quält,die,Mücke,mit,dem,aggressiven,Mückenspray,VA,0,187
+2,103,2103,Die,Fliege,plagt,die,Hündin,mit,dem,wedelnden,Schwanz,NA,0,188
+2,103,2103,Die,Hündin,plagt,die,Fliege,mit,dem,wedelnden,Schwanz,VA,0,188
+2,104,2104,Der,Autofahrer,irritiert,den,Notdienst,mit,dem,schrillen,Blaulicht,NA,0,189
+2,104,2104,Der,Notdienst,irritiert,den,Autofahrer,mit,dem,schrillen,Blaulicht,VA,0,189
