@@ -1,0 +1,201 @@
+Det;N0;Verb;Det;N1;Prep;Det;Adj;N2;condition;pair_number;ID;Attachment;verb_number;Question;Answer
+Das;Amt;empfiehlt;einen;Arbeiter;mit;einer;höheren;Position.;1;2;12;NA;60;Wer spricht eine Empfehlung aus?;Amt/Arbeiter
+Das;Amt;belohnt;einen;Arbeiter;mit;einer;höheren;Position.;1;2;12;VA;25;;
+Der;Wärter;streichelt;den;Elefant;mit;dem;grauen;Rüssel.;2;3;23;NA;137;Wer wird gestreichelt?;Elefant/W�rter
+Der;Elefant;streichelt;den;Wärter;mit;dem;grauen;Rüssel.;2;3;23;VA;137;;
+Der;Wanderer;schubst;den;Bock;mit;dem;gekrümmten;Horn.;2;7;27;NA;132;;
+Der;Bock;schubst;den;Wanderer;mit;dem;gekrümmten;Horn.;2;7;27;VA;132;;
+Der;Hirsch;trifft;den;Krieger;mit;dem;klobigen;Gewehr.;2;8;28;NA;141;;
+Der;Krieger;trifft;den;Hirsch;mit;dem;klobigen;Gewehr.;2;8;28;VA;141;;
+Die;Robbe;bespritzt;die;Animateurin;mit;dem;vollen;Eimer.;2;9;29;NA;43;Wer hat den Eimer?;Animateurin/Robbe
+Die;Animateurin;bespritzt;die;Robbe;mit;dem;vollen;Eimer.;2;9;29;VA;43;;
+Der;Papagei;ärgert;den;Pilger;mit;dem;spitzen;Schnabel.;2;10;210;VA;2;Wer wird ge�rgert?;Pilger/Papagei
+Der;Pilger;ärgert;den;Papagei;mit;dem;spitzen;Schnabel.;2;10;210;NA;2;;
+Der;Beirat;sucht;die;Ämter;mit;den;besten;Arbeitern.;1;11;111;NA;137;Wer hat die besten Arbeiter?;�mter/Beirat
+Der;Schüler;kitzelt;den;Kater;mit;dem;weißen;Schnurrhaar.;2;11;211;NA;103;Wer wird gekitzelt?;Kater/Sch�ler
+Der;Beirat;besetzt;die;Ämter;mit;den;besten;Arbeitern.;1;11;111;VA;40;;
+Der;Kater;kitzelt;den;Schüler;mit;dem;weißen;Schnurrhaar.;2;11;211;VA;103;;
+Der;Doktor;grüßt;den;Patient;mit;dem;brandneuen;Stethoskop.;2;12;212;VA;91;Wer hat das Stethoskop?;Doktor/Patient
+Der;Patient;grüßt;den;Doktor;mit;dem;brandneuen;Stethoskop.;2;12;212;NA;91;;
+Der;Mieter;erwartet;den;Klempner;mit;der;dreckigen;Rohrzange.;2;14;214;NA;77;Wer hat die Rohrzange?;Klempner/Mieter
+Der;Camper;mag;die;Suppe;mit;der;frischen;Petersilie.;1;14;114;NA;111;;
+Der;Camper;würzt;die;Suppe;mit;der;frischen;Petersilie.;1;14;114;VA;186;;
+Der;Klempner;erwartet;den;Mieter;mit;der;dreckigen;Rohrzange.;2;14;214;VA;77;;
+Die;Zahnfee;überrascht;die;Tochter;mit;dem;wackeligen;Zahn.;2;15;215;NA;5;Wer wird �berrascht?;Tochter/Zahnfee
+Die;Tochter;überrascht;die;Zahnfee;mit;dem;wackeligen;Zahn.;2;15;215;VA;5;;
+Die;Chefin;meidet;den;Mitarbeiter;mit;der;faltbaren;Karte.;1;16;116;NA;113;Wer hat die Karte?;Mitarbeiter/Chefin
+Das;Maskottchen;umarmt;das;Mädchen;mit;den;pelzigen;Armen.;2;16;216;VA;142;Wer hat pelzige Arme?;Maskottchen/M�dchen
+Das;Mädchen;umarmt;das;Maskottchen;mit;den;pelzigen;Armen.;2;16;216;NA;142;;
+Die;Cousine;verschenkt;die;Reifen;mit;dem ;feinen;Flickzeug.;1;19;119;NA;168;;
+Die;Cousine;erneuert;die;Reifen;mit;dem ;feinen;Flickzeug.;1;19;119;VA;69;;
+Der;Sänger;winkt;dem;Fan;mit;der;akustischen;Gitarre.;2;21;221;VA;188;Wem wird gewunken?;Fan/S�nger
+Der;Fan;winkt;dem;Sänger;mit;der;akustischen;Gitarre.;2;21;221;NA;188;;
+Die;Diebin;rettet;ihren;Komplizen;mit;der;einzigen;Pistole.;1;23;123;VA;124;Wer hat die Pistole?;Diebin/Komplize
+Die;Diebin;beneidet;ihren;Komplizen;mit;der;einzigen;Pistole.;1;23;123;NA;29;;
+Der;Dirigent;folgt;dem;Musiker;mit;der;lieblichen;Geige.;2;23;223;NA;87;;
+Der;Musiker;folgt;dem;Dirigent;mit;der;lieblichen;Geige.;2;23;223;VA;87;;
+Die;Betreuer;geleiten;die;Senioren;mit;den;klapprigen;Rollatoren.;2;25;225;NA;89;Wer hat Rollatoren?;Senioren/Betreuer
+Die;Senioren;geleiten;die;Betreuer;mit;den;klapprigen;Rollatoren.;2;25;225;VA;89;;
+Der;Sanitäter;holt;den;Urlauber;mit;der;faltbaren;Trage.;2;26;226;VA;95;Wer wird geholt?;Urlauber/Sanit�ter
+Der;Urlauber;holt;den;Sanitäter;mit;der;faltbaren;Trage.;2;26;226;NA;95;;
+Der;Reiter;überholt;den;Biker;mit;dem;schweren;Motorrad.;2;27;227;NA;3;Wer wird �berholt?;Biker/Reiter
+Der;Biker;überholt;den;Reiter;mit;dem;schweren;Motorrad.;2;27;227;VA;3;;
+Die;Mütter;bedrängen;die;Obsthändler;mit;den;sperrigen;Kinderwägen.;2;28;228;VA;12;Wer wird bedr�ngt?;Obsth�ndler/M�tter
+Der;Förster;befördert;das;Holz;mit;der;roten;Markierung.;1;28;128;NA;15;Wer wird bef�rdert?;Holz/F�rster
+Der;Förster;markiert;das;Holz;mit;der;roten;Markierung.;1;28;128;VA;112;;
+Die;Obsthändler;bedrängen;die;Mütter;mit;den;sperrigen;Kinderwägen.;2;28;228;NA;12;;
+Die;Fotografen;benötigen;eine;Kamera;mit;dem;wertigen;Objektiv.;1;29;129;NA;28;;
+Die;Fotografen;erweitern;eine;Kamera;mit;dem;wertigen;Objektiv.;1;29;129;VA;78;;
+Die;Gärtnerin;kennt;die;Dame;mit;den;weißen;Rosen.;1;31;131;NA;102;Wer hat die wei�en Rosen?;Dame/G�rtnerin
+Die;Gärtnerin;beschenkt;die;Dame;mit;den;weißen;Rosen.;1;31;131;VA;37;;
+Der;Gast;findet;die;Serviette;mit;einer;mobilen;Handynummer.;1;32;132;NA;86;;
+Der;Gast;beschriftet;die;Serviette;mit;einer;mobilen;Handynummer.;1;32;132;VA;39;;
+Der;Großvater;backt;die;Brezel;mit;dem;groben;Salz.;1;35;135;NA;10;;
+Der;Großvater;bestreut;die;Brezel;mit;dem;groben;Salz.;1;35;135;VA;45;;
+Das;Kleinkind;berührt;das;Pony;mit;der;weichen;Schnauze.;2;35;235;NA;32;;
+Das;Pony;berührt;das;Kleinkind;mit;der;weichen;Schnauze.;2;35;235;VA;32;;
+Der;Ingenieur;verpackt;die;Kette;mit;dem;klebrigen;Öl.;1;38;138;NA;163;;
+Der;Ingenieur;beschmiert;die;Kette;mit;dem;klebrigen;Öl.;1;38;138;VA;38;;
+Die;Investoren;suchen;die;Betriebe;mit;einigen;fleißigen;Tagelöhnern.;1;39;139;NA;137;Wer hat flei�ige Tagesl�hner?;Betriebe/Investoren
+Die;Investoren;besetzen;die;Betriebe;mit;einigen;fleißigen;Tagelöhnern.;1;39;139;VA;40;;
+Der;Kaiser;erheitert;den;Hofnarr;mit;der;bunten;Perücke.;2;39;239;NA;66;;
+Der;Hofnarr;erheitert;den;Kaiser;mit;der;bunten;Perücke.;2;39;239;VA;66;;
+Der;Junge;rettet;seinen;Bruder;mit;dem;dicken;Seil.;1;40;140;VA;124;Wer hat das dicke Seil?;Junge/Bruder
+Der;Junge;beneidet;seinen;Bruder;mit;dem;dicken;Seil.;1;40;140;NA;29;;
+Der;Kellner;hält;die;Tasse;mit;dem;heißen;Kaffee.;1;42;142;NA;93;;
+Der;Kellner;füllt;die;Tasse;mit;dem;heißen;Kaffee.;1;42;142;VA;83;;
+Die;Erzählerin;lauscht;der;Greisin;mit;dem;piepsenden;Hörgerät.;2;42;242;NA;106;;
+Die;Greisin;lauscht;der;Erzählerin;mit;dem;piepsenden;Hörgerät.;2;42;242;VA;106;;
+Der;Koch;mag;den;Salat;mit;den;lokalen;Kräutern.;1;44;144;NA;111;;
+Der;Koch;würzt;den;Salat;mit;den;lokalen;Kräutern.;1;44;144;VA;186;;
+Der;Milliardär;begegnet;dem;Bauarbeiter;mit;dem;teuren;Cabrio.;2;45;245;VA;17;Wer hat das Cabrio;Milliard�r/Bauarbeiter
+Der;Bauarbeiter;begegnet;dem;Milliardär;mit;dem;teuren;Cabrio.;2;45;245;NA;17;;
+Der;Konditor;backt;den;Kuchen;mit;den;bunten;Streuseln.;1;46;146;NA;10;;
+Der;Konditor;bestreut;den;Kuchen;mit;den;bunten;Streuseln.;1;46;146;VA;45;;
+Der;Küchenchef;hält;den;Topf;mit;der;gestrigen;Suppe.;1;49;149;NA;93;;
+Der;Küchenchef;füllt;den;Topf;mit;der;gestrigen;Suppe.;1;49;149;VA;83;;
+Der;Kunde;benötigt;einen;Computer;mit;einer;modernen;Tastatur.;1;50;150;NA;28;;
+Der;Kunde;erweitert;einen;Computer;mit;einer;modernen;Tastatur.;1;50;150;VA;78;;
+Der;Fußballer;nervt;den;Schiri;mit;der;schwarzen;Pfeife.;2;50;250;NA;116;;
+Der;Schiri;nervt;den;Fußballer;mit;der;schwarzen;Pfeife.;2;50;250;VA;116;;
+Die;Kundin;verärgert;die;Kellnerin;mit;den;unhöflichen;Manieren.;1;51;151;VA;146;Wer hat unh�fliche Manieren?;Kundin/Kellnerin
+Die;Kundin;bezahlt;die;Kellnerin;mit;den;unhöflichen;Manieren.;1;51;151;NA;49;;
+Die;Landwirte;umfahren;die;Wiesen;mit;den;stacheligen;Zäunen.;1;54;154;NA;143;;
+Die;Landwirte;sperren;die;Wiesen;mit;den;stacheligen;Zäunen.;1;54;154;VA;134;;
+Der;Adler;verfolgt;den;Jäger;mit;der;rostigen;Flinte.;2;57;257;NA;153;;
+Der;Jäger;verfolgt;den;Adler;mit;der;rostigen;Flinte.;2;57;257;VA;153;;
+Der;Kassierer;erreicht;den;Käufer;mit;dem;vollen;Wagen.;2;60;260;NA;71;;
+Der;Käufer;erreicht;den;Kassierer;mit;dem;vollen;Wagen.;2;60;260;VA;71;;
+Der;Specht;lockt;den;Käfer;mit;dem;glänzenden;Panzer.;2;61;261;NA;110;;
+Der;Käfer;lockt;den;Specht;mit;dem;glänzenden;Panzer.;2;61;261;VA;110;;
+Die;Soldaten;bekriegen;die;Indianer;mit;den;vergifteten;Pfeilen.;2;62;262;NA;22;Wer hat vergiftete Pfeile?;Indianer/Soldaten
+Die;Indianer;bekriegen;die;Soldaten;mit;den;vergifteten;Pfeilen.;2;62;262;VA;22;;
+Die;Nichte;meidet;die;Patentante;mit;der;riesigen;Torte.;1;63;163;NA;113;;
+Der;Büffel;bekämpft;den;Tiger;mit;den;breiten;Tatzen.;2;63;263;NA;20;;
+Der;Tiger;bekämpft;den;Büffel;mit;den;breiten;Tatzen.;2;63;263;VA;20;;
+Der;Hausmeister;erschreckt;den;Greis;mit;dem;klappernden;Gebiss.;2;64;264;NA;73;Wer wird erschreckt?;Greis/Hausmeister
+Der;Greis;erschreckt;den;Hausmeister;mit;dem;klappernden;Gebiss.;2;64;264;VA;73;;
+Der;Kurier;ohrfeigt;den;Butler;mit;dem;silbernen;Tablett.;2;65;265;NA;117;Wer wird geohrfeigt?;Butler/Kurier
+Der;Butler;ohrfeigt;den;Kurier;mit;dem;silbernen;Tablett.;2;65;265;VA;117;;
+Die;Partei;überzeugt;eine;Untergruppe;mit;einigen;fraglichen;Argumenten.;1;67;167;VA;7;Wer hat fragliche Argumente?;Partei/Untergruppe
+Die;Partei;besitzt;eine;Untergruppe;mit;einigen;fraglichen;Argumenten.;1;67;167;NA;41;;
+Die;Pflegerin;kennt;eine;Seniorin;mit;ganz;viel;Liebe.;1;69;169;NA;102;;
+Die;Pflegerin;beschenkt;eine;Seniorin;mit;ganz;viel;Liebe.;1;69;169;VA;37;;
+Das;Kind;verängstigt;das;Insekt;mit;dem;giftigen;Stachel.;2;69;269;NA;145;;
+Das;Insekt;verängstigt;das;Kind;mit;dem;giftigen;Stachel.;2;69;269;VA;145;;
+Die;Kuh;bedroht;die;Wilde;mit;der;brennenden;Fackel.;2;70;270;NA;13;;
+Die;Wilde;bedroht;die;Kuh;mit;der;brennenden;Fackel.;2;70;270;VA;13;;
+Die;Politikerin;bezahlt;den;Taxifahrer;mit;der;dreisten;Art.;1;72;172;NA;49;;
+Die;Politikerin;verärgert;den;Taxifahrer;mit;der;dreisten;Art.;1;72;172;VA;146;;
+Der;Polizist;verständigt;seinen;Kollegen;mit;dem;anonymen;Telefon.;1;73;173;VA;174;Wer hat das anonyme Telefon?;Kollege/Polizist
+Das;Rind;attackiert;das;Publikum;mit;den;spitzen;Hörnern.;2;73;273;VA;9;Wer wird attackiert?;Publikum/Rind
+Der;Polizist;braucht;seinen;Kollegen;mit;dem;anonymen;Telefon.;1;73;173;NA;53;;
+Das;Publikum;attackiert;das;Rind;mit;den;spitzen;Hörnern.;2;73;273;NA;9;;
+Das;Einhorn;beschützt;das;Fräulein;mit;dem;leuchtenden;Horn.;2;74;274;VA;36;Wer wird besch�tzt?;Fr�ulein/Einhorn
+Das;Fräulein;beschützt;das;Einhorn;mit;dem;leuchtenden;Horn.;2;74;274;NA;36;;
+Die;Praktikant;verpackt;das;Brot;mit;der;organischen;Butter.;1;75;175;NA;163;;
+Der;Praktikant;beschmiert;das;Brot;mit;der;organischen;Butter.;1;75;175;VA;38;;
+Der;Prüfer;umfährt;die;Zone;mit;dem;rot-weißen;Absperrband.;1;77;177;NA;143;;
+Der;Prüfer;sperrt;die;Zone;mit;dem;rot-weißen;Absperrband.;1;77;177;VA;134;;
+Die;Reiterin;empfiehlt;ein;Pferd;mit;einem;neuen;Sattel.;1;79;179;NA;60;;
+Die;Reiterin;belohnt;ein;Pferd;mit;einem;neuen;Sattel.;1;79;179;VA;25;;
+Der;Radler;behindert;den;Bauer;mit;dem;dreckigen;Trecker.;2;80;280;NA;19;;
+Der;Bauer;behindert;den;Radler;mit;dem;dreckigen;Trecker.;2;80;280;VA;19;;
+Der;Chor;animiert;den;Pensionär;mit;seinem;alten;Krückstock.;2;81;281;NA;8;;
+Der;Pensionär;animiert;den;Chor;mit;seinem;alten;Krückstock.;2;81;281;VA;8;;
+Die;Schülerin;zeigt;die;Klausur;mit;nur;wenigen;Fehlern.;1;82;182;NA;190;;
+Die;Schülerin;schreibt;die;Klausur;mit;nur;wenigen;Fehlern.;1;82;182;VA;131;;
+Der;Sänger;begleitet;den;Violinist;mit;seiner;kostbaren;Violine.;2;82;282;NA;19;;
+Der;Violinist;begleitet;den;Sänger;mit;seiner;kostbaren;Violine.;2;82;282;VA;19;;
+Der;Knecht;empfängt;den;König;mit;seinem;prächtigen;Zepter.;2;83;283;NA;59;;
+Der;König;empfängt;den;Knecht;mit;seinem;prächtigen;Zepter.;2;83;283;VA;59;;
+Der;Sekretär;zeigt;das;Protokoll;mit;der;schönen;Handschrift.;1;84;184;NA;190;;
+Der;Sekretär;schreibt;das;Protokoll;mit;der;schönen;Handschrift.;1;84;184;VA;131;;
+Der;Ninja;sch�tzt;den;Meister;mit;den;uralten;Weisheiten.;2;85;285;NA;127;;
+Der;Meister;sch�tzt;den;Ninja;mit;den;uralten;Weisheiten.;2;85;285;VA;127;;
+Der;Spion;findet;das;Notizbuch;mit;einer;wertvollen;Information.;1;86;186;NA;86;;
+Der;Spion;beschriftet;das;Notizbuch;mit;einer;wertvollen;Information.;1;86;186;VA;39;;
+Der;Staat;beliefert;die;Haushalte;mit;einem;robusten;Stromnetz.;1;87;187;VA;24;Wer wird beliefert?;Haushalte/Staat
+Der;Staat;zählt;die;Haushalte;mit;einem;robusten;Stromnetz.;1;87;187;NA;189;;
+Die;Schwangere;verblüfft;die;Hebamme;mit;ihrer;jahrelangen;Erfahrung.;2;89;289;NA;148;Wer hat die jahrelange Erfahrung?;Hebamme/Schwangere
+Die;Hebamme;verblüfft;die;Schwangere;mit;ihrer;jahrelangen;Erfahrung.;2;89;289;VA;148;;
+Der;Fuchs;verletzt;den;Igel;mit;den;kleinen;Stacheln.;2;90;290;NA;158;;
+Der;Igel;verletzt;den;Fuchs;mit;den;kleinen;Stacheln.;2;90;290;VA;158;;
+Das;Volk;vertreibt;das;Militär;mit;den;grässlichen;Waffen.;2;91;291;NA;176;Wer wird vertrieben?;Milit�r/Volk
+Das;Militär;vertreibt;das;Volk;mit;den;grässlichen;Waffen.;2;91;291;VA;176;;
+Die;Trainerin;sieht;den;Hund;mit;einem;langen;Stock.;1;92;192;NA;133;Wer hat den langen Stock?;Hund/Trainerin
+Die;Trainerin;schlägt;den;Hund;mit;einem;langen;Stock.;1;92;192;VA;129;;
+Die;Beute;reizt;die;Krake;mit;den;flinken;Tentakeln.;2;93;293;NA;122;;
+Die;Krake;reizt;die;Beute;mit;den;flinken;Tentakeln.;2;93;293;VA;122;;
+Der;Elch;rammt;den;Wolf;mit;seinem;enormen;Geweih.;2;94;294;VA;121;Wer wird gerammt?;Wolf/Elch
+Der;Wolf;rammt;den;Elch;mit;seinem;enormen;Geweih.;2;94;294;NA;121;;
+Der;Samurai;verwundet;den;Alligator;mit;dem;antiken;Schwert.;2;95;295;VA;179;Wer wird verwundet?;Alligator/Samurai
+Der;Alligator;verwundet;den;Samurai;mit;dem;antiken;Schwert.;2;95;295;NA;179;;
+Der;Verbrecher;besänftigt;den;Anwalt;mit;den;cleveren;Ausreden.;1;97;197;VA;34;Wer hat die cleveren Ausreden?;Verbrecher/Anwalt
+Die;Muschel;bezwingt;die;Möwe;mit;ihrer;harten;Schale.;2;97;297;VA;50;Wer wird bezwungen?;M�we/Muschel
+Der;Verbrecher;bevorzugt;den;Anwalt;mit;den;cleveren;Ausreden.;1;97;197;NA;47;;
+Die;Möwe;bezwingt;die;Muschel;mit;ihrer;harten;Schale.;2;97;297;NA;50;;
+Der;Verein;überzeugt;ein;Komitee;mit;einer;dynamischen;Rhetorik.;1;98;198;VA;7;Wer hat die dynamische Rhetorik?;Verein/Komitee
+Der;Verein;besitzt;ein;Komitee;mit;einer;dynamischen;Rhetorik.;1;98;198;NA;41;;
+Die;Wühlmaus;befühlt;die;Schnecke;mit;den;wendigen;Fühlern.;2;98;298;NA;16;;
+Die;Schnecke;befühlt;die;Wühlmaus;mit;den;wendigen;Fühlern.;2;98;298;VA;16;;
+Die;Zentrale;braucht;das;Flugzeug;mit;dem;digitalen;Funkgerät.;1;99;199;NA;53;;
+Die;Zentrale;verständigt;das;Flugzeug;mit;dem;digitalen;Funkgerät.;1;99;199;VA;174;;
+Die;Bäuerin;liebkost;die;Miezekatze;mit;den;rosa;Pfoten.;2;99;299;NA;107;;
+Die;Miezekatze;liebkost;die;Bäuerin;mit;den;rosa;Pfoten.;2;99;299;VA;107;;
+Die;Züchterin;sieht;das;Tier;mit;der;kurzen;Leine.;1;100;1100;NA;133;;
+Die;Züchterin;schlägt;das;Tier;mit;der;kurzen;Leine.;1;100;1100;VA;129;;
+Der;Badegast;schikaniert;den;Delphin;mit;den;kräftigen;Flossen.;2;100;2100;NA;128;;
+Der;Delphin;schikaniert;den;Badegast;mit;den;kräftigen;Flossen.;2;100;2100;VA;128;;
+Der;Eigentümer;erzürnt;den;Mechaniker;mit;dem;schmutzigen;Werkzeug.;2;101;2101;NA;81;;
+Der;Mechaniker;erzürnt;den;Eigentümer;mit;dem;schmutzigen;Werkzeug.;2;101;2101;VA;81;;
+Die;Mücke;quält;die;Urlauberin;mit;dem;aggressiven;Mückenspray.;2;102;2102;NA;120;;
+Die;Urlauberin;quält;die;Mücke;mit;dem;aggressiven;Mückenspray.;2;102;2102;VA;120;;
+Der;Produzent;beliefert;die;Fabriken;mit;den;seltenen;Teilen.;1;103;1103;VA;24;Wer hat die seltenen Teile?;Produzent/Fabrik
+Der;Produzent;zählt;die;Fabriken;mit;den;seltenen;Teilen.;1;103;1103;NA;189;;
+Die;Fliege;plagt;die;Hündin;mit;dem;wedelnden;Schwanz.;2;103;2103;NA;119;;
+Die;Hündin;plagt;die;Fliege;mit;dem;wedelnden;Schwanz.;2;103;2103;VA;119;;
+Der;Unternehmer;besänftigt;den;Geldanleger;mit;den;klugen;Sprüchen.;1;105;1105;VA;34;Wer hat die klugen Spr�che?;Unternehmer/Geldanleger
+Der;Unternehmer;bevorzugt;den;Geldanleger;mit;den;klugen;Sprüchen.;1;105;1105;NA;47;;
+Die;Cousine;verschenkt;den;Raumduft;mit;einem;handlichen;Nachfüller.;1;106;1106;NA;168;;
+Die;Cousine;erneuert;den;Raumduft;mit;einem;handlichen;Nachfüller.;1;106;1106;VA;69;;
+Der;Bote;befördert;die;Kisten;mit;dem;gelben;Etikett.;1;107;1107;NA;15;Wer wird bef�rdert?;Kisten/Bote
+Der;Bote;markiert;die;Kisten;mit;dem;gelben;Etikett.;1;107;1107;VA;112;;
+Die;Chefin;gratuliert;dem;Mitarbeiter;mit;der;faltbaren;Karte.;1;110;1110;VA;92;Wem wird gratuliert?;Mitarbeiter/Chefin
+Die;Nichte;gratuliert;der;Patentante;mit;der;riesigen;Torte.;1;110;1110;VA;92;;
+Der;Maler;begutachtet;die;Wand;mit;der;frischen;Farbe.;1;111;1111;NA;17;;
+Der;Maler;bemalt;die;Wand;mit;der;frischen;Farbe.;1;111;1111;VA;26;;
+Der;Schamane;begutachtet;die;Maske;mit;der;braunen;Kreide.;1;112;1112;NA;17;;
+Der;Schamane;bemalt;die;Maske;mit;der;braunen;Kreide.;1;112;1112;VA;26;;
+Der;Arzt;entdeckt;den;Säugling;mit;einem;flauschigen;Teddy.;1;113;1113;NA;62;;
+Der;Arzt;ermuntert;den;Säugling;mit;einem;flauschigen;Teddy.;1;113;1113;VA;68;;
+Der;Sanitäter;entdeckt;den;Kranken;mit;einem;kuscheligen;Bären.;1;114;1114;NA;62;;
+Der;Sanitäter;ermuntert;den;Kranken;mit;einem;kuscheligen;Bären.;1;114;1114;VA;68;;
+Die;Blinde;verehrt;das;Wesen;mit;den;zarten;Fingern.;1;115;1115;NA;150;Wer hat zarte Finger?;Wesen/Blinde
+Die;Blinde;ertastet;das;Wesen;mit;den;zarten;Fingern.;1;115;1115;VA;76;;
+Die;Kaiserin;verehrt;das;Geschöpf;mit;den;feinen;Händen.;1;116;1116;NA;150;;
+Die;Kaiserin;ertastet;das;Geschöpf;mit;den;feinen;Händen.;1;116;1116;VA;76;;
+Der;Junggeselle;wählt;die;Angebetete;mit;einem;hübschen;Kleid.;1;127;1127;NA;182;Wer wird gew�hlt?;Angebetete/Junggeselle
+Der;Junggeselle;erfreut;die;Angebetete;mit;einem;hübschen;Kleid.;1;127;1127;VA;65;;
+Der;Kandidat;erfreut;die;Kandidatin;mit;einem;strahlenden;Lächeln.;1;128;1128;VA;65;Wer hat das strahlende L�cheln?;Kandidat/Kandidatin
+Der;Kandidat;wählt;die;Kandidatin;mit;einem;strahlenden;Lächeln.;1;128;1128;NA;182;;
