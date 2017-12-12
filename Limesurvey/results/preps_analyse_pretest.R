@@ -14,9 +14,6 @@ stimuli$fullID  <- as.character(interaction(stimuli[,c(13,3)],sep = ""))
 file_names = list.files(pattern="^results",path = "Bresponses",full.names = TRUE)
 temp <- lapply(file_names,read.csv,sep=",",na.strings = c("","NAN"), stringsAsFactors = TRUE)
 df.responses <- Reduce(function(x,y) merge(x,y,all=TRUE,sort=TRUE),temp)
-
-
-subjectnum      <- nrow(df.responses)
 #transpose and fix column names and classes
 df.responses                <- setDT(df.responses,keep.rownames = TRUE)
 colnames(df.responses)[1]   <- "subjects"
@@ -130,7 +127,7 @@ plausibility_counts <- rbind(c(sum(plausibility_counts[c(1,2),1]),
 # Group RTs by plausibility ratings and attachment
 summary_rts <- df.responses %>%
   group_by(items,attachment,rating_plausibility) %>%
-  summarise(mean_rt = mean(rt_attachment)) 
+  summarise(mean_rt = mean(rt_attachment)) # does make sense to take mean here?
 
 p <- ggplot(summary_rts, aes(x = factor(rating_plausibility), y = mean_rt,items = items,fill=factor(rating_plausibility))) +
   geom_boxplot() +
