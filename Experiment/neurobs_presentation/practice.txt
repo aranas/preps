@@ -1,0 +1,5 @@
+﻿Det	N0	Verb	Det	N1	Prep	Det	Adj	N2	condition	pair_number	ID	Attachment	Question	Answer
+Die	Designerin	zeichnet	das	Poster	mit	einem	dünnen	Filzstift	3	4	34	VA	3	 	
+Der	Gast	isst	den	Hummer	mit	einer	speziellen	Gabel	3	1	31	VA	2	Wer hat die Gabel?	Gast/Hummer
+Der	Nussknacker	knackt	die	Nuss	mit	dem	weichen	Kern	3	3	33	NA	9	Wer hat einen weichen Kern?Nuss/Nussknacker
+Der	Akrobat	haut	den	Clown	mit	dem	elastischen	Hammer	1	1	11	VA	7	 	

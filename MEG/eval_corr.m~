@@ -1,0 +1,16 @@
+function success = eval_corr(y_hat,y_test,featv,num)
+% which observations/words correspond to the test_set
+[size(y_hat);
+ tmp = corr(y_test',featv');
+ [maxval,testind] = max(tmp');
+% correlate predicted vector with all possible vectors and choose top three
+% picks.
+ tmp = corr(y_hat',featv');
+ [sorted,predictind] = sort(tmp,2,'descend');
+ 
+ for i = 1:length(predictind)
+ [row,col] = find(ismember(predictind(:,1:num),testind));
+ success = length(row);
+fprintf('%d correct matches within %d most correlated word embedding vectors',success,num);
+fprintf('\n');
+end
