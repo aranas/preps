@@ -1,19 +1,19 @@
+clear all
+clc
 
 %Preprocessing (get each word with 100ms pre-onset and 500ms)
 cfg                     = [];
 cfg.dataset             = strcat('/project/3011210.01/raw/301121001sopara11_1200hz_20171207_01.ds');
 cfg.logfile             = strcat('/project/3011210.01/logfiles/1_log.txt');
-cfg.trialdef.prestim    = 0.1;
-cfg.trialdef.poststim   = 0.5;
+cfg.trialdef.prestim    = 0.5;
+cfg.trialdef.poststim   = 1;
 cfg.trialdef.eventtype  = 'UPPT001';
-cfg.trialdef.eventvalue = [110:118,120:128,210:218,220:228]; 
+cfg.trialdef.eventvalue = [110:118,120:128,210:218,220:228,130:138]; 
 new_cfg                  = ft_definetrial(cfg);
 
 
 new_cfg.channel          = {'MEG', 'EEG'};
 new_cfg.continuous       = 'yes';
-new_cfg.dftfilter        = 'yes';    %get rid of line noise
-new_cfg.padding          = 10;
 data                     = ft_preprocessing(new_cfg);
 
 
@@ -88,8 +88,6 @@ compds              = ft_componentanalysis(cfg, data_resamp);
             promptUser = false;
         end
     end
-    
-  save(strcat('/project/3011210.01/MEG/ICA/pilot_ICAcomp'), 'compds','badcompds','-v7.3')   
     %% STEP 3.3 
     % remove components related to ECG and EOG artifacts and backproject the data
     cfg = [];
@@ -102,5 +100,5 @@ compds              = ft_componentanalysis(cfg, data_resamp);
     cfg.channel = 'MEG';
     data_clean   = ft_preprocessing(cfg, data_clean);
   
-    save('/project/3011210.01/MEG/pilot_data_clean', 'data_clean','-v7.3')
+    save('/project/3011210.01/MEG/pilot_data_clean', 'data_clean','compds','badcompds','-v7.3')
       
