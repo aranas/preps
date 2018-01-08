@@ -1,4 +1,7 @@
-function [y_hat,beta_hat,lambda_hat,lambdas,Mu,Sigma] = ridgeregression_sa(x_train,x_test,y_train,k,numlambdas,lambdas)
+function [beta_hat,y_hat,lambda_hat,lambdas,Mu,Sigma] = ridgeregression_sa(cfg,x_train,x_test,y_train)
+
+if ~isfield(cfg, 'nfolds'),    cfg.nfolds    = 5; end 
+if ~isfield(cfg, 'numlambdas'), cfg.numlambdas = 10;  end
 
 %zscore
 [x_train, Mu, Sigma] = zscore(x_train);
@@ -8,9 +11,9 @@ varx                 = x_train * x_train';
 
 % train ridge regression with several labda values using cross-validation
 if exist('lambdas','var')
-[R, lambdas]         = get_R_and_lambda(varx, y_train, k, numlambdas,lambdas); 
+[R, lambdas]         = get_R_and_lambda(varx, y_train, cfg.nfolds, cfg.numlambdas,cfg.lambdas); 
 else
-    [R, lambdas]         = get_R_and_lambda(x_train,varx,y_train,k, numlambdas); %k =  folds for crossval; 10 lambda values
+    [R, lambdas]         = get_R_and_lambda(x_train,varx,y_train,cfg.nfolds, cfg.numlambdas); %k =  folds for crossval; 10 lambda values
 end
 % force to use regularization:
 R = R(:,2:end);
