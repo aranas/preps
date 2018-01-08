@@ -34,11 +34,11 @@ cfg.runica.maxsteps = 100;
 compds              = ft_componentanalysis(cfg, data_resamp);
  
 % perform same ICA on original data (not downsampled)
-    cfg                 = [];
-    cfgcomp.channel     = 'MEG';
-    cfg.unmixing        = compds.unmixing;
-    cfg.topolabel       = compds.topolabel;
-    comp                = ft_componentanalysis(cfg,data);
+ cfg                 = [];
+ cfgcomp.channel     = 'MEG';
+ cfg.unmixing        = compds.unmixing;
+ cfg.topolabel       = compds.topolabel;
+ comp                = ft_componentanalysis(cfg,data);
     
     
 %% Correlate ICs to EOGh, EOGv and ECG and store which components to remove
@@ -93,12 +93,12 @@ compds              = ft_componentanalysis(cfg, data_resamp);
     cfg = [];
     cfg.channel = 'MEG';
     cfg.component = badcomp; % to be removed component(s)
-    data_clean = ft_rejectcomponent(cfg, comp, data);
+    data = ft_rejectcomponent(cfg, comp, data);
     
     % Remove non-MEG channels, because ft_rejectcomponent adds those again
     cfg         = [];
     cfg.channel = 'MEG';
-    data_clean   = ft_preprocessing(cfg, data_clean);
+    data        = ft_preprocessing(cfg, data);
   
-    save('/project/3011210.01/MEG/pilot_data_clean', 'data_clean','compds','badcompds','-v7.3')
+    save('/project/3011210.01/MEG/pilot_data_clean','data','compds','badcomp','-v7.3')
       
