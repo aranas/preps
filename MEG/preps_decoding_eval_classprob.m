@@ -1,13 +1,13 @@
 
 
 
-function [correct,incorrect,rankACC] = preps_decoding_eval_classprob(probs,label_test,GNBmodel,label_string)
+function [correct,incorrect] = preps_decoding_eval_classprob(probs,label_test,GNBmodel,label_string)
 
-rankACC             = rankAccuracy(probs,label_test,GNBmodel);
+%rankACC             = rankAccuracy(probs,label_test,GNBmodel);
 
 [~,indx_predict]    = max(probs,[],2);
 
-label_hat           = GNBmodel.labelVocab(indx_predict);
+label_hat           = indx_predict;
 
 correct = 0;
 incorrect = 1;
