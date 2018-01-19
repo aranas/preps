@@ -1,4 +1,4 @@
-function [beta_hat,probs,Mu,Sigma] = preps_naivebayes(cfg,trainX,testX,trainY)
+function [beta_hat,probs,out] = preps_naivebayes(cfg,trainX,testX,trainY)
 
 % [trainX, Mu, Sigma]     = zscore(trainX);
 % testX                   = bsxfun(@rdivide, bsxfun(@minus, testX, Mu),Sigma);
@@ -19,13 +19,14 @@ if any(idx)
     testX(:,idx) = bsxfun(@rdivide,testX(:,idx),Sigma(idx));
 end
 
-beta_hat                = nbayes_train(trainX, trainY', 1);
+beta_hat               = nbayes_train(trainX, trainY', cfg.poolsigma); %third argument yes/no pool sigma?
 
 % use top N features
-%GNBmodel.sortedFeats   = sortGNBfeaturesByMuDifference(GNBmodel);
-%selectedFeats          = GNBmodel.sortedFeats(1:nFeatures);
+beta_hat.sortedFeats   = sortGNBfeaturesByMuDifference(beta_hat);
+selectedFeats          = beta_hat.sortedFeats(:);
 
-probs                   = nbayes_apply(testX, beta_hat);
+probs                  = nbayes_apply(testX, beta_hat,selectedFeats);
+out                    = [Mu Sigma];
 % [~,indx_predict]        = max(probs,[],2);
 % 
 % y_hat                   = indx_predict;
