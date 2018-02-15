@@ -2,47 +2,53 @@
 % This script takes preprocessed data and prepares it for
 % preps_decodingpipeline
 
-load('/project/3011210.01/MEG/pilot_data_300')
+load('/project/3011210.01/MEG/p2_data_clean')
 
+%% select trials
+trigger_det     = [110,113,120,123,210,213,220,223]; %Determiner
+trigger_noun    = [111,114,121,124,211,214,221,224]; %noun
+trigger_verb    = [112,122,212,222]; %verbs
+trigger_adj     = [117,127,217,227]; %adjectives
+trigger_prep    = [115,125,215,225]; %prepositions
 
-%extract trials Det vs Nouns
-trigger_det        = [110,113,120,123,210,213,220,223]; %Determiner
-trigger_noun       = [111,114,121,124,211,214,221,224]; %noun
-%trigger_verb       = [112,122,212,222];
-%trigger_adj        = [117,127,217,227];
-%trigger_prep       = [115,125,215,225];
+trigger_VA      = [218,228]; %last word of verb attached sentences
+trigger_NA      = [118,128]; %last word of noun attached sentences
+trigger_Fill    = [138]; %last word of filler
 
-%trigger_VA         = [218,228];
-%trigger_NA         = [118,128];
-%trigger_Fill       = [138];
+ind             = ismember(data.trialinfo,[trigger_noun,trigger_adj]);
 
-[nchannels,nsamples] = size(data_300.trial{1});
+cfg             = [];
+cfg.trials      = ind;
+data            = ft_selectdata(cfg,data);
 
-labels             = zeros(size(data_300.trial,2),1);
-examples           = zeros(size(data_300.trial,2),nchannels*nsamples);
-vocab              = {'Det','Noun'};
+%%  filter
 
-trialsreject = [];
-for trial = 1:size(data_300.trial,2)
-    
-    tmp                   = data_300.trial{trial};
-    examples(trial,:)     = tmp(:)';
-    if any(ismember(trigger_det,data_300.trialinfo(trial)))
-        labels(trial) = 1;
-    elseif any(ismember(trigger_noun,data_300.trialinfo(trial)))
-        labels(trial) = 2;
-    else
-        trialsreject = [trialsreject trial];
+cfg            = [];
+cfg.continuous = 'yes';
+cfg.lpfilter   = 'yes';
+cfg.lpfreq     = 30;
+cfg.lpfilttype = 'firws';
+%cfg.padding    = 10; 
+% cfg.hpfilter   = 'yes';
+% cfg.hpfreq     = 1;
+% cfg.hpfilttype = 'firws';
+cfg.usefftfilt = 'yes';
+data           = ft_preprocessing(cfg,data);
+
+%%
+[nchannels,nsamples] = size(data.trial{1});
+
+labels              = zeros(size(data.trial,2),1);
+vocab               = {'Noun','Adjective'};
+
+for trial = 1:size(data.trial,2)
+    if any(ismember(trigger_noun,data.trialinfo(trial)))
+        labels(trial)   = 1;
+    elseif any(ismember(trigger_adj,data.trialinfo(trial)))
+        labels(trial)   = 2;
     end
-    
 end
-clear tmp
 
-examples(trialsreject,:)   = [];
-labels(trialsreject)    = [];
 
-data = examples;
+save(strcat('/project/3011210.01/MEG/p2_NounvsAdj_nolof'), 'data','labels','vocab','-v7.3')
 
-save(strcat('/project/3011210.01/MEG/pilot_DetvsNoun'), 'data','labels','vocab','-v7.3')   
-
-  
