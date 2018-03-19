@@ -1,6 +1,6 @@
 function [beta_hat,y_hat,lambda_hat,lambdas,Mu,Sigma] = ridgeregression_sa(cfg,x_train,x_test,y_train)
 
-if ~isfield(cfg, 'nfolds'),    cfg.nfolds    = 5; end 
+cfg.nfolds = 5; 
 if ~isfield(cfg, 'numlambdas'), cfg.numlambdas = 10;  end
 
 %zscore
