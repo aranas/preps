@@ -2,7 +2,7 @@
 % trial belongs to. Where each trial corresponds to one trigger, thus one
 % word.
 % cleaned data contains all trials except questions
-subj          = 2;
+subj          = 5;
 
 load(strcat('/project/3011210.01/MEG/p',num2str(subj),'_data_clean_alltrials'))
 clear compds badcomp
@@ -47,26 +47,25 @@ allwords = strrep(allwords,'.','');
 %extract word embeddings from pre-trained model and save to vector with
 %same nrows as data.trial
 
-fid = fopen('/project/3011210.01/word2vec/wiki.de.vec');
-format = ['%s ' repmat('%f ', [1 300]),'%*[^\n]'];
-wiki_embeddings_300 = textscan(fid,format);
-wiki_vocab = wiki_embeddings_300(1);
-wiki_vecs  = wiki_embeddings_300(2:end);
-wiki_vecs  = cell2mat(wiki_vecs);
-clear wiki_embeddings_300
+load('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_w2v.mat')
 
-feat = zeros(length(allwords),size(wiki_vecs,2));
+feat = zeros(length(allwords),size(w2v.feat,2));
+pos  = cell(length(allwords),1);
 ind_match = [];
 for i = 1:length(allwords)
-        ind = find(strcmpi(wiki_vocab{1}, allwords{i}));
+        ind = find(strcmpi(w2v.word, allwords{i}));
         if ~isempty(ind)
-            feat(i,:) = wiki_vecs(ind,:);
+            feat(i,:) = w2v.feat(ind,:);
+            pos{i}    = w2v.pos{ind};
             ind_match = [ind_match i];
+        else
+            allwords{i}
         end
 end
 % many nonmatches are due to spelling errors (should be corrected in
 % stimulus set/logfiles
-allwords = allwords(ind_match); 
+allwords = allwords(ind_match);
+pos      = pos(ind_match);
 feat     = feat(ind_match,:);
 data     = ft_selectdata(data,'rpt',ind_match);%keep all trial that are not questions
 
@@ -76,15 +75,15 @@ cfg.continuous = 'yes';
 cfg.lpfilter   = 'yes';
 cfg.lpfreq     = 30;
 cfg.lpfilttype = 'firws';
-%cfg.padding    = 10; 
-% cfg.hpfilter   = 'yes';
-% cfg.hpfreq     = 1;
-% cfg.hpfilttype = 'firws';
+cfg.padding    = 10; 
+cfg.hpfilter   = 'yes';
+cfg.hpfreq     = 1;
+cfg.hpfilttype = 'firws';
 cfg.usefftfilt = 'yes';
 data           = ft_preprocessing(cfg,data);
 
 
-save(strcat('/project/3011210.01/MEG/p2_alltrials_w2v'), 'data','allwords','feat','-v7.3')
+save(strcat('/project/3011210.01/MEG/p5_alltrials_w2v'), 'data','allwords','feat','pos','-v7.3')
 
 
 
