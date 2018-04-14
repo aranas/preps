@@ -1,6 +1,6 @@
 function [beta_hat,y_hat,lambda_hat,lambdas,Mu,Sigma] = ridgeregression_sa(cfg,x_train,x_test,y_train)
 
-cfg.nfolds = 5; 
+cfg.nfolds = 10; 
 if ~isfield(cfg, 'numlambdas'), cfg.numlambdas = 10;  end
 
 %zscore
@@ -8,10 +8,10 @@ if ~isfield(cfg, 'numlambdas'), cfg.numlambdas = 10;  end
 
 %pre-compute data variance
 varx                 = x_train * x_train';
-
-% train ridge regression with several labda values using cross-validation
+lambdas          = [0.000000001,0.0000000001,0.000000001,0.00000001,0.0000001,0.000001,1,5,8];
+% train ridge regression with several lambda values using cross-validation
 if exist('lambdas','var')
-[R, lambdas]         = get_R_and_lambda(varx, y_train, cfg.nfolds, cfg.numlambdas,cfg.lambdas); 
+[R, lambdas]         = get_R_and_lambda(x_train,varx, y_train, cfg.nfolds, length(lambdas),lambdas); 
 else
     [R, lambdas]         = get_R_and_lambda(x_train,varx,y_train,cfg.nfolds, cfg.numlambdas); %k =  folds for crossval; 10 lambda values
 end
