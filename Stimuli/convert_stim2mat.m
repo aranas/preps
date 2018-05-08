@@ -25,8 +25,6 @@ for i = 1:size(stimuli_file{1},1)%each sentence
     verb_num{i}   = stimuli_file{14}(i);
     question{i}   = stimuli_file{15}(i);
     answers{i}    = stimuli_file{16}(i);
-    if attachment{i} == 'NA'
-    id{i}         = 100 + 10*condition{i} + 
 end
 
 stimuli = [sentences; condition; pair_num; attachment; verb_num; question; answers];
@@ -36,14 +34,22 @@ rowHeadings = {'sent_string', 'condition', 'pair_num','attachment' ...
 
 stimuli = cell2struct(stimuli, rowHeadings,1);
 
-%add new field for individual words
+fid = fopen('/project/3011210.01/Presentation/Stimuli/tagged_stimlist.txt');
+format = '%s %s';
+pos_list = textscan(fid,format,'Delimiter',' ');
+
+%add new field for individual words & get pos from tagged list
+count = 1;
 for i = 1:size(stimuli_file{1},1)%each sentence
     for j = 1:9%each word
-    x{j}                        =    stimuli_file{j}(i);
+    x{j}   = stimuli_file{j}(i);
+    pos{j} = pos_list{2}(count);
+    count = count + 1;
     end
-    rowHeadings = {'word'};
-    tmp = cell2struct(x,rowHeadings,1);
+    rowHeadings = {'word', 'pos'};
+    tmp = cell2struct([x; pos],rowHeadings,1);
     stimuli(i).words = tmp;
+    count = count + 1;
 end
 clear tmp
 

@@ -3,19 +3,26 @@ clc
 
 %Preprocessing (get each word with 100ms pre-onset and 500ms)
 cfg                     = [];
-cfg.dataset             = strcat('/project/3011210.01/raw/301121001sopara11_1200hz_20171207_01.ds');
-cfg.logfile             = strcat('/project/3011210.01/logfiles/1_log.txt');
-cfg.trialdef.prestim    = 0.5;
-cfg.trialdef.poststim   = 1;
+cfg.dataset             = strcat('/project/3011210.01/raw/pilot006ses01_3011210.01_20180227_01.ds');
+cfg.logfile             = strcat('/project/3011210.01/logfiles/6_log.txt');
+cfg.trialdef.prestim    = 0.2;
+cfg.trialdef.poststim   = 2.7;
 cfg.trialdef.eventtype  = 'UPPT001';
-cfg.trialdef.eventvalue = [110:118,120:128,210:218,220:228,130:138]; 
-new_cfg                  = ft_definetrial(cfg);
+%cfg.trialdef.eventvalue = [31:39,111:119,121:129,211:218,221:228]; 
+new_cfg                 = ft_definetrial(cfg);
 
+new_cfg.channel         = {'MEG', 'EEG'};
+new_cfg.continuous      = 'yes';
+data_words              = ft_preprocessing(new_cfg);
 
-new_cfg.channel          = {'MEG', 'EEG'};
-new_cfg.continuous       = 'yes';
-data                     = ft_preprocessing(new_cfg);
+ind_lastword            = find(ismember(data_words.trialinfo,[39,119,129,219,229])); 
+toi                     = repmat([data_words.time{1}(1) 0.5],length(data_words.trial),1); 
+toi(ind_lastword,:)     = repmat([data_words.time{1}(1) data_words.time{1}(end)],length(ind_lastword),1);
 
+cfg                     = [];
+cfg.toilim              = toi;
+cfg.trials              = 'all';
+data                    = ft_redefinetrial(cfg,data_words);
 
 %% compute ICA on data to remove ECG/EOG artifacts 
 %downsampling data to 300 Hz for ICA analysis
@@ -100,5 +107,5 @@ compds              = ft_componentanalysis(cfg, data_resamp);
     cfg.channel = 'MEG';
     data        = ft_preprocessing(cfg, data);
   
-    save('/project/3011210.01/MEG/pilot_data_clean','data','compds','badcomp','-v7.3')
+    save('/project/3011210.01/MEG/p6_data_clean_alltrials','data','compds','badcomp','-v7.3')
       

@@ -50,7 +50,7 @@ end
 function lambda = get_lambda(K, n)
 
 s      = svd(K);
-s      = s(s > 0);
+s      = s(s > eps*1e4); % rather than 0
 lambda = NaN(1, n);
 L      = length(s);
 df     = linspace(L, 1, n);

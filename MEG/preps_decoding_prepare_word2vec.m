@@ -2,7 +2,7 @@
 % trial belongs to. Where each trial corresponds to one trigger, thus one
 % word.
 % cleaned data contains all trials except questions
-subj          = 5;
+subj          = 6;
 
 load(strcat('/project/3011210.01/MEG/p',num2str(subj),'_data_clean_alltrials'))
 clear compds badcomp
@@ -70,12 +70,11 @@ feat     = feat(ind_match,:);
 data     = ft_selectdata(data,'rpt',ind_match);%keep all trial that are not questions
 
 
-cfg            = [];
-cfg.continuous = 'yes';
+cfg            = []; 
 cfg.lpfilter   = 'yes';
 cfg.lpfreq     = 30;
 cfg.lpfilttype = 'firws';
-cfg.padding    = 10; 
+cfg.padding    = 5;
 cfg.hpfilter   = 'yes';
 cfg.hpfreq     = 1;
 cfg.hpfilttype = 'firws';
@@ -83,7 +82,7 @@ cfg.usefftfilt = 'yes';
 data           = ft_preprocessing(cfg,data);
 
 
-save(strcat('/project/3011210.01/MEG/p5_alltrials_w2v'), 'data','allwords','feat','pos','-v7.3')
+save(strcat('/project/3011210.01/MEG/p',int2str(subj),'_alltrials_w2v'), 'data','allwords','feat','pos','-v7.3')
 
 
 
