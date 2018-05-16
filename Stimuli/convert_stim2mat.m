@@ -53,6 +53,28 @@ for i = 1:size(stimuli_file{1},1)%each sentence
 end
 clear tmp
 
+%%  add info from pre-test (added on May 14th 2018)
+fid = fopen('/project/3011210.01/Presentation/Stimuli/pretest_values_per_item.txt');
+format = ['%s %s %s %f %f','%*[^\n]']; %attachment, penultimate word(adj), final noun, accuracy & plausibility ratings across 20 pre-test subjects
+pretest = textscan(fid,format,'Headerlines',1,'Delimiter','\t');
+
+ind_VA = find(strcmp('VA',pretest{1}));
+ind_NA = find(strcmp('NA',pretest{1}));
+
+
+for i = 1:length(stimuli)
+    if strcmp('VA',stimuli(i).attachment);
+        ind             = ind_VA(strcmp(strrep(stimuli(i).words(9).word,'.',''),pretest{3}(ind_VA)));
+    else strcmp('NA',stimuli(i).attachment);
+        ind             = ind_NA(strcmp(strrep(stimuli(i).words(9).word,'.',''),pretest{3}(ind_NA)));
+    end
+    if length(ind) > 1;
+        ind = ind(strcmp(strrep(stimuli(i).words(8).word,'.',''),pretest{2}(ind)));
+    end
+    stimuli(i).acc  = pretest{3}(ind);
+    stimuli(i).plaus = pretest{4}(ind);
+end
+
 
 %save as matfile
 save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.m','stimuli')
