@@ -1,301 +1,301 @@
-Det	N0	Verb	Det	N1	Prep	Det	Adj	N2	condition	pair_number	ID	Attachment	verb_number	Question	Answer										
-Der	Arzt	entdeckt	den	Säugling	mit	einem	flauschigen	Teddy.	1	113	1113	NA	62												
-Der	Kellner	füllt	die	Tasse	mit	dem	heißen	Kaffee.	1	42	142	VA	83												
-Der	Sohn	der	Nachbarn	gewinnt	den	Wettbewerb	der	Schule.	3	19	319	NaN	0	Wer gewinnt den Wettbewerb?	Sohn/Schule										
-Die	beiden	Bildhauer	starben	im	Abstand	von	sechs	Jahren.	3	59	359	NaN	0												
-Der	Fan	winkt	dem	Sänger	mit	der	akustischen	Gitarre.	2	21	221	NA	188												
-Der	Liebhaber	betrügt	seine	Geliebte	ohne	ein	schlechtes	Gewissen.	3	26	326	NaN	0	Wer wird betrogen?	Geliebte/Liebhaber										
-Der	Prüfer	umfährt	die	Zone	mit	dem	rot-weißen	Absperrband.	1	77	177	NA	143												
-Der	Rektor	der	den	Azubi	bestraft	ist	sehr	vernünftig.	3	27	327	NaN	0	Wer wird bestraft?	Azubi/Rektor										
-Der	Specht	lockt	den	Käfer	mit	dem	glänzenden	Panzer.	2	61	261	NA	110												
-Die	Zentrale	braucht	das	Flugzeug	mit	dem	digitalen	Funkgerät.	1	99	199	NA	53												
-Die	Schülerin	zeigt	die	Klausur	mit	nur	wenigen	Fehlern.	1	82	182	NA	190												
-Das	Amt	belohnt	einen	Arbeiter	mit	einer	höheren	Position.	1	2	12	VA	25												
-Der	Hofnarr	erheitert	den	Kaiser	mit	der	bunten	Perücke.	2	39	239	VA	66												
-Die	im	Text	erwähnte	Attraktion	ist	im	Preis	inbegriffen.	3	52	352	NaN	0												
-Der	Gast	beschriftet	die	Serviette	mit	einer	mobilen	Handynummer.	1	32	132	VA	39												
-Die	Chefin	meidet	den	Mitarbeiter	mit	der	faltbaren	Karte.	1	16	116	NA	113	Wer hat die Karte?	Mitarbeiter/Chefin										
-Der	Kandidat	erfreut	die	Kandidatin	mit	einem	strahlenden	Lächeln.	1	128	1128	VA	65	Wer hat das strahlende Lächeln?	Kandidat/Kandidatin										
-Der	Rahmen	hing	erst	schief	und	fiel	dann	runter.	3	80	380	NaN	0												
-Der	Unternehmer	bevorzugt	den	Geldanleger	mit	den	klugen	Sprüchen.	1	105	1105	NA	47												
-Der	Ninja	schützt	den	Meister	mit	den	uralten	Weisheiten.	2	85	285	NA	127												
-Der	Fußballer	erzielte	seinen	ersten	Treffer	für	den	Verein.	3	57	357	NaN	0												
-Die	kommenden	Jahre	bringen	hoffentlich	viele	neue	spannende	Abenteuer.	3	87	387	NaN	0												
-Der	Badegast	schikaniert	den	Delphin	mit	den	kräftigen	Flossen.	2	100	2100	NA	128												
-Die	Designerin	zeichnet	liebend	gern	mit	Kohle	auf	Papier.	3	81	381	NaN	0												
-Der	Ingenieur	beschmiert	die	Kette	mit	dem	klebrigen	Öl.	1	38	138	VA	38												
-Die	Freunde	lästern	hinter	dem	Rücken	des	jüngeren	Kollegen.	3	22	322	NaN	0	Wer lästert?	Freunde/Kollege										
-Der	Tagelöhner	möchte	so	wenig	Steuern	wie	möglich	zahlen.	3	54	354	NaN	0												
-Der	Produzent	beliefert	die	Fabriken	mit	den	seltenen	Teilen.	1	103	1103	VA	24	Wer hat die seltenen Teile?	Produzent/Fabrik										
-Der	Brand	im	Schacht	konnte	vom	Team	gelöscht	werden.	3	11	311	NaN	0	Was war im Schacht?	Brand/Team										
-Der	Polizist	verständigt	seinen	Kollegen	mit	dem	anonymen	Telefon.	1	73	173	VA	174	Wer hat das anonyme Telefon?	Kollege/Polizist										
-Der	Bote	befördert	die	Kisten	mit	dem	gelben	Etikett.	1	107	1107	NA	15	Wer wird befördert?	Kisten/Bote										
-Die	Indianer	bekriegen	die	Soldaten	mit	den	vergifteten	Pfeilen.	2	62	262	VA	22												
-Die	Läuferin	ist	vielfache	nationale	Meisterin	auf	kurzen	Strecken.	3	97	397	NaN	0												
-Der	Käfer	lockt	den	Specht	mit	dem	glänzenden	Panzer.	2	61	261	VA	110												
-Die	Investoren	suchen	die	Betriebe	mit	einigen	fleißigen	Tagelöhnern.	1	39	139	NA	137	Wer hat fleißige Tageslöhner?	Betriebe/Investoren										
-Die	Schülerin	schreibt	die	Klausur	mit	nur	wenigen	Fehlern.	1	82	182	VA	131												
-Der	Gipfel	des	tausend	Meter	hohen	Berges	wird	beklommen.	3	99	399	NaN	0												
-Die	Reiterin	empfiehlt	ein	Pferd	mit	einem	neuen	Sattel.	1	79	179	NA	60												
-Der	Camper	mag	die	Suppe	mit	der	frischen	Petersilie.	1	14	114	NA	111												
-Die	Beute	reizt	die	Krake	mit	den	flinken	Tentakeln.	2	93	293	NA	122												
-Die	Länder	und	Kommunen	haben	miteinander	einige	Regelungen	vereinbart.	3	89	389	NaN	0												
-Der	Staubsauger	macht	einen	riesigen	Lärm	in	der	Stube.	3	86	386	NaN	0												
-Der	Fußballer	nervt	den	Schiri	mit	der	schwarzen	Pfeife.	2	50	250	NA	116												
-Die	Wühlmaus	befühlt	die	Schnecke	mit	den	wendigen	Fühlern.	2	98	298	NA	16												
-Die	Blinde	verehrt	das	Wesen	mit	den	zarten	Fingern.	1	115	1115	NA	150	Wer hat zarte Finger?	Wesen/Blinde										
-Das	blonde	und	talentierte	Model	gab	mir	einen	Tipp.	3	83	383	NaN	0												
-Die	Politikerin	verärgert	den	Taxifahrer	mit	der	dreisten	Art.	1	72	172	VA	146												
-Das	Museum	zeigt	zahlreiche	Geräte	und	Zeugnisse	zum	Ackerbau.	3	63	363	NaN	0												
-Die	Cousine	erneuert	die	Reifen	mit	dem	feinen	Flickzeug.	1	19	119	VA	69												
-Der	Knecht	empfängt	den	König	mit	seinem	prächtigen	Zepter.	2	83	283	NA	59												
-Die	Robbe	bespritzt	die	Animateurin	mit	dem	vollen	Eimer.	2	9	29	NA	43	Wer hat den Eimer?	Animateurin/Robbe										
-Der	Schüler	kitzelt	den	Kater	mit	dem	weißen	Schnurrhaar.	2	11	211	NA	103	Wer wird gekitzelt?	Kater/Schüler										
-Der	Konditor	bestreut	den	Kuchen	mit	den	bunten	Streuseln.	1	46	146	VA	45												
-Die	fleißige	Biene	fällt	abends	erschöpft	in	ihr	Bett.	3	84	384	NaN	0												
-Der	Kunde	benötigt	einen	Computer	mit	einer	modernen	Tastatur.	1	50	150	NA	28												
-Der	Bote	markiert	die	Kisten	mit	dem	gelben	Etikett.	1	107	1107	VA	112												
-Die	Trainerin	sieht	den	Hund	mit	einem	langen	Stock.	1	92	192	NA	133	Wer hat den langen Stock?	Hund/Trainerin										
-Der	Arzt	ermuntert	den	Säugling	mit	einem	flauschigen	Teddy.	1	113	1113	VA	68												
-Der	Schamane	bemalt	die	Maske	mit	der	braunen	Kreide.	1	112	1112	VA	26												
-Die	hundert	Menschen	wurden	zur	Einweihung	des	Tempels	geopfert.	3	14	314	NaN	0	Was wurde geopfert?	Tempel/Menschen										
-Der	Spion	findet	das	Notizbuch	mit	einer	wertvollen	Information.	1	86	186	NA	86												
-Die	Diebin	beneidet	ihren	Komplizen	mit	der	einzigen	Pistole.	1	23	123	NA	29												
-Die	Muschel	bezwingt	die	Möwe	mit	ihrer	harten	Schale.	2	97	297	VA	50	Wer wird bezwungen?	Möwe/Muschel										
-Der	Greis	beklagte	sich	und	befahl	ohne	zu	Zögern.	3	71	371	NaN	0												
-Das	Pony	berührt	das	Kleinkind	mit	der	weichen	Schnauze.	2	35	235	VA	32												
-Die	veralteten	Kontodaten	sollten	von	allen	Beteiligten	gelöscht	werden.	3	82	382	NaN	0												
-Die	Cousine	verschenkt	den	Raumduft	mit	einem	handlichen	Nachfüller.	1	106	1106	NA	168												
-Der	Mechaniker	erzürnt	den	Eigentümer	mit	dem	schmutzigen	Werkzeug.	2	101	2101	VA	81												
-Der	Reisende	erzählt	wehmütig	von	dem	schmutzigen	Hafen	Havannas.	3	50	350	NaN	0												
-Die	zarten	Pflanzen	blühen	nicht	weil	es	draußen	friert.	3	10	310	NaN	0	Was tun die Pflanzen?	Blühen/Frieren										
-Die	Fotografen	erweitern	eine	Kamera	mit	dem	wertigen	Objektiv.	1	29	129	VA	78												
-Der	Hausmeister	erschreckt	den	Greis	mit	dem	klappernden	Gebiss.	2	64	264	NA	73	Wer wird erschreckt?	Greis/Hausmeister										
-Das	Scharmützel	ist	anders	als	eine	Schlacht	ein	Zufall.	3	5	35	NaN	0	Was ist ein Zufall?	Schwarmützel/Schlacht										
-Die	Wilde	bedroht	die	Kuh	mit	der	brennenden	Fackel.	2	70	270	VA	13												
-Der	Violinist	begleitet	den	Sänger	mit	seiner	kostbaren	Violine.	2	82	282	VA	21												
-Der	übermütige	Kletterer	kam	bei 	der	Besteigung	ums	Leben.	3	68	368	NaN	0												
-Die	Nichte	meidet	die	Patentante	mit	der	riesigen	Torte.	1	63	163	NA	113												
-Die	Stadt	Hamburg	wartet	mit	dem	Bau	der	Oper.	3	35	335	NaN	0												
-Die	Politikerin	bezahlt	den	Taxifahrer	mit	der	dreisten	Art.	1	72	172	NA	49												
-Die	seltenen	Libellen	stellen	ihre	gemusterten	Flügel	zur	Schau.	3	29	329	NaN	0												
-Der	Gelehrte	steht	vor	einem	riesigen	Rad	aus	Stein.	3	70	370	NaN	0												
-Das	Publikum	attackiert	das	Rind	mit	den	spitzen	Hörnern.	2	73	273	NA	9												
-Die	Fackel	brannte	mit	lodernden	Flammen	eine	ganze	Woche.	3	85	385	NaN	0												
-Der	Papagei	ärgert	den	Pilger	mit	dem	spitzen	Schnabel.	2	10	210	VA	2	Wer wird geärgert?	Pilger/Papagei										
-Das	Einkochen	von	Obst	verlangt	nach	großen	zuckrigen	Kristallen.	3	44	344	NaN	0												
-Der	Maler	bemalt	die	Wand	mit	der	frischen	Farbe.	1	111	1111	VA	26												
-Der	Käufer	erreicht	den	Kassierer	mit	dem	vollen	Wagen.	2	60	260	VA	71												
-Der	Reiter	überholt	den	Biker	mit	dem	schweren	Motorrad.	2	27	227	NA	3	Wer wird überholt?	Biker/Reiter										
-Der	Koch	mag	den	Salat	mit	den	lokalen	Kräutern.	1	44	144	NA	111												
-Das	Mädchen	umarmt	das	Maskottchen	mit	den	pelzigen	Armen.	2	16	216	NA	142												
-Das	Buch	ist	nur	im	Fachhandel	oder	online	verfügbar.	3	56	356	NaN	0												
-Die	mit	großer	Vorsicht	behandelte	Vase	fällt	zu	Boden.	3	100	3100	NaN	0												
-Der	Sänger	winkt	dem	Fan	mit	der	akustischen	Gitarre.	2	21	221	VA	188	Wem wird gewunken?	Fan/Sänger										
-Die	Putzfrau	öffnet	die	Fenster	und	schließt	die	Türen.	3	12	312	NaN	0	Was wird geöffnet?	Fenster/Türen										
-Der	Adler	verfolgt	den	Jäger	mit	der	rostigen	Flinte.	2	57	257	NA	153												
-Die	Praktikant	verpackt	das	Brot	mit	der	organischen	Butter.	1	75	175	NA	163												
-Der	Unternehmer	besänftigt	den	Geldanleger	mit	den	klugen	Sprüchen.	1	105	1105	VA	34	Wer hat die klugen Sprüche?	Unternehmer/Geldanleger										
-Die	Jugend	verlor	das	Spiel	um	den	ersehnten	Titel.	3	61	361	NaN	0												
-Die	Schnecke	befühlt	die	Wühlmaus	mit	den	wendigen	Fühlern.	2	98	298	VA	16												
-Die	Kuh	bedroht	die	Wilde	mit	der	brennenden	Fackel.	2	70	270	NA	13												
-Die	Zitronen	kosten	wenig	und	können	die	Gesundheit	schützen.	3	43	343	NaN	0												
-Die	Bäuerin	liebkost	die	Miezekatze	mit	den	rosa	Pfoten.	2	99	299	NA	107												
-Der	Tiger	bekämpft	den	Büffel	mit	den	breiten	Tatzen.	2	63	263	VA	20												
-Die	Pflegerin	kennt	eine	Seniorin	mit	ganz	viel	Liebe.	1	69	169	NA	102												
-Die	Amme	hält	das 	zappelnde	Neugeborene	auf 	dem	Arm.	3	33	333	NaN	0												
-Der	Spieler	liegt	dösend	auf	dem	Rasen	vorm	Platz.	3	30	330	NaN	0	Wo liegt der Spieler?	Rasen/Platz										
-Die	Greisin	lauscht	der	Erzählerin	mit	dem	piepsenden	Hörgerät.	2	42	242	VA	106												
-Der	Manager	erwartet	einen	exzellenten	Service	wenn	Störungen	auftreten.	3	37	337	NaN	0												
-Die	Forscher	finden	in 	den	Proben	Rückstände	giftiger	Substanzen.	3	53	353	NaN	0												
-Der	Camper	würzt	die	Suppe	mit	der	frischen	Petersilie.	1	14	114	VA	186												
-Der	Assistent	packt	seinen	Rucksack	vor 	der	weiten	Reise.	3	75	375	NaN	0												
-Der	Kassierer	erreicht	den	Käufer	mit	dem	vollen	Wagen.	2	60	260	NA	71												
-Der	Biker	überholt	den	Reiter	mit	dem	schweren	Motorrad.	2	27	227	VA	3												
-Der	Lehrling	der	verhört	wurde	hatte	den	Dekan	getötet.	3	28	328	NaN	0	Wer wurde getötet?	Dekan/Lehrling										
-Die	Mütter	bedrängen	die	Obsthändler	mit	den	sperrigen	Kinderwägen.	2	28	228	VA	12	Wer wird bedrängt?	Obsthändler/Mütter										
-Der	Junggeselle	erfreut	die	Angebetete	mit	einem	hübschen	Kleid.	1	127	1127	VA	65												
-Die	Fliege	plagt	die	Hündin	mit	dem	wedelnden	Schwanz.	2	103	2103	NA	119												
-Der	Kaiser	erheitert	den	Hofnarr	mit	der	bunten	Perücke.	2	39	239	NA	66												
-Der	Wanderer	schubst	den	Bock	mit	dem	gekrümmten	Horn.	2	7	27	NA	132												
-Die	Züchterin	schlägt	das	Tier	mit	der	kurzen	Leine.	1	100	1100	VA	129												
-Der	Praktikant	beschmiert	das	Brot	mit	der	organischen	Butter.	1	75	175	VA	38												
-Die	Pädagogin	verändert	das	Schulwesen	auf	eine	kreative	Weise.	3	98	398	NaN	0												
-Die	Cousine	verschenkt	die	Reifen	mit	dem	feinen	Flickzeug.	1	19	119	NA	168												
-Das	Militär	vertreibt	das	Volk	mit	den	grässlichen	Waffen.	2	91	291	VA	176												
-Der	Bauleiter	realisierte	dass	ein 	tieferer	Stollen	nötig	war.	3	64	364	NaN	0												
-Der	Samurai	verwundet	den	Alligator	mit	dem	antiken	Schwert.	2	95	295	VA	179	Wer wird verwundet?	Alligator/Samurai										
-Der	Sänger	begleitet	den	Violinist	mit	seiner	kostbaren	Violine.	2	82	282	NA	21												
-Der	Prüfer	sperrt	die	Zone	mit	dem	rot-weißen	Absperrband.	1	77	177	VA	134												
-Die	Gärtnerin	kennt	die	Dame	mit	den	weißen	Rosen.	1	31	131	NA	102	Wer hat die weißen Rosen?	Dame/Gärtnerin										
-Der	Büffel	bekämpft	den	Tiger	mit	den	breiten	Tatzen.	2	63	263	NA	20												
-Der	Radler	behindert	den	Bauer	mit	dem	dreckigen	Trecker.	2	80	280	NA	19												
-Der	Junge	rettet	seinen	Bruder	mit	dem	dicken	Seil.	1	40	140	VA	124	Wer hat das dicke Seil?	Junge/Bruder										
-Das	Bier	schmeckt	nach	Gerste	aber	der	Whisky	nicht.	3	9	39	NaN	0	Was schmeckt nach Gerste?	Whisky/Bier										
-Der	Verbrecher	bevorzugt	den	Anwalt	mit	den	cleveren	Ausreden.	1	97	197	NA	47												
-Der	Großvater	backt	die	Brezel	mit	dem	groben	Salz.	1	35	135	NA	10												
-Der	Gast	findet	die	Serviette	mit	einer	mobilen	Handynummer.	1	32	132	NA	86												
-Die	Seen	sind	durch	Kanäle	verbunden	so	sagt	man.	3	72	372	NaN	0												
-Die	Felder	befinden	sich	drei	Ecken	vom	Haus	entfernt.	3	62	362	NaN	0												
-Die	Zentrale	verständigt	das	Flugzeug	mit	dem	digitalen	Funkgerät.	1	99	199	VA	174												
-Der	Kandidat	wählt	die	Kandidatin	mit	einem	strahlenden	Lächeln.	1	128	1128	NA	182												
-Die	leeren	Flaschen	dienen	zur	Dekoration	auf	dem	Nachttisch.	3	3	33	NaN	0	Was dient zur Dekoration?	Flaschen/Nachttisch										
-Der	Mieter	erwartet	den	Klempner	mit	der	dreckigen	Rohrzange.	2	14	214	NA	77	Wer hat die Rohrzange?	Klempner/Mieter										
-Der	Butler	ohrfeigt	den	Kurier	mit	dem	silbernen	Tablett.	2	65	265	VA	117												
-Der	Produzent	zählt	die	Fabriken	mit	den	seltenen	Teilen.	1	103	1103	NA	189												
-Der	Casanova	hatte	viel	Geld	und	kaufte	edle	Schuhe.	3	42	342	NaN	0												
-Das	jährliche	Einkommen	beträgt	im	Schnitt	zwanzig	Tausend	Dollar.	3	58	358	NaN	0												
-Die	Kaiserin	verehrt	das	Geschöpf	mit	den	feinen	Händen.	1	116	1116	NA	150												
-Der	Naturpark	ist	ein	geschützter	Lebensraum	für	zahlreiche	Tiere.	3	95	395	NaN	0												
-Die	Partei	überzeugt	eine	Untergruppe	mit	einigen	fraglichen	Argumenten.	1	67	167	VA	7	Wer hat fragliche Argumente?	Partei/Untergruppe										
-Der	unverhoffte	Gast	erklärt	mit	gedämpfter	Stimme	sein 	Anliegen.	3	6	36	NaN	0	Wer oder was kommt unverhofft?	Gast/Anliegen										
-Die	Aktivitsten	gehen	weiter	und	helfen	ihren	Mitgliedern	praktisch.	3	16	316	NaN	0	Wem wird geholfen?	Mitgliedern/Aktivisten										
-Der	Delphin	schikaniert	den	Badegast	mit	den	kräftigen	Flossen.	2	100	2100	VA	128												
-Das	Rind	attackiert	das	Publikum	mit	den	spitzen	Hörnern.	2	73	273	VA	9	Wer wird attackiert?	Publikum/Rind										
-Der	Schamane	begutachtet	die	Maske	mit	der	braunen	Kreide.	1	112	1112	NA	18												
-Das	Pferd	war	ein 	verspätetes	Geschenk	zum	elften	Geburtstag.	3	77	377	NaN	0												
-Der	Kunde	erweitert	einen	Computer	mit	einer	modernen	Tastatur.	1	50	150	VA	78												
-Die	Kundin	bezahlt	die	Kellnerin	mit	den	unhöflichen	Manieren.	1	51	151	NA	49												
-Die	Blinde	ertastet	das	Wesen	mit	den	zarten	Fingern.	1	115	1115	VA	76												
-Der	Bock	schubst	den	Wanderer	mit	dem	gekrümmten	Horn.	2	7	27	VA	132												
-Die	Hebamme	verblüfft	die	Schwangere	mit	ihrer	jahrelangen	Erfahrung.	2	89	289	VA	148												
-Die	Lehrerin	bestraft	ihre	Schüler	wegen	zu	vielen	Kraftworten.	3	32	332	NaN	0												
-Der	Junge	beneidet	seinen	Bruder	mit	dem	dicken	Seil.	1	40	140	NA	29												
-Der	Kater	kitzelt	den	Schüler	mit	dem	weißen	Schnurrhaar.	2	11	211	VA	103												
-Der	Elch	rammt	den	Wolf	mit	seinem	enormen	Geweih.	2	94	294	VA	121	Wer wird gerammt?	Wolf/Elch										
-Der	Junggeselle	wählt	die	Angebetete	mit	einem	hübschen	Kleid.	1	127	1127	NA	182	Wer wird gewählt?	Angebetete/Junggeselle										
-Der	König	empfängt	den	Knecht	mit	seinem	prächtigen	Zepter.	2	83	283	VA	59												
-Der	Rechtsklick	dient	auch	zum	auswählen	zwischen	mehreren	Texttypen.	3	65	365	NaN	0												
-Die	saftigen	Mangos	wurden	bei	Bedarf	zu	Mus	püriert.	3	79	379	NaN	0												
-Der	Sanitäter	ermuntert	den	Kranken	mit	einem	kuscheligen	Bären.	1	114	1114	VA	68												
-Die	Thearpeutin	muss	emotionale	Reaktionen	frühzeitig	erkennen	und	gegenwirken.	3	51	351	NaN	0												
-Der	Kellner	hält	die	Tasse	mit	dem	heißen	Kaffee.	1	42	142	NA	93												
-Der	Hirsch	trifft	den	Krieger	mit	dem	klobigen	Gewehr.	2	8	28	NA	141												
-Der	Förster	markiert	das	Holz	mit	der	roten	Markierung.	1	28	128	VA	112												
-Der	Ingenieur	verpackt	die	Kette	mit	dem	klebrigen	Öl.	1	38	138	NA	163												
-Die	Anbieter	beklagen	dass	überhöhte	Entgelte	den	Wettbewerb	verhindern.	3	2	32	NaN	0	Was beklagen die Anbieter?	Entgelte/Wettbewerb										
-Das	Unkraut	im	Garten	wird	durch	giftige	Stoffe	bekämpft.	3	46	346	NaN	0												
-Die	Obsthändler	bedrängen	die	Mütter	mit	den	sperrigen	Kinderwägen.	2	28	228	NA	12												
-Die	Senioren	geleiten	die	Betreuer	mit	den	klapprigen	Rollatoren.	2	25	225	VA	89												
-Der	Dirigent	folgt	dem	Musiker	mit	der	lieblichen	Geige.	2	23	223	NA	87												
-Der	Milliardär	begegnet	dem	Bauarbeiter	mit	dem	teuren	Cabrio.	2	45	245	VA	17	Wer hat das Cabrio	Milliardär/Bauarbeiter										
-Der	Roman	behandelt	die	Rivalität	zwischen	den	zwei	Brüdern.	3	40	340	NaN	0												
-Die	Pflegerin	beschenkt	eine	Seniorin	mit	ganz	viel	Liebe.	1	69	169	VA	37												
-Die	Investoren	besetzen	die	Betriebe	mit	einigen	fleißigen	Tagelöhnern.	1	39	139	VA	40												
-Die	Krake	reizt	die	Beute	mit	den	flinken	Tentakeln.	2	93	293	VA	122												
+ï»¿Det	N0	Verb	Det	N1	Prep	Det	Adj	N2	condition	pair_number	ID	Attachment	verb_number	Question	Answer										
 Der	Greis	erschreckt	den	Hausmeister	mit	dem	klappernden	Gebiss.	2	64	264	VA	73												
-Der	Sekretär	schreibt	das	Protokoll	mit	der	schönen	Handschrift.	1	84	184	VA	131												
-Die	Mücke	quält	die	Urlauberin	mit	dem	aggressiven	Mückenspray.	2	102	2102	NA	120												
-Der	Spion	beschriftet	das	Notizbuch	mit	einer	wertvollen	Information.	1	86	186	VA	39												
-Die	Landwirte	umfahren	die	Wiesen	mit	den	stacheligen	Zäunen.	1	54	154	NA	143												
-Die	Miezekatze	liebkost	die	Bäuerin	mit	den	rosa	Pfoten.	2	99	299	VA	107												
-Der	Wärter	streichelt	den	Elefant	mit	dem	grauen	Rüssel.	2	3	23	NA	137	Wer wird gestreichelt?	Elefant/Wärter										
-Der	dunkle	Friedhof	an	der	Kirche	erschien	ihr	gruselig.	3	93	393	NaN	0												
-Der	Verein	besitzt	ein	Komitee	mit	einer	dynamischen	Rhetorik.	1	98	198	NA	41												
-Die	beste	Mannschaft	erhielt	einen	Pokal	aber	kein	Preisgeld.	3	36	336	NaN	0												
-Der	Konditor	backt	den	Kuchen	mit	den	bunten	Streuseln.	1	46	146	NA	10												
-Die	Animateurin	bespritzt	die	Robbe	mit	dem	vollen	Eimer.	2	9	29	VA	43												
-Der	Krieger	trifft	den	Hirsch	mit	dem	klobigen	Gewehr.	2	8	28	VA	141												
-Der	im	Versteck	lauernde	Osterhase	wurde	von	Paul	gefunden.	3	23	323	NaN	0	Wer war versteckt?	Osterhase/Paul										
-Der	Chor	animiert	den	Pensionär	mit	seinem	alten	Krückstock.	2	81	281	NA	8												
-Das	Insekt	verängstigt	das	Kind	mit	dem	giftigen	Stachel.	2	69	269	VA	145												
-Die	Tochter	überrascht	die	Zahnfee	mit	dem	wackeligen	Zahn.	2	15	215	VA	5												
-Die	Diebin	rettet	ihren	Komplizen	mit	der	einzigen	Pistole.	1	23	123	VA	124	Wer hat die Pistole?	Diebin/Komplize										
-Das	Paar	kann	sich	Reis	aber	kein	Gemüse	leisten.	3	7	37	NaN	0	Was kann sich das Paar leisten?	Reis/Gemüse										
-Der	Musiker	folgt	dem	Dirigent	mit	der	lieblichen	Geige.	2	23	223	VA	87												
-Die	bekannteste	Regel	im	Verkehr	ist	rechts	vor	links.	3	60	360	NaN	0												
-Die	Nichte	gratuliert	der	Patentante	mit	der	riesigen	Torte.	1	110	1110	VA	92												
-Der	Zeppelin	explodiert	innerhalb	von	wenigen	Sekunden	am	Himmel.	3	88	388	NaN	0												
-Die	Züchterin	sieht	das	Tier	mit	der	kurzen	Leine.	1	100	1100	NA	133												
-Die	Jury	erhält	pro	Jahr	einhundert	Vorschläge	für	Produkte.	3	4	34	NaN	0	Was erhält die Jury?	Vorschläge/Produkte										
-Der	Kurier	ohrfeigt	den	Butler	mit	dem	silbernen	Tablett.	2	65	265	NA	117	Wer wird geohrfeigt?	Butler/Kurier										
-Der	Staat	beliefert	die	Haushalte	mit	einem	robusten	Stromnetz.	1	87	187	VA	24	Wer wird beliefert?	Haushalte/Staat										
-Der	Basilikum	auf	dem	Esstisch	musste	häufig	gegossen	werden.	3	78	378	NaN	0												
-Der	Sekretär	zeigt	das	Protokoll	mit	der	schönen	Handschrift.	1	84	184	NA	190												
-Der	Meister	schützt	den	Ninja	mit	den	uralten	Weisheiten.	2	85	285	VA	127												
-Der	Eigentümer	erzürnt	den	Mechaniker	mit	dem	schmutzigen	Werkzeug.	2	101	2101	NA	81												
-Die	Reiterin	belohnt	ein	Pferd	mit	einem	neuen	Sattel.	1	79	179	VA	25												
-Das	Lied	wurde	von	beiden	Künstlern	aufgenommen	und	produziert.	3	13	313	NaN	0	Was wurde aufgenommen?	Lied/Künstler										
-Der	Patient	grüßt	den	Doktor	mit	dem	brandneuen	Stethoskop.	2	12	212	NA	91												
-Der	berliner	Reporter	fürchtet	Jobverlust	wenn	seine	Quellen	auffliegen.	3	8	38	NaN	0	Was könnte der Reporter verlieren?	Job/Quellen										
-Der	prägende	Moment	für	seine	Karriere	kam	bereits	früh.	3	92	392	NaN	0												
-Der	Wilderer	schlägt	die	tobenden	Raubkatzen	in	die	Flucht.	3	18	318	NaN	0	Wer flieht?	Raubkatzen/Wilderer										
-Das	Alibi	der	drei	Ganoven	löst	nicht	alle	Probleme.	3	41	341	NaN	0												
-Der	Großvater	bestreut	die	Brezel	mit	dem	groben	Salz.	1	35	135	VA	45												
-Das	Einhorn	beschützt	das	Fräulein	mit	dem	leuchtenden	Horn.	2	74	274	VA	36	Wer wird beschützt?	Fräulein/Einhorn										
-Der	Koch	würzt	den	Salat	mit	den	lokalen	Kräutern.	1	44	144	VA	186												
-Das	Amt	empfiehlt	einen	Arbeiter	mit	einer	höheren	Position.	1	2	12	NA	60	Wer spricht eine Empfehlung aus?	Amt/Arbeiter										
-Die	Verspätung	wurde	durch	ungünstiges	Wetter	und	Blitzeis	verursacht.	3	47	347	NaN	0												
-Der	Hamster	schläft	nachmittags	und	wird	um	Mitternacht	munter.	3	34	334	NaN	0												
-Der	Küchenchef	füllt	den	Topf	mit	der	gestrigen	Suppe.	1	49	149	VA	83												
-Die	Hündin	plagt	die	Fliege	mit	dem	wedelnden	Schwanz.	2	103	2103	VA	119												
-Die	Bekannte 	die	Decken	für	Arme	webt	ist	glücklich.	3	31	331	NaN	0												
-Die	Gärtnerin	beschenkt	die	Dame	mit	den	weißen	Rosen.	1	31	131	VA	37												
-Die	Erzählerin	lauscht	der	Greisin	mit	dem	piepsenden	Hörgerät.	2	42	242	NA	106												
-Das	Denkmal	wird	im	nächsten	Frühling	vom	Baumeister	errichtet.	3	91	391	NaN	0												
-Der	mittellose	Goldgräber	pflegte	schon	lange	eine	verbitterte	Feindschaft.	3	49	349	NaN	0												
-Der	Staat	zählt	die	Haushalte	mit	einem	robusten	Stromnetz.	1	87	187	NA	189												
-Der	Roboter	bedient	Geräte	und	macht	die	Leute	klar.	3	17	317	NaN	0	Wen bedient der Roboter?	Geräte/Leute										
-Die	alten	römischen	Inschriften	kamen	später	noch	ans	Tageslicht.	3	48	348	NaN	0												
-Das	Kleinkind	berührt	das	Pony	mit	der	weichen	Schnauze.	2	35	235	NA	32												
-Der	Bauer	behindert	den	Radler	mit	dem	dreckigen	Trecker.	2	80	280	VA	19												
-Der	Wolf	rammt	den	Elch	mit	seinem	enormen	Geweih.	2	94	294	NA	121												
-Der	Verbrecher	besänftigt	den	Anwalt	mit	den	cleveren	Ausreden.	1	97	197	VA	34	Wer hat die cleveren Ausreden?	Verbrecher/Anwalt										
-Der	Elefant	streichelt	den	Wärter	mit	dem	grauen	Rüssel.	2	3	23	VA	137												
-Der	arrogante	Minister	besuchte	die	Universität	in	den	Staaten.	3	96	396	NaN	0												
-Die	Platte	hat	einen	Sprung	und	spielt	nicht	mehr.	3	76	376	NaN	0												
-Der	Mächtige	suchte	früher	selbst	den	Rat	des	Ältesten.	3	73	373	NaN	0												
-Das	äußerst	komplexe	Problem	der	Mathematik	ist	nicht	lösbar.	3	90	390	NaN	0												
-Die	Brände	im	Wald	treten	häufig	im	Hocchsommer	auf.	3	39	339	NaN	0												
-Die	Urlauberin	quält	die	Mücke	mit	dem	aggressiven	Mückenspray.	2	102	2102	VA	120												
-Der	Schneider	der	der	Königin	ihr	Kleid	verkaufte	schluchtzte.	3	21	321	NaN	0	Wer kauft das Kleid?	Königin/Schneider										
-Das	Ende	des	Krieges	leitete	eine	starke	Emsigkeit	ein .	3	45	345	NaN	0												
-Die	Kundin	verärgert	die	Kellnerin	mit	den	unhöflichen	Manieren.	1	51	151	VA	146	Wer hat unhöfliche Manieren?	Kundin/Kellnerin										
-Der	Maler	begutachtet	die	Wand	mit	der	frischen	Farbe.	1	111	1111	NA	18												
-Der	Küchenchef	hält	den	Topf	mit	der	gestrigen	Suppe.	1	49	149	NA	93												
-Der	Unterricht	bereichert	und	prägt	den	Lehrling	des	Zauberers.	3	25	325	NaN	0	Wer wird bereichert?	Lehrling/Zauberer										
-Der	Schiri	nervt	den	Fußballer	mit	der	schwarzen	Pfeife.	2	50	250	VA	116												
-Die	Wascherei	trocknet	die	Kleidung	bevor	sie	sie	ausliefert.	3	38	338	NaN	0												
-Das	Fräulein	beschützt	das	Einhorn	mit	dem	leuchtenden	Horn.	2	74	274	NA	36												
-Der	Bauarbeiter	begegnet	dem	Milliardär	mit	dem	teuren	Cabrio.	2	45	245	NA	17												
-Der	Sanitäter	holt	den	Urlauber	mit	der	faltbaren	Trage.	2	26	226	VA	95	Wer wird geholt?	Urlauber/Sanitäter										
-Die	Partei	besitzt	eine	Untergruppe	mit	einigen	fraglichen	Argumenten.	1	67	167	NA	41												
-Die	Soldaten	bekriegen	die	Indianer	mit	den	vergifteten	Pfeilen.	2	62	262	NA	22	Wer hat vergiftete Pfeile?	Indianer/Soldaten										
-Der	Fuchs	verletzt	den	Igel	mit	den	kleinen	Stacheln.	2	90	290	NA	158												
-Die	Cousine	erneuert	den	Raumduft	mit	einem	handlichen	Nachfüller.	1	106	1106	VA	69												
-Das	Volk	vertreibt	das	Militär	mit	den	grässlichen	Waffen.	2	91	291	NA	176	Wer wird vertrieben?	Militär/Volk										
-Der	Pilger	ärgert	den	Papagei	mit	dem	spitzen	Schnabel.	2	10	210	NA	2												
-Die	Fotografen	benötigen	eine	Kamera	mit	dem	wertigen	Objektiv.	1	29	129	NA	28												
-Der	Beirat	sucht	die	Ämter	mit	den	besten	Arbeitern.	1	11	111	NA	137	Wer hat die besten Arbeiter?	Ämter/Beirat										
 Die	Betreuer	geleiten	die	Senioren	mit	den	klapprigen	Rollatoren.	2	25	225	NA	89	Wer hat Rollatoren?	Senioren/Betreuer										
-Der	Klempner	erwartet	den	Mieter	mit	der	dreckigen	Rohrzange.	2	14	214	VA	77												
-Das	Maskottchen	umarmt	das	Mädchen	mit	den	pelzigen	Armen.	2	16	216	VA	142	Wer hat pelzige Arme?	Maskottchen/Mädchen										
-Der	vergessene	Dichter	der 	den	Leser	fürchtet	ist	verzweifelt.	3	20	320	NaN	0	Wer ist verzweifelt?	Dichter/Leser										
-Die	Trainerin	schlägt	den	Hund	mit	einem	langen	Stock.	1	92	192	VA	129												
-Der	Verein	überzeugt	ein	Komitee	mit	einer	dynamischen	Rhetorik.	1	98	198	VA	7	Wer hat die dynamische Rhetorik?	Verein/Komitee										
-Der	Jäger	verfolgt	den	Adler	mit	der	rostigen	Flinte.	2	57	257	VA	153												
-Der	Cousin	war	gehorsam	und	hielt	das	Haus	sauber.	3	69	369	NaN	0												
-Die	Zahnfee	überrascht	die	Tochter	mit	dem	wackeligen	Zahn.	2	15	215	NA	5	Wer wird überrascht?	Tochter/Zahnfee										
-Der	Laden	wird	samstags	geschlossen	aber	hat	Montag	auf.	3	1	31	NaN	0	Wann ist der Laden geschlossen?	Samstag/Montag										
-Die	Möwe	bezwingt	die	Muschel	mit	ihrer	harten	Schale.	2	97	297	NA	50												
-Die	Schwangere	verblüfft	die	Hebamme	mit	ihrer	jahrelangen	Erfahrung.	2	89	289	NA	148	Wer hat die jahrelange Erfahrung?	Hebamme/Schwangere										
-Der	Doktor	grüßt	den	Patient	mit	dem	brandneuen	Stethoskop.	2	12	212	VA	91	Wer hat das Stethoskop?	Doktor/Patient										
-Die	besten	Läden	befinden	sich	in	der	oberen	Etage.	3	67	367	NaN	0												
-Der	Förster	befördern	das	Holz	mit	der	roten	Markierung.	1	28	128	NA	15	Wer wird befördert?	Holz/Förster										
-Der	Sanitäter	entdeckt	den	Kranken	mit	einem	kuscheligen	Bären.	1	114	1114	NA	62												
-Der	Urlauber	holt	den	Sanitäter	mit	der	faltbaren	Trage.	2	26	226	NA	95												
-Das	Turnier	wird	jetzt	schon	zum	dritten	Mal	verschoben.	3	94	394	NaN	0												
-Der	Polizist	braucht	seinen	Kollegen	mit	dem	anonymen	Telefon.	1	73	173	NA	53												
-Der	Igel	verletzt	den	Fuchs	mit	den	kleinen	Stacheln.	2	90	290	VA	158												
-Der	Journalist	der	den	Autor	interviewt	will	viel	wissen.	3	24	324	NaN	0	Wer will viel wissen?	Journalist/Autor										
+Die	bekannteste	Regel	im	Verkehr	ist	rechts	vor	links.	3	60	360	NaN	0												
+Der	Arzt	ermuntert	den	SÃ¤ugling	mit	einem	flauschigen	Teddy.	1	113	1113	VA	68												
+Der	Spieler	liegt	dÃ¶send	auf	dem	Rasen	vorm	Platz.	3	30	330	NaN	0	Wo liegt der Spieler?	Rasen/Platz										
+Die	Partei	besitzt	eine	Untergruppe	mit	einigen	fraglichen	Argumenten.	1	67	167	NA	41												
+Die	saftigen	Mangos	wurden	bei	Bedarf	zu	Mus	pÃ¼riert.	3	79	379	NaN	0												
+Der	Junggeselle	erfreut	die	Angebetete	mit	einem	hÃ¼bschen	Kleid.	1	127	1127	VA	65												
+Der	SekretÃ¤r	zeigt	das	Protokoll	mit	der	schÃ¶nen	Handschrift.	1	84	184	NA	190												
+Die	Stadt	Hamburg	wartet	mit	dem	Bau	der	Oper.	3	35	335	NaN	0												
+Die	Felder	befinden	sich	drei	Ecken	vom	Haus	entfernt.	3	62	362	NaN	0												
+Das	Publikum	attackiert	das	Rind	mit	den	spitzen	HÃ¶rnern.	2	73	273	NA	9												
+Der	Hirsch	trifft	den	Krieger	mit	dem	klobigen	Gewehr.	2	8	28	NA	141												
+Die	PÃ¤dagogin	verÃ¤ndert	das	Schulwesen	auf	eine	kreative	Weise.	3	98	398	NaN	0												
+Der	GroÃŸvater	bestreut	die	Brezel	mit	dem	groben	Salz.	1	35	135	VA	45												
+Das	MÃ¤dchen	umarmt	das	Maskottchen	mit	den	pelzigen	Armen.	2	16	216	NA	142												
+Die	ErzÃ¤hlerin	lauscht	der	Greisin	mit	dem	piepsenden	HÃ¶rgerÃ¤t.	2	42	242	NA	106												
+Der	Bote	markiert	die	Kisten	mit	dem	gelben	Etikett.	1	107	1107	VA	112												
+Der	Meister	schÃ¼tzt	den	Ninja	mit	den	uralten	Weisheiten.	2	85	285	VA	127												
+Der	Polizist	verstÃ¤ndigt	seinen	Kollegen	mit	dem	anonymen	Telefon.	1	73	173	VA	174	Wer hat das anonyme Telefon?	Kollege/Polizist										
+Die	letzten	Wochen	der	Ausbildung	verbrachten	sie	mit	VortrÃ¤gen.	3	74	374	NaN	0												
+Der	Kunde	benÃ¶tigt	einen	Computer	mit	einer	modernen	Tastatur.	1	50	150	NA	28												
 Der	Alligator	verwundet	den	Samurai	mit	dem	antiken	Schwert.	2	95	295	NA	179												
-Die	letzten	Wochen	der	Ausbildung	verbrachten	sie	mit	Vorträgen.	3	74	374	NaN	0												
-Das	Kind	verängstigt	das	Insekt	mit	dem	giftigen	Stachel.	2	69	269	NA	145												
-Der	Beirat	besetzt	die	Ämter	mit	den	besten	Arbeitern.	1	11	111	VA	40												
-Die	Jagd	mit	Schusswaffen	ist	in	den	USA	erlaubt.	3	66	366	NaN	0												
-Der	Einsiedler	ist	gerne	allein	zuhause	während	der	Ferien.	3	55	355	NaN	0												
-Der	Dolmetscher	hilft	dem	Verleger	das	Buch	zu	übersetzen.	3	15	315	NaN	0	Wem wird geholfen?	Verleger/Dolmetscher										
-Der	Pensionär	animiert	den	Chor	mit	seinem	alten	Krückstock.	2	81	281	VA	8												
-Die	Kaiserin	ertastet	das	Geschöpf	mit	den	feinen	Händen.	1	116	1116	VA	76												
+Der	Junge	rettet	seinen	Bruder	mit	dem	dicken	Seil.	1	40	140	VA	124	Wer hat das dicke Seil?	Junge/Bruder										
+Der	Cousin	war	gehorsam	und	hielt	das	Haus	sauber.	3	69	369	NaN	0												
+Die	Aktivisten	gehen	weiter	und	helfen	ihren	Mitgliedern	praktisch.	3	16	316	NaN	0	Wem wird geholfen?	Mitgliedern/Aktivisten										
+Das	Amt	belohnt	einen	Arbeiter	mit	einer	hÃ¶heren	Position.	1	2	12	VA	25												
+Die	Hebamme	verblÃ¼fft	die	Schwangere	mit	ihrer	jahrelangen	Erfahrung.	2	89	289	VA	148												
+Der	Biker	Ã¼berholt	den	Reiter	mit	dem	schweren	Motorrad.	2	27	227	VA	3												
+Der	Maler	begutachtet	die	Wand	mit	der	frischen	Farbe.	1	111	1111	NA	18												
+Der	Basilikum	auf	dem	Esstisch	musste	hÃ¤ufig	gegossen	werden.	3	78	378	NaN	0												
+Der	im	Versteck	lauernde	Osterhase	wurde	von	Paul	gefunden.	3	23	323	NaN	0	Wer war versteckt?	Osterhase/Paul										
+Die	Animateurin	bespritzt	die	Robbe	mit	dem	vollen	Eimer.	2	9	29	VA	43												
+Die	Investoren	besetzen	die	Betriebe	mit	einigen	fleiÃŸigen	TagelÃ¶hnern.	1	39	139	VA	40												
+Die	Soldaten	bekriegen	die	Indianer	mit	den	vergifteten	Pfeilen.	2	62	262	NA	22	Wer hat vergiftete Pfeile?	Indianer/Soldaten										
+Die	Bekannte 	die	Decken	fÃ¼r	Arme	webt	ist	glÃ¼cklich.	3	31	331	NaN	0												
+Der	Violinist	begleitet	den	SÃ¤nger	mit	seiner	kostbaren	Violine.	2	82	282	VA	21												
+Die	Politikerin	bezahlt	den	Taxifahrer	mit	der	dreisten	Art.	1	72	172	NA	49												
+Der	KÃ¶nig	empfÃ¤ngt	den	Knecht	mit	seinem	prÃ¤chtigen	Zepter.	2	83	283	VA	59												
+Das	Kind	verÃ¤ngstigt	das	Insekt	mit	dem	giftigen	Stachel.	2	69	269	NA	145												
+Der	Dirigent	folgt	dem	Musiker	mit	der	lieblichen	Geige.	2	23	223	NA	87												
+Die	besten	LÃ¤den	befinden	sich	in	der	oberen	Etage.	3	67	367	NaN	0												
+Das	Paar	kann	sich	Reis	aber	kein	GemÃ¼se	leisten.	3	7	37	NaN	0	Was kann sich das Paar leisten?	Reis/GemÃ¼se										
+Das	Bier	schmeckt	nach	Gerste	aber	der	Whisky	nicht.	3	9	39	NaN	0	Was schmeckt nach Gerste?	Whisky/Bier										
+Das	Kleinkind	berÃ¼hrt	das	Pony	mit	der	weichen	Schnauze.	2	35	235	NA	32												
+Der	Konditor	bestreut	den	Kuchen	mit	den	bunten	Streuseln.	1	46	146	VA	45												
+Die	Fackel	brannte	mit	lodernden	Flammen	eine	ganze	Woche.	3	85	385	NaN	0												
+Die	ZÃ¼chterin	sieht	das	Tier	mit	der	kurzen	Leine.	1	100	1100	NA	133												
+Der	MilliardÃ¤r	begegnet	dem	Bauarbeiter	mit	dem	teuren	Cabrio.	2	45	245	VA	17	Wer hat das Cabrio	MilliardÃ¤r/Bauarbeiter										
+Der	Spion	beschriftet	das	Notizbuch	mit	einer	wertvollen	Information.	1	86	186	VA	39												
+Die	Landwirte	sperren	die	Wiesen	mit	den	stacheligen	ZÃ¤unen.	1	54	154	VA	134												
+Das	Amt	empfiehlt	einen	Arbeiter	mit	einer	hÃ¶heren	Position.	1	2	12	NA	60	Wer spricht eine Empfehlung aus?	Amt/Arbeiter										
+Der	WÃ¤rter	streichelt	den	Elefant	mit	dem	grauen	RÃ¼ssel.	2	3	23	NA	137	Wer wird gestreichelt?	Elefant/WÃ¤rter										
+Der	Wanderer	schubst	den	Bock	mit	dem	gekrÃ¼mmten	Horn.	2	7	27	NA	132												
+Der	Maler	bemalt	die	Wand	mit	der	frischen	Farbe.	1	111	1111	VA	26												
+Der	Greis	beklagte	sich	und	befahl	ohne	zu	ZÃ¶gern.	3	71	371	NaN	0												
+Der	Rechtsklick	dient	auch	zum	auswÃ¤hlen	zwischen	mehreren	Texttypen.	3	65	365	NaN	0												
+Der	SekretÃ¤r	schreibt	das	Protokoll	mit	der	schÃ¶nen	Handschrift.	1	84	184	VA	131												
+Der	Tiger	bekÃ¤mpft	den	BÃ¼ffel	mit	den	breiten	Tatzen.	2	63	263	VA	20												
+Die	Wilde	bedroht	die	Kuh	mit	der	brennenden	Fackel.	2	70	270	VA	13												
+Der	PrÃ¼fer	umfÃ¤hrt	die	Zone	mit	dem	rot-weiÃŸen	Absperrband.	1	77	177	NA	143												
+Das	Einhorn	beschÃ¼tzt	das	FrÃ¤ulein	mit	dem	leuchtenden	Horn.	2	74	274	VA	36	Wer wird beschÃ¼tzt?	FrÃ¤ulein/Einhorn										
+Der	Unterricht	bereichert	und	prÃ¤gt	den	Lehrling	des	Zauberers.	3	25	325	NaN	0	Wer wird bereichert?	Lehrling/Zauberer										
+Der	Mieter	erwartet	den	Klempner	mit	der	dreckigen	Rohrzange.	2	14	214	NA	77	Wer hat die Rohrzange?	Klempner/Mieter										
+Die	WÃ¤scherei	trocknet	die	Kleidung	bevor	sie	sie	ausliefert.	3	38	338	NaN	0												
+Die	LÃ¤uferin	ist	vielfache	nationale	Meisterin	auf	kurzen	Strecken.	3	97	397	NaN	0												
+Der	Kunde	erweitert	einen	Computer	mit	einer	modernen	Tastatur.	1	50	150	VA	78												
+Der	Unternehmer	besÃ¤nftigt	den	Geldanleger	mit	den	klugen	SprÃ¼chen.	1	105	1105	VA	34	Wer hat die klugen SprÃ¼che?	Unternehmer/Geldanleger										
+Der	SÃ¤nger	winkt	dem	Fan	mit	der	akustischen	Gitarre.	2	21	221	VA	188	Wem wird gewunken?	Fan/SÃ¤nger										
+Die	GÃ¤rtnerin	beschenkt	die	Dame	mit	den	weiÃŸen	Rosen.	1	31	131	VA	37												
+Die	Greisin	lauscht	der	ErzÃ¤hlerin	mit	dem	piepsenden	HÃ¶rgerÃ¤t.	2	42	242	VA	106												
+Der	Polizist	braucht	seinen	Kollegen	mit	dem	anonymen	Telefon.	1	73	173	NA	53												
+Der	berliner	Reporter	fÃ¼rchtet	Jobverlust	wenn	seine	Quellen	auffliegen.	3	8	38	NaN	0	Was kÃ¶nnte der Reporter verlieren?	Job/Quellen										
+Die	Jury	erhÃ¤lt	pro	Jahr	einhundert	VorschlÃ¤ge	fÃ¼r	Produkte.	3	4	34	NaN	0	Was erhÃ¤lt die Jury?	VorschlÃ¤ge/Produkte										
+Der	Spion	findet	das	Notizbuch	mit	einer	wertvollen	Information.	1	86	186	NA	86												
+Die	im	Text	erwÃ¤hnte	Attraktion	ist	im	Preis	inbegriffen.	3	52	352	NaN	0												
+Der	Laden	wird	samstags	geschlossen	aber	hat	Montag	auf.	3	1	31	NaN	0	Wann ist der Laden geschlossen?	Samstag/Montag										
+Der	Wolf	rammt	den	Elch	mit	seinem	enormen	Geweih.	2	94	294	NA	121												
+Der	Produzent	beliefert	die	Fabriken	mit	den	seltenen	Teilen.	1	103	1103	VA	24	Wer hat die seltenen Teile?	Produzent/Fabrik										
+Die	veralteten	Kontodaten	sollten	von	allen	Beteiligten	gelÃ¶scht	werden.	3	82	382	NaN	0												
+Die	ObsthÃ¤ndler	bedrÃ¤ngen	die	MÃ¼tter	mit	den	sperrigen	KinderwÃ¤gen.	2	28	228	NA	12												
+Die	Nichte	meidet	die	Patentante	mit	der	riesigen	Torte.	1	63	163	NA	113												
+Der	Lehrling	der	verhÃ¶rt	wurde	hatte	den	Dekan	getÃ¶tet.	3	28	328	NaN	0	Wer wurde getÃ¶tet?	Dekan/Lehrling										
+Der	BÃ¼ffel	bekÃ¤mpft	den	Tiger	mit	den	breiten	Tatzen.	2	63	263	NA	20												
+Der	FÃ¶rster	befÃ¶rdern	das	Holz	mit	der	roten	Markierung.	1	28	128	NA	15	Wer wird befÃ¶rdert?	Holz/FÃ¶rster										
+Die	Muschel	bezwingt	die	MÃ¶we	mit	ihrer	harten	Schale.	2	97	297	VA	50	Wer wird bezwungen?	MÃ¶we/Muschel										
+Der	Gast	beschriftet	die	Serviette	mit	einer	mobilen	Handynummer.	1	32	132	VA	39												
+Der	MÃ¤chtige	suchte	frÃ¼her	selbst	den	Rat	des	Ã„ltesten.	3	73	373	NaN	0												
+Der	SanitÃ¤ter	holt	den	Urlauber	mit	der	faltbaren	Trage.	2	26	226	VA	95	Wer wird geholt?	Urlauber/SanitÃ¤ter										
+Die	Politikerin	verÃ¤rgert	den	Taxifahrer	mit	der	dreisten	Art.	1	72	172	VA	146												
+Der	Staat	zÃ¤hlt	die	Haushalte	mit	einem	robusten	Stromnetz.	1	87	187	NA	189												
+Die	Reiterin	belohnt	ein	Pferd	mit	einem	neuen	Sattel.	1	79	179	VA	25												
+Der	SanitÃ¤ter	entdeckt	den	Kranken	mit	einem	kuscheligen	BÃ¤ren.	1	114	1114	NA	62												
+Der	EigentÃ¼mer	erzÃ¼rnt	den	Mechaniker	mit	dem	schmutzigen	Werkzeug.	2	101	2101	NA	81												
+Der	Konditor	backt	den	Kuchen	mit	den	bunten	Streuseln.	1	46	146	NA	10												
+Der	Patient	grÃ¼ÃŸt	den	Doktor	mit	dem	brandneuen	Stethoskop.	2	12	212	NA	91												
+Der	Praktikant	beschmiert	das	Brot	mit	der	organischen	Butter.	1	75	175	VA	38												
+Der	unverhoffte	Gast	erklÃ¤rt	mit	gedÃ¤mpfter	Stimme	sein	Anliegen.	3	6	36	NaN	0	Wer oder was kommt unverhofft?	Gast/Anliegen										
+Der	Musiker	folgt	dem	Dirigent	mit	der	lieblichen	Geige.	2	23	223	VA	87												
+Der	JÃ¤ger	verfolgt	den	Adler	mit	der	rostigen	Flinte.	2	57	257	VA	153												
+Die	Platte	hat	einen	Sprung	und	spielt	nicht	mehr.	3	76	376	NaN	0												
+Die	Putzfrau	Ã¶ffnet	die	Fenster	und	schlieÃŸt	die	TÃ¼ren.	3	12	312	NaN	0	Was wird geÃ¶ffnet?	Fenster/TÃ¼ren										
+Die	Indianer	bekriegen	die	Soldaten	mit	den	vergifteten	Pfeilen.	2	62	262	VA	22												
+Der	Liebhaber	betrÃ¼gt	seine	Geliebte	ohne	ein	schlechtes	Gewissen.	3	26	326	NaN	0	Wer wird betrogen?	Geliebte/Liebhaber										
+Das	Ã¤uÃŸerst	komplexe	Problem	der	Mathematik	ist	nicht	lÃ¶sbar.	3	90	390	NaN	0												
+Der	Elch	rammt	den	Wolf	mit	seinem	enormen	Geweih.	2	94	294	VA	121	Wer wird gerammt?	Wolf/Elch										
+Die	Senioren	geleiten	die	Betreuer	mit	den	klapprigen	Rollatoren.	2	25	225	VA	89												
+Der	Brand	im	Schacht	konnte	vom	Team	gelÃ¶scht	werden.	3	11	311	NaN	0	Was war im Schacht?	Brand/Team										
+Der	Kurier	ohrfeigt	den	Butler	mit	dem	silbernen	Tablett.	2	65	265	NA	117	Wer wird geohrfeigt?	Butler/Kurier										
+Die	alten	rÃ¶mischen	Inschriften	kamen	spÃ¤ter	noch	ans	Tageslicht.	3	48	348	NaN	0												
+Der	Rahmen	hing	erst	schief	und	fiel	dann	runter.	3	80	380	NaN	0												
+Die	beiden	Bildhauer	starben	im	Abstand	von	sechs	Jahren.	3	59	359	NaN	0												
+Der	Gast	findet	die	Serviette	mit	einer	mobilen	Handynummer.	1	32	132	NA	86												
+Der	Beirat	besetzt	die	Ã„mter	mit	den	besten	Arbeitern.	1	11	111	VA	40												
+Das	Denkmal	wird	im	nÃ¤chsten	FrÃ¼hling	vom	Baumeister	errichtet.	3	91	391	NaN	0												
+Das	Museum	zeigt	zahlreiche	GerÃ¤te	und	Zeugnisse	zum	Ackerbau.	3	63	363	NaN	0												
+Das	Buch	ist	nur	im	Fachhandel	oder	online	verfÃ¼gbar.	3	56	356	NaN	0												
+Die	WÃ¼hlmaus	befÃ¼hlt	die	Schnecke	mit	den	wendigen	FÃ¼hlern.	2	98	298	NA	16												
+Der	TagelÃ¶hner	mÃ¶chte	so	wenig	Steuern	wie	mÃ¶glich	zahlen.	3	54	354	NaN	0												
+Der	Bote	befÃ¶rdert	die	Kisten	mit	dem	gelben	Etikett.	1	107	1107	NA	15	Wer wird befÃ¶rdert?	Kisten/Bote										
+Die	zarten	Pflanzen	blÃ¼hen	nicht	weil	es	drauÃŸen	friert.	3	10	310	NaN	0	Was tun die Pflanzen?	BlÃ¼hen/Frieren										
+Der	Ingenieur	beschmiert	die	Kette	mit	dem	klebrigen	Ã–l.	1	38	138	VA	38												
+Die	Trainerin	schlÃ¤gt	den	Hund	mit	einem	langen	Stock.	1	92	192	VA	129												
+Der	Zeppelin	explodiert	innerhalb	von	wenigen	Sekunden	am	Himmel.	3	88	388	NaN	0												
+Der	Adler	verfolgt	den	JÃ¤ger	mit	der	rostigen	Flinte.	2	57	257	NA	153												
+Die	Robbe	bespritzt	die	Animateurin	mit	dem	vollen	Eimer.	2	9	29	NA	43	Wer hat den Eimer?	Animateurin/Robbe										
+Die	Pflegerin	beschenkt	eine	Seniorin	mit	ganz	viel	Liebe.	1	69	169	VA	37												
+Das	Pony	berÃ¼hrt	das	Kleinkind	mit	der	weichen	Schnauze.	2	35	235	VA	32												
+Der	Schamane	bemalt	die	Maske	mit	der	braunen	Kreide.	1	112	1112	VA	26												
+Der	Wilderer	schlÃ¤gt	die	tobenden	Raubkatzen	in	die	Flucht.	3	18	318	NaN	0	Wer flieht?	Raubkatzen/Wilderer										
+Der	vergessene	Dichter	der	den	Leser	fÃ¼rchtet	ist	verzweifelt.	3	20	320	NaN	0	Wer ist verzweifelt?	Dichter/Leser										
+Der	Kandidat	erfreut	die	Kandidatin	mit	einem	strahlenden	LÃ¤cheln.	1	128	1128	VA	65	Wer hat das strahlende LÃ¤cheln?	Kandidat/Kandidatin										
+Der	Assistent	packt	seinen	Rucksack	vor 	der	weiten	Reise.	3	75	375	NaN	0												
+Die	seltenen	Libellen	stellen	ihre	gemusterten	FlÃ¼gel	zur	Schau.	3	29	329	NaN	0												
+Die	Anbieter	beklagen	dass	Ã¼berhÃ¶hte	Entgelte	den	Wettbewerb	verhindern.	3	2	32	NaN	0	Was beklagen die Anbieter?	Entgelte/Wettbewerb										
+Die	Cousine	verschenkt	den	Raumduft	mit	einem	handlichen	NachfÃ¼ller.	1	106	1106	NA	168												
+Der	Urlauber	holt	den	SanitÃ¤ter	mit	der	faltbaren	Trage.	2	26	226	NA	95												
+Der	Radler	behindert	den	Bauer	mit	dem	dreckigen	Trecker.	2	80	280	NA	19												
+Der	Beirat	sucht	die	Ã„mter	mit	den	besten	Arbeitern.	1	11	111	NA	137	Wer hat die besten Arbeiter?	Ã„mter/Beirat										
+Die	Tochter	Ã¼berrascht	die	Zahnfee	mit	dem	wackeligen	Zahn.	2	15	215	VA	5												
+Die	Blinde	verehrt	das	Wesen	mit	den	zarten	Fingern.	1	115	1115	NA	150	Wer hat zarte Finger?	Wesen/Blinde										
+Das	jÃ¤hrliche	Einkommen	betrÃ¤gt	im	Schnitt	zwanzig	Tausend	Dollar.	3	58	358	NaN	0												
+Der	Roboter	bedient	GerÃ¤te	und	macht	die	Leute	klar.	3	17	317	NaN	0	Wen bedient der Roboter?	GerÃ¤te/Leute										
+Der	Junggeselle	wÃ¤hlt	die	Angebetete	mit	einem	hÃ¼bschen	Kleid.	1	127	1127	NA	182	Wer wird gewÃ¤hlt?	Angebetete/Junggeselle										
+Der	Einsiedler	ist	gerne	allein	zuhause	wÃ¤hrend	der	Ferien.	3	55	355	NaN	0												
+Der	KÃ¤fer	lockt	den	Specht	mit	dem	glÃ¤nzenden	Panzer.	2	61	261	VA	110												
+Der	Naturpark	ist	ein	geschÃ¼tzter	Lebensraum	fÃ¼r	zahlreiche	Tiere.	3	95	395	NaN	0												
+Die	Trainerin	sieht	den	Hund	mit	einem	langen	Stock.	1	92	192	NA	133	Wer hat den langen Stock?	Hund/Trainerin										
+Der	SchÃ¼ler	kitzelt	den	Kater	mit	dem	weiÃŸen	Schnurrhaar.	2	11	211	NA	103	Wer wird gekitzelt?	Kater/SchÃ¼ler										
+Die	Fliege	plagt	die	HÃ¼ndin	mit	dem	wedelnden	Schwanz.	2	103	2103	NA	119												
+Die	Urlauberin	quÃ¤lt	die	MÃ¼cke	mit	dem	aggressiven	MÃ¼ckenspray.	2	102	2102	VA	120												
+Die	MÃ¼tter	bedrÃ¤ngen	die	ObsthÃ¤ndler	mit	den	sperrigen	KinderwÃ¤gen.	2	28	228	VA	12	Wer wird bedrÃ¤ngt?	ObsthÃ¤ndler/MÃ¼tter										
+Die	Praktikant	verpackt	das	Brot	mit	der	organischen	Butter.	1	75	175	NA	163												
+Der	Schamane	begutachtet	die	Maske	mit	der	braunen	Kreide.	1	112	1112	NA	18												
+Die	beste	Mannschaft	erhielt	einen	Pokal	aber	kein	Preisgeld.	3	36	336	NaN	0												
+Der	Chor	animiert	den	PensionÃ¤r	mit	seinem	alten	KrÃ¼ckstock.	2	81	281	NA	8												
+Der	Camper	wÃ¼rzt	die	Suppe	mit	der	frischen	Petersilie.	1	14	114	VA	186												
+Der	Butler	ohrfeigt	den	Kurier	mit	dem	silbernen	Tablett.	2	65	265	VA	117												
+Die	Schwangere	verblÃ¼fft	die	Hebamme	mit	ihrer	jahrelangen	Erfahrung.	2	89	289	NA	148	Wer hat die jahrelange Erfahrung?	Hebamme/Schwangere										
+Der	Kaiser	erheitert	den	Hofnarr	mit	der	bunten	PerÃ¼cke.	2	39	239	NA	66												
+Der	FÃ¶rster	markiert	das	Holz	mit	der	roten	Markierung.	1	28	128	VA	112												
+Die	Kuh	bedroht	die	Wilde	mit	der	brennenden	Fackel.	2	70	270	NA	13												
+Der	Igel	verletzt	den	Fuchs	mit	den	kleinen	Stacheln.	2	90	290	VA	158												
+Die	Investoren	suchen	die	Betriebe	mit	einigen	fleiÃŸigen	TagelÃ¶hnern.	1	39	139	NA	137	Wer hat fleiÃŸige TageslÃ¶hner?	Betriebe/Investoren										
+Der	Samurai	verwundet	den	Alligator	mit	dem	antiken	Schwert.	2	95	295	VA	179	Wer wird verwundet?	Alligator/Samurai										
+Das	Turnier	wird	jetzt	schon	zum	dritten	Mal	verschoben.	3	94	394	NaN	0												
+Die	Lehrerin	bestraft	ihre	SchÃ¼ler	wegen	zu	vielen	Kraftworten.	3	32	332	NaN	0												
+Der	Verbrecher	bevorzugt	den	Anwalt	mit	den	cleveren	Ausreden.	1	97	197	NA	47												
+Die	ZÃ¼chterin	schlÃ¤gt	das	Tier	mit	der	kurzen	Leine.	1	100	1100	VA	129												
+Die	Freunde	lÃ¤stern	hinter	dem	RÃ¼cken	des	jÃ¼ngeren	Kollegen.	3	22	322	NaN	0	Wer lÃ¤stert?	Freunde/Kollege										
+Der	prÃ¤gende	Moment	fÃ¼r	seine	Karriere	kam	bereits	frÃ¼h.	3	92	392	NaN	0												
+Das	Unkraut	im	Garten	wird	durch	giftige	Stoffe	bekÃ¤mpft.	3	46	346	NaN	0												
+Der	Ninja	schÃ¼tzt	den	Meister	mit	den	uralten	Weisheiten.	2	85	285	NA	127												
+Der	Bauleiter	realisierte	dass	ein	tieferer	Stollen	nÃ¶tig	war.	3	64	364	NaN	0												
+Die	Diebin	rettet	ihren	Komplizen	mit	der	einzigen	Pistole.	1	23	123	VA	124	Wer hat die Pistole?	Diebin/Komplize										
+Die	HÃ¼ndin	plagt	die	Fliege	mit	dem	wedelnden	Schwanz.	2	103	2103	VA	119												
+Der	SanitÃ¤ter	ermuntert	den	Kranken	mit	einem	kuscheligen	BÃ¤ren.	1	114	1114	VA	68												
+Der	Klempner	erwartet	den	Mieter	mit	der	dreckigen	Rohrzange.	2	14	214	VA	77												
+Der	Produzent	zÃ¤hlt	die	Fabriken	mit	den	seltenen	Teilen.	1	103	1103	NA	189												
+Der	Bauer	behindert	den	Radler	mit	dem	dreckigen	Trecker.	2	80	280	VA	19												
+Der	Reiter	Ã¼berholt	den	Biker	mit	dem	schweren	Motorrad.	2	27	227	NA	3	Wer wird Ã¼berholt?	Biker/Reiter										
+Der	Casanova	hatte	viel	Geld	und	kaufte	edle	Schuhe.	3	42	342	NaN	0												
+Die	Reiterin	empfiehlt	ein	Pferd	mit	einem	neuen	Sattel.	1	79	179	NA	60												
+Der	Bauarbeiter	begegnet	dem	MilliardÃ¤r	mit	dem	teuren	Cabrio.	2	45	245	NA	17												
+Das	MilitÃ¤r	vertreibt	das	Volk	mit	den	grÃ¤sslichen	Waffen.	2	91	291	VA	176												
+Der	Mechaniker	erzÃ¼rnt	den	EigentÃ¼mer	mit	dem	schmutzigen	Werkzeug.	2	101	2101	VA	81												
+Das	Lied	wurde	von	beiden	KÃ¼nstlern	aufgenommen	und	produziert.	3	13	313	NaN	0	Was wurde aufgenommen?	Lied/KÃ¼nstler										
+Die	hundert	Menschen	wurden	zur	Einweihung	des	Tempels	geopfert.	3	14	314	NaN	0	Was wurde geopfert?	Tempel/Menschen										
+Die	Jugend	verlor	das	Spiel	um	den	ersehnten	Titel.	3	61	361	NaN	0												
+Das	Einkochen	von	Obst	verlangt	nach	groÃŸen	zuckrigen	Kristallen.	3	44	344	NaN	0												
+Der	Kellner	fÃ¼llt	die	Tasse	mit	dem	heiÃŸen	Kaffee.	1	42	142	VA	83												
+Das	Ende	des	Krieges	leitete	eine	starke	Emsigkeit	ein.	3	45	345	NaN	0												
+Der	Verbrecher	besÃ¤nftigt	den	Anwalt	mit	den	cleveren	Ausreden.	1	97	197	VA	34	Wer hat die cleveren Ausreden?	Verbrecher/Anwalt										
+Die	Zentrale	verstÃ¤ndigt	das	Flugzeug	mit	dem	digitalen	FunkgerÃ¤t.	1	99	199	VA	174												
+Die	SchÃ¼lerin	schreibt	die	Klausur	mit	nur	wenigen	Fehlern.	1	82	182	VA	131												
+Der	Schneider	der	der	KÃ¶nigin	ihr	Kleid	verkaufte	schluchzte.	3	21	321	NaN	0	Wer kauft das Kleid?	KÃ¶nigin/Schneider										
+Die	fleiÃŸige	Biene	fÃ¤llt	abends	erschÃ¶pft	in	ihr	Bett.	3	84	384	NaN	0												
+Das	ScharmÃ¼tzel	ist	anders	als	eine	Schlacht	ein	Zufall.	3	5	35	NaN	0	Was ist ein Zufall?	SchwarmÃ¼tzel/Schlacht										
+Der	Badegast	schikaniert	den	Delphin	mit	den	krÃ¤ftigen	Flossen.	2	100	2100	NA	128												
+Der	Verein	Ã¼berzeugt	ein	Komitee	mit	einer	dynamischen	Rhetorik.	1	98	198	VA	7	Wer hat die dynamische Rhetorik?	Verein/Komitee										
+Der	Fuchs	verletzt	den	Igel	mit	den	kleinen	Stacheln.	2	90	290	NA	158												
+Der	Manager	erwartet	einen	exzellenten	Service	wenn	StÃ¶rungen	auftreten.	3	37	337	NaN	0												
+Die	Miezekatze	liebkost	die	BÃ¤uerin	mit	den	rosa	Pfoten.	2	99	299	VA	107												
+Der	Kandidat	wÃ¤hlt	die	Kandidatin	mit	einem	strahlenden	LÃ¤cheln.	1	128	1128	NA	182												
+Die	BrÃ¤nde	im	Wald	treten	hÃ¤ufig	im	Hochsommer	auf.	3	39	339	NaN	0												
+Die	mit	groÃŸer	Vorsicht	behandelte	Vase	fÃ¤llt	zu	Boden.	3	100	3100	NaN	0												
+Der	FuÃŸballer	erzielte	seinen	ersten	Treffer	fÃ¼r	den	Verein.	3	57	357	NaN	0												
+Der	Junge	beneidet	seinen	Bruder	mit	dem	dicken	Seil.	1	40	140	NA	29												
+Die	Fotografen	erweitern	eine	Kamera	mit	dem	wertigen	Objektiv.	1	29	129	VA	78												
+Die	Kundin	bezahlt	die	Kellnerin	mit	den	unhÃ¶flichen	Manieren.	1	51	151	NA	49												
+Der	Dolmetscher	hilft	dem	Verleger	das	Buch	zu	Ã¼bersetzen.	3	15	315	NaN	0	Wem wird geholfen?	Verleger/Dolmetscher										
+Der	Doktor	grÃ¼ÃŸt	den	Patient	mit	dem	brandneuen	Stethoskop.	2	12	212	VA	91	Wer hat das Stethoskop?	Doktor/Patient										
+Der	Schiri	nervt	den	FuÃŸballer	mit	der	schwarzen	Pfeife.	2	50	250	VA	116												
+Der	Papagei	Ã¤rgert	den	Pilger	mit	dem	spitzen	Schnabel.	2	10	210	VA	2	Wer wird geÃ¤rgert?	Pilger/Papagei										
+Der	mittellose	GoldgrÃ¤ber	pflegte	schon	lange	eine	verbitterte	Feindschaft.	3	49	349	NaN	0												
+Der	KÃ¼chenchef	fÃ¼llt	den	Topf	mit	der	gestrigen	Suppe.	1	49	149	VA	83												
 Die	Chefin	gratuliert	dem	Mitarbeiter	mit	der	faltbaren	Karte.	1	110	1110	VA	92	Wem wird gratuliert?	Mitarbeiter/Chefin										
-Die	Landwirte	sperren	die	Wiesen	mit	den	stacheligen	Zäunen.	1	54	154	VA	134												
+Das	Maskottchen	umarmt	das	MÃ¤dchen	mit	den	pelzigen	Armen.	2	16	216	VA	142	Wer hat pelzige Arme?	Maskottchen/MÃ¤dchen										
+Der	Hamster	schlÃ¤ft	nachmittags	und	wird	um	Mitternacht	munter.	3	34	334	NaN	0												
+Der	Elefant	streichelt	den	WÃ¤rter	mit	dem	grauen	RÃ¼ssel.	2	3	23	VA	137												
+Die	Seen	sind	durch	KanÃ¤le	verbunden	so	sagt	man.	3	72	372	NaN	0												
+Der	Specht	lockt	den	KÃ¤fer	mit	dem	glÃ¤nzenden	Panzer.	2	61	261	NA	110												
+Der	Reisende	erzÃ¤hlt	wehmÃ¼tig	von	dem	schmutzigen	Hafen	Havannas.	3	50	350	NaN	0												
+Der	Camper	mag	die	Suppe	mit	der	frischen	Petersilie.	1	14	114	NA	111												
+Die	Cousine	verschenkt	die	Reifen	mit	dem	feinen	Flickzeug.	1	19	119	NA	168												
+Der	Unternehmer	bevorzugt	den	Geldanleger	mit	den	klugen	SprÃ¼chen.	1	105	1105	NA	47												
+Der	Gipfel	des	tausend	Meter	hohen	Berges	wird	beklommen.	3	99	399	NaN	0												
+Die	BÃ¤uerin	liebkost	die	Miezekatze	mit	den	rosa	Pfoten.	2	99	299	NA	107												
+Der	Staat	beliefert	die	Haushalte	mit	einem	robusten	Stromnetz.	1	87	187	VA	24	Wer wird beliefert?	Haushalte/Staat										
+Die	Amme	hÃ¤lt	das	zappelnde	Neugeborene	auf	dem	Arm.	3	33	333	NaN	0												
+Der	Rektor	der	den	Azubi	bestraft	ist	sehr	vernÃ¼nftig.	3	27	327	NaN	0	Wer wird bestraft?	Azubi/Rektor										
+Der	Ingenieur	verpackt	die	Kette	mit	dem	klebrigen	Ã–l.	1	38	138	NA	163												
+Der	Ã¼bermÃ¼tige	Kletterer	kam	bei	der	Besteigung	ums	Leben.	3	68	368	NaN	0												
+Die	SchÃ¼lerin	zeigt	die	Klausur	mit	nur	wenigen	Fehlern.	1	82	182	NA	190												
+Der	Kellner	hÃ¤lt	die	Tasse	mit	dem	heiÃŸen	Kaffee.	1	42	142	NA	93												
+Die	Kaiserin	verehrt	das	GeschÃ¶pf	mit	den	feinen	HÃ¤nden.	1	116	1116	NA	150												
+Die	Zentrale	braucht	das	Flugzeug	mit	dem	digitalen	FunkgerÃ¤t.	1	99	199	NA	53												
+Der	Staubsauger	macht	einen	riesigen	LÃ¤rm	in	der	Stube.	3	86	386	NaN	0												
+Die	MÃ¼cke	quÃ¤lt	die	Urlauberin	mit	dem	aggressiven	MÃ¼ckenspray.	2	102	2102	NA	120												
+Die	Schnecke	befÃ¼hlt	die	WÃ¼hlmaus	mit	den	wendigen	FÃ¼hlern.	2	98	298	VA	16												
+Der	Kater	kitzelt	den	SchÃ¼ler	mit	dem	weiÃŸen	Schnurrhaar.	2	11	211	VA	103												
+Die	Nichte	gratuliert	der	Patentante	mit	der	riesigen	Torte.	1	110	1110	VA	92												
+Der	GroÃŸvater	backt	die	Brezel	mit	dem	groben	Salz.	1	35	135	NA	10												
+Die	Diebin	beneidet	ihren	Komplizen	mit	der	einzigen	Pistole.	1	23	123	NA	29												
+Der	Gelehrte	steht	vor	einem	riesigen	Rad	aus	Stein.	3	70	370	NaN	0												
+Die	Fotografen	benÃ¶tigen	eine	Kamera	mit	dem	wertigen	Objektiv.	1	29	129	NA	28												
+Der	FuÃŸballer	nervt	den	Schiri	mit	der	schwarzen	Pfeife.	2	50	250	NA	116												
+Der	Roman	behandelt	die	RivalitÃ¤t	zwischen	den	zwei	BrÃ¼dern.	3	40	340	NaN	0												
+Der	Koch	mag	den	Salat	mit	den	lokalen	KrÃ¤utern.	1	44	144	NA	111												
+Der	Delphin	schikaniert	den	Badegast	mit	den	krÃ¤ftigen	Flossen.	2	100	2100	VA	128												
+Der	Krieger	trifft	den	Hirsch	mit	dem	klobigen	Gewehr.	2	8	28	VA	141												
+Der	dunkle	Friedhof	an	der	Kirche	erschien	ihr	gruselig.	3	93	393	NaN	0												
+Das	Insekt	verÃ¤ngstigt	das	Kind	mit	dem	giftigen	Stachel.	2	69	269	VA	145												
+Die	Partei	Ã¼berzeugt	eine	Untergruppe	mit	einigen	fraglichen	Argumenten.	1	67	167	VA	7	Wer hat fragliche Argumente?	Partei/Untergruppe										
+Das	FrÃ¤ulein	beschÃ¼tzt	das	Einhorn	mit	dem	leuchtenden	Horn.	2	74	274	NA	36												
+Die	Designerin	zeichnet	liebend	gern	mit	Kohle	auf	Papier.	3	81	381	NaN	0												
+Der	Verein	besitzt	ein	Komitee	mit	einer	dynamischen	Rhetorik.	1	98	198	NA	41												
+Der	Sohn	der	Nachbarn	gewinnt	den	Wettbewerb	der	Schule.	3	19	319	NaN	0	Wer gewinnt den Wettbewerb?	Sohn/Schule										
+Die	Chefin	meidet	den	Mitarbeiter	mit	der	faltbaren	Karte.	1	16	116	NA	113	Wer hat die Karte?	Mitarbeiter/Chefin										
+Der	KÃ¼chenchef	hÃ¤lt	den	Topf	mit	der	gestrigen	Suppe.	1	49	149	NA	93												
+Die	Kaiserin	ertastet	das	GeschÃ¶pf	mit	den	feinen	HÃ¤nden.	1	116	1116	VA	76												
+Die	Jagd	mit	Schusswaffen	ist	in	den	USA	erlaubt.	3	66	366	NaN	0												
+Das	Rind	attackiert	das	Publikum	mit	den	spitzen	HÃ¶rnern.	2	73	273	VA	9	Wer wird attackiert?	Publikum/Rind										
+Die	Beute	reizt	die	Krake	mit	den	flinken	Tentakeln.	2	93	293	NA	122												
+Der	Journalist	der	den	Autor	interviewt	will	viel	wissen.	3	24	324	NaN	0	Wer will viel wissen?	Journalist/Autor										
+Die	Cousine	erneuert	die	Reifen	mit	dem	feinen	Flickzeug.	1	19	119	VA	69												
+Der	Pilger	Ã¤rgert	den	Papagei	mit	dem	spitzen	Schnabel.	2	10	210	NA	2												
+Die	VerspÃ¤tung	wurde	durch	ungÃ¼nstiges	Wetter	und	Blitzeis	verursacht.	3	47	347	NaN	0												
+Der	KÃ¤ufer	erreicht	den	Kassierer	mit	dem	vollen	Wagen.	2	60	260	VA	71												
+Die	Zitronen	kosten	wenig	und	kÃ¶nnen	die	Gesundheit	schÃ¼tzen.	3	43	343	NaN	0												
+Die	kommenden	Jahre	bringen	hoffentlich	viele	neue	spannende	Abenteuer.	3	87	387	NaN	0												
+Die	Therapeutin	muss	emotionale	Reaktionen	frÃ¼hzeitig	erkennen	und	gegenwirken.	3	51	351	NaN	0												
+Die	Pflegerin	kennt	eine	Seniorin	mit	ganz	viel	Liebe.	1	69	169	NA	102												
+Der	Koch	wÃ¼rzt	den	Salat	mit	den	lokalen	KrÃ¤utern.	1	44	144	VA	186												
+Das	blonde	und	talentierte	Model	gab	mir	einen	Tipp.	3	83	383	NaN	0												
+Die	leeren	Flaschen	dienen	zur	Dekoration	auf	dem	Nachttisch.	3	3	33	NaN	0	Was dient zur Dekoration?	Flaschen/Nachttisch										
+Der	Bock	schubst	den	Wanderer	mit	dem	gekrÃ¼mmten	Horn.	2	7	27	VA	132												
+Das	Pferd	war	ein	verspÃ¤tetes	Geschenk	zum	elften	Geburtstag.	3	77	377	NaN	0												
+Das	Alibi	der	drei	Ganoven	lÃ¶st	nicht	alle	Probleme.	3	41	341	NaN	0												
+Der	PrÃ¼fer	sperrt	die	Zone	mit	dem	rot-weiÃŸen	Absperrband.	1	77	177	VA	134												
+Der	arrogante	Minister	besuchte	die	UniversitÃ¤t	in	den	Staaten.	3	96	396	NaN	0												
+Die	Forscher	finden	in	den	Proben	RÃ¼ckstÃ¤nde	giftiger	Substanzen.	3	53	353	NaN	0												
+Die	MÃ¶we	bezwingt	die	Muschel	mit	ihrer	harten	Schale.	2	97	297	NA	50												
+Der	Fan	winkt	dem	SÃ¤nger	mit	der	akustischen	Gitarre.	2	21	221	NA	188												
+Die	Zahnfee	Ã¼berrascht	die	Tochter	mit	dem	wackeligen	Zahn.	2	15	215	NA	5	Wer wird Ã¼berrascht?	Tochter/Zahnfee										
+Die	Blinde	ertastet	das	Wesen	mit	den	zarten	Fingern.	1	115	1115	VA	76												
+Die	LÃ¤nder	und	Kommunen	haben	miteinander	einige	Regelungen	vereinbart.	3	89	389	NaN	0												
+Der	Hausmeister	erschreckt	den	Greis	mit	dem	klappernden	Gebiss.	2	64	264	NA	73	Wer wird erschreckt?	Greis/Hausmeister										
+Die	Krake	reizt	die	Beute	mit	den	flinken	Tentakeln.	2	93	293	VA	122												
+Die	Kundin	verÃ¤rgert	die	Kellnerin	mit	den	unhÃ¶flichen	Manieren.	1	51	151	VA	146	Wer hat unhÃ¶fliche Manieren?	Kundin/Kellnerin										
+Die	Cousine	erneuert	den	Raumduft	mit	einem	handlichen	NachfÃ¼ller.	1	106	1106	VA	69												
+Der	Knecht	empfÃ¤ngt	den	KÃ¶nig	mit	seinem	prÃ¤chtigen	Zepter.	2	83	283	NA	59												
+Der	SÃ¤nger	begleitet	den	Violinist	mit	seiner	kostbaren	Violine.	2	82	282	NA	21												
+Der	Kassierer	erreicht	den	KÃ¤ufer	mit	dem	vollen	Wagen.	2	60	260	NA	71												
+Die	Landwirte	umfahren	die	Wiesen	mit	den	stacheligen	ZÃ¤unen.	1	54	154	NA	143												
+Der	Arzt	entdeckt	den	SÃ¤ugling	mit	einem	flauschigen	Teddy.	1	113	1113	NA	62												
+Das	Volk	vertreibt	das	MilitÃ¤r	mit	den	grÃ¤sslichen	Waffen.	2	91	291	NA	176	Wer wird vertrieben?	MilitÃ¤r/Volk										
+Der	PensionÃ¤r	animiert	den	Chor	mit	seinem	alten	KrÃ¼ckstock.	2	81	281	VA	8												
+Der	Hofnarr	erheitert	den	Kaiser	mit	der	bunten	PerÃ¼cke.	2	39	239	VA	66												
+Die	GÃ¤rtnerin	kennt	die	Dame	mit	den	weiÃŸen	Rosen.	1	31	131	NA	102	Wer hat die weiÃŸen Rosen?	Dame/GÃ¤rtnerin										

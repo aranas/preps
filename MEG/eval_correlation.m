@@ -1,4 +1,4 @@
-function [acc, dist, correct_pos, incorrect_pos] = eval_correlation(cfg,obj,testsize)
+function [acc, dist, correct_pos, incorrect_pos] = eval_correlation(cfg,obj)
 
 success = 0;
 fail    = 0;
@@ -6,16 +6,18 @@ dist    = cell(length(cfg.nfolds),1);
 incorrect_pos = {};
 correct_pos    = {};
 
-if testsize ~= size(obj.result{1},1)
-    loop = size(obj.result{1},1)/testsize;
+if ~isfield(cfg, 'testsize'), cfg.testsize = size(obj.result{1},1);  end
+
+if cfg.testsize ~= size(obj.result{1},1)
+    loop = size(obj.result{1},1)/cfg.testsize;
 else
     loop = 1;
 end
 for f = 1:cfg.nfolds
-    for l = 1:testsize:loop
+    for l = 1:cfg.testsize:loop
         
-        y_hat                = obj.result{f}(l:l+(testsize-1),:);
-        y_test               = obj.design{f}(l:l+(testsize-1),:);
+        y_hat                = obj.result{f}(l:l+(cfg.testsize-1),:);
+        y_test               = obj.design{f}(l:l+(cfg.testsize-1),:);
         
         [num,~]              = size(y_test);
         if mod(num,2)~= 0

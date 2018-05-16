@@ -3,10 +3,18 @@ function [beta_hat,y_hat,lambda_hat,lambdas,Mu,Sigma] = ridgeregression_sa(cfg,x
 cfg.nfolds = 10;
 if ~isfield(cfg, 'numlambdas'), cfg.numlambdas = 10;  end
 if isfield(cfg, 'lambda'), lambdas = cfg.lambda; end
+if ~isfield(cfg, 'constant'), cfg.constant = 0; end
 
 [m,n]                = size(y_train);
-%zscore
-[x_train, Mu, Sigma] = zscore(x_train);
+%add constant & zscore
+if cfg.constant == 1
+    x_train = [ones(size(x_train,1),1) x_train];
+    x_test  = [ones(size(x_test,1),1) x_test];
+    Mu = 0;
+    Sigma = 0;
+else
+    [x_train, Mu, Sigma] = zscore(x_train);
+end
 %pre-compute data variance
 varx                 = x_train * x_train';
 
@@ -44,5 +52,5 @@ for lambda  = 1 : length(C)
     
 end
 beta_hat =  x_train' * beta_hat;
-y_hat               = predictdata(beta_hat,Mu,Sigma,x_test);
+y_hat               = predictdata(beta_hat,Mu,Sigma,x_test,cfg);
 end

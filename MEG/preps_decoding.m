@@ -11,10 +11,10 @@ cfg             = [];
 cfg.resamplefs  = 300;
 data_res        = ft_resampledata(cfg,data);
 
-cfg                = [];
-cfg.demean         = 'yes';
-cfg.baselinewindow = [data_res.time{1}(1) data_res.time{1}(150)];
-data_res           = ft_preprocessing(cfg,data_res);
+% cfg                = [];
+% cfg.demean         = 'yes';
+% cfg.baselinewindow = [data_res.time{1}(1) data_res.time{1}(150)];
+% data_res           = ft_preprocessing(cfg,data_res);
 
 
 % %emulate random data
@@ -23,6 +23,7 @@ data_res           = ft_preprocessing(cfg,data_res);
 % end
 % 
 % data.trial = data_rand;
+
 
 %decompose matrix and only keep 60 components
 params                = [];

@@ -5,6 +5,8 @@ fail    = 0;
 dist    = cell(length(cfg.nfolds),1);
 incorrect_pos = {};
 correct_pos    = {};
+
+
 for f = 1:cfg.nfolds
     
     y_hat                = obj.result{f};
