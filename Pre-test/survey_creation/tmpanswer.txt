@@ -1,5 +1,5 @@
 <row>
-    <qid><![CDATA[184935]]></qid>
+    <qid><![CDATA[599]]></qid>
     <code><![CDATA[A1]]></code>
     <answer><![CDATA[Verb]]></answer>
     <assessment_value><![CDATA[0]]></assessment_value>
@@ -8,7 +8,7 @@
     <scale_id><![CDATA[0]]></scale_id>
    </row>
    <row>
-    <qid><![CDATA[184935]]></qid>
+    <qid><![CDATA[599]]></qid>
     <code><![CDATA[A2]]></code>
     <answer><![CDATA[Nomen]]></answer>
     <assessment_value><![CDATA[0]]></assessment_value>

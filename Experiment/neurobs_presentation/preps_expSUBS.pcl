@@ -107,52 +107,35 @@ int trigger;
 sub
 	SetupTrigger(string pair, string condition, string attachment)
 begin
-	#aiTrigger[1] = int(pair);
-	term.print(aiTrigger);
-	term.print("\n");
-	if bool(attachment.find("N")) then						#noun attached = 1xx
-		if condition == "1" then									#cond1 (different verb) = x1x
-			loop int i = 0 until i > 9								#for each word set trigger 1-9
-			begin
-				aiTrigger[i+1] = 110+i;	
-				i = i+1;
-			end;
-		elseif condition == "2" then								#cond2 (different noun order) = x2x
-			loop int i = 0 until i > 9								#for each word set trigger 1-9
-			begin
-				aiTrigger[i+1] = 120+i;	
-				i = i+1;
-			end;
-		elseif condition == "3" then								#cond3 (filler) = x3x
-			loop int i = 0 until i > 9								#for each word set trigger 1-9
-			begin
-				aiTrigger[i+1] = 130+i;	
-				i = i+1;
-			end;
-			aiTrigger[10] = 130;									#Trigger for question
+	if condition == "1" then							#cond1 (different verb) = x1x
+		trig_cond = 10;
+		if bool(attachment.find("N")) then			#noun attached = 1xx
+			trig_at = 100;
+			trig_q  = 140;
+		elseif bool(attachment.find("V")) then	 	#verb attached = 2xx
+			trig_at = 200;
+			trig_q  = 240;									#question = x40
+		end;	
+	elseif condition == "2" then						#cond2 (different noun order) = x2x
+		trig_cond = 20;
+		if bool(attachment.find("N")) then
+			trig_at = 100;
+			trig_q  = 140;
+		elseif bool(attachment.find("V")) then
+			trig_at = 200;
+			trig_q  = 240;
 		end;
-	elseif bool(attachment.find("V")) then						#verb attached = 2xx
-		if condition == "1" then									#cond1 (different verb) = x1x
-			loop int i = 0 until i > 9								#for each word set trigger 1-9
-			begin
-				aiTrigger[i+1] = 210+i;	
-				i = i+1;
-			end;
-		elseif condition == "2" then								#cond2 (different noun order) = x2x
-			loop int i = 0 until i > 9								#for each word set trigger 1-9
-			begin
-				aiTrigger[i+1] = 220+i;	
-				i = i+1;
-			end;
-		elseif condition == "3" then								#cond3 (filler) = x3x
-			loop int i = 0 until i > 9								#for each word set trigger 1-9
-			begin
-				aiTrigger[i+1] = 230+i;	
-				i = i+1;
-			end;
-			aiTrigger[10] = 230;									#Trigger for question
-		end;
+	elseif condition == "3" then						#cond3 (filler) = x3x
+		trig_cond = 30;
+		trig_at = 0;
+		trig_q  = 40;
 	end;
+	loop int i=1 until i > 9							#for each word set trigger xx1 - xx9
+	begin
+		aiTrigger[i] = trig_at + trig_cond + i;
+		i = i+1;
+	end;
+	aiTrigger[10] = trig_q;
 end;
 
 #------------------------------------------- Set up question ------------------------------------------------------------------------------
@@ -315,7 +298,7 @@ begin
 					end;
 				end;
 		end;
-		p_blink.present();	
+		p_fixation.present();	
 		wait_interval(500);	
 		
 		iTrialCount = iTrialCount + 1;
@@ -331,8 +314,6 @@ begin
 		loop iTrialCount = iTrial_id until iTrialCount > iTrialLoopStop
 		begin
 			SetupTrigger( asPairNumber[iTrialCount], asCondition[iTrialCount], asAttachment[iTrialCount]);
-			term.print(aiTrigger);
-			term.print("\n");
 			SetupTiming(asTrialInputData,iTrialCount);
 			SetupWords(iTrialCount);
 			if asQuestion[iTrialCount].count() > 0 then
@@ -344,55 +325,55 @@ begin
 			wait_interval(isi);	
 			# flash each word
 			p_word1.present();
-			#Oport.send_code(aiTrigger[1]);		
+			Oport.send_code(aiTrigger[1]);		
 			aiWordOnset[1] = clock.time();
 			wait_interval(aiTiming[1]);
 			default.present();
 			wait_interval(gap_duration);
 			p_word2.present();
-			#Oport.send_code(aiTrigger[2]);		
+			Oport.send_code(aiTrigger[2]);		
 			aiWordOnset[2] = clock.time();
 			wait_interval(aiTiming[2]);
 			default.present();
 			wait_interval(gap_duration);
 			p_word3.present();
-			#Oport.send_code(aiTrigger[3]);		
+			Oport.send_code(aiTrigger[3]);		
 			aiWordOnset[3] = clock.time();
 			wait_interval(aiTiming[3]);
 			default.present();
 			wait_interval(gap_duration);
 			p_word4.present();
-			#Oport.send_code(aiTrigger[4]);		
+			Oport.send_code(aiTrigger[4]);		
 			aiWordOnset[4] = clock.time();
 			wait_interval(aiTiming[4]);
 			default.present();
 			wait_interval(gap_duration);
 			p_word5.present();
-			#Oport.send_code(aiTrigger[5]);		
+			Oport.send_code(aiTrigger[5]);		
 			aiWordOnset[5] = clock.time();
 			wait_interval(aiTiming[5]);
 			default.present();
 			wait_interval(gap_duration);
 			p_word6.present();
-			#Oport.send_code(aiTrigger[6]);		
+			Oport.send_code(aiTrigger[6]);		
 			aiWordOnset[6] = clock.time();
 			wait_interval(aiTiming[6]);
 			default.present();
 			wait_interval(gap_duration);
 			p_word7.present();
-			#Oport.send_code(aiTrigger[7]);		
+			Oport.send_code(aiTrigger[7]);		
 			aiWordOnset[7] = clock.time();
 			wait_interval(aiTiming[7]);
 			default.present();
 			wait_interval(gap_duration);
 			p_word8.present();
-			#Oport.send_code(aiTrigger[8]);		
+			Oport.send_code(aiTrigger[8]);		
 			aiWordOnset[8] = clock.time();
 			wait_interval(aiTiming[8]);
 			default.present();
 			wait_interval(gap_duration);
 			p_word9.present();
-			#Oport.send_code(aiTrigger[9]);		
+			Oport.send_code(aiTrigger[9]);		
 			aiWordOnset[9] = clock.time();
 			wait_interval(aiTiming[9]);
 			default.present();
@@ -401,7 +382,7 @@ begin
 			#-------------------- present question -------------
 			if asQuestion[iTrialCount].count() > 0 then
 				p_question.present();
-				#Oport.send_code(aiTrigger[10]);	
+				Oport.send_code(aiTrigger[10]);	
 				loop #loops during response time window
 					iCountOld = response_manager.total_response_count();
 					until (response_manager.total_response_count() > iCountOld) 
@@ -415,7 +396,7 @@ begin
 						end;
 					end;
 			end;
-			p_blink.present();	
+			p_fixation.present();	
 			wait_interval(500);
 			WriteTrialToOutputFile(s_OutFile);
 	
@@ -430,6 +411,7 @@ begin
 		block = block + 1;	
 		iTrial_id = iTrialLoopStop + 1;
 		iTrialLoopStop = iTrialLoopStop + iTrialsPerBlock;
+		WaitForExperimenterButtonpress();
 		WaitForAllButtonpress();
 	end;
 end;

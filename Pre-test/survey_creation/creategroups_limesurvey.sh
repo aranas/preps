@@ -25,7 +25,6 @@ while read line
 	echo $count
 		q=$(echo $line | awk '{print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}') 
 		code=$(echo $line | awk '{print $12$13}')
-		pcode=$(echo $line | awk '{print "P"$12$13}')		
 		if [ $count -eq $pausepoint ]
 		then
 			cat template_pause.txt | sed -e "s:enterquestionidhere:$qid:;s:enterquestionorderhere:$qord:" > tmppause.txt	
@@ -35,7 +34,7 @@ while read line
 			qord=$(($qord+1))
 		echo $count
 		fi 
-		cat template_question.txt | sed -e "s:enterquestionidhere:$qid:;s:entercodehere:$code:;s:enterquestionhere:$q:;s:enterquestionorderhere:$qord:;s:enterquestion2idhere:$(($qid+1)):;s:enterquestionorder2here:$(($qord+1)):;s:enterpcodehere:$pcode:" > tmpquestion.txt
+		cat template_question.txt | sed -e "s:enterquestionidhere:$qid:;s:entercodehere:$code:;s:enterquestionhere:$q:;s:enterquestionorderhere:$qord:" > tmpquestion.txt
 		cat template_answer.txt | sed -e "s:enterquestionidhere:$qid:" > tmpanswer.txt
 		cat template_attribute.txt | sed -e "s:enterquestionidhere:$qid:" > tmpattribute.txt
 		awk '/enterquestioncodehere/{while(getline line<"tmpquestion.txt"){print line}} //' template_group.lsg > tmp

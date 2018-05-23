@@ -52,9 +52,8 @@ picture {
 	text {caption =
 "Die Sätze werden Ihnen Wort für Wort auf dem Bildschirm präsentiert. Vor jedem Satz erscheint ein Kreuz,
 fixieren Sie dieses bitte. 
-Wenn möglich, sollten Sie nicht blinzeln während die Sätze präsentiert werden.
-Nach jedem Satz erscheint ein grünes Kreuz. Wenn das grüne Kreuz erscheint, können Sie blinzeln. 
-Wechselt das Kreuz zu weiss, dann beginnt in Kürze der nächste Satz. Blinzeln Sie nun bitte nicht mehr!
+Wenn möglich, sollten Sie nicht direkt nach dem letzten Wort eine Satzes blinzeln.
+Warten Sie bis sie das Kreuz erscheint und blinzeln dann.
 
 
 Bitte drücken Sie einen der Knöpfe um fortzufahren"; font_size = 25; } t_instruction3;
@@ -64,7 +63,9 @@ Bitte drücken Sie einen der Knöpfe um fortzufahren"; font_size = 25; } t_instr
 picture {
 	text {caption =
 "Nach einem Satz wird ab und an eine inhaltliche Frage gestellt. Mit der Frage werden Ihnen zwei mögliche Antworten präsentiert.
-Drücken Sie auf den linken Knopf, um die linke Antwort auszuwählen und auf den rechten Knopf, um die rechte Antwort auszuwählen. Bitte benutzen Sie
+Drücken Sie auf den linken Knopf, um die linke Antwort auszuwählen.
+Drücken Sie auf den rechten Knopf, um die rechte Antwort auszuwählen.
+Bitte benutzen Sie
 dafür den Zeigefinger der jeweiligen Hand.
 
 Wir beginnen nun mit einigen Übungsversuchen. 

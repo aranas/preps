@@ -1,8 +1,8 @@
 # PCL program
 int inittime = clock.time();
 ############# INITIATION ###########
-#output_port Oport = output_port_manager.get_port(1);
-#Oport.send_code(1);
+output_port Oport = output_port_manager.get_port(1);
+Oport.send_code(1);
 
 include "preps_expVARS.pcl";		# Include all the variables.
 include "preps_expSUBS.pcl";		# Include all the subroutines.
@@ -16,7 +16,7 @@ s_StimFile		= sKeyboardInput + ".txt";
 InitiateOutputFile(s_OutFile);
 
 ########### LOAD STIMULI ###########
-#LoadStimuli("practice.txt",iTotalAmountOfPracticeTrials);
+LoadStimuli("practice.txt",iTotalAmountOfPracticeTrials);
 ######### SHOW INSTRUCTIONS ########
 p_instruction1.present();
 WaitForAllButtonpress();
@@ -27,7 +27,7 @@ WaitForAllButtonpress();
 p_instruction4.present();
 WaitForAllButtonpress();
 ########## PRACTICE TASK ###########
-#ShowPractice();
+ShowPractice();
 ########### LOAD STIMULI ###########
 LoadStimuli(s_StimFile,iTotalAmountOfTrials);
 ######### SHOW INSTRUCTIONS ########

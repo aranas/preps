@@ -1,7 +1,10 @@
 # --------------------- VARIABLES INITIATION ----------------------------
 int 	gap_duration 				= 200;					#duration between words
-int 	blank_after_last_word 	= 500; 	#duration of pause after last word in sentence
+int 	blank_after_last_word 	= 2000; 	#duration of pause after last word in sentence
 int 	iPPnr;
+int   trig_cond;
+int   trig_at;
+int   trig_q;
 
 string sKeyboardInput;
 string s_StimFile;
