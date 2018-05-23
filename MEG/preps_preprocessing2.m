@@ -112,7 +112,7 @@ trigger(8,:)        = [130,131,132,133,134,135,136,137,138]; %last word of fille
 
 %% filter & save each selection to separate file
 
-for i = 7:size(trigger,2)
+for i = 1:size(trigger,1)
     
     ind             = ismember(data.trialinfo(:,1),trigger(i,:));
     
