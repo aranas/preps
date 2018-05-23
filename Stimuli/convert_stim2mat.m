@@ -61,7 +61,8 @@ pretest = textscan(fid,format,'Headerlines',1,'Delimiter','\t');
 ind_VA = find(strcmp('VA',pretest{1}));
 ind_NA = find(strcmp('NA',pretest{1}));
 
-
+%fix some acc/plaus values are missing, need to be extracted from R
+%notebook
 for i = 1:length(stimuli)
     if strcmp('VA',stimuli(i).attachment);
         ind             = ind_VA(strcmp(strrep(stimuli(i).words(9).word,'.',''),pretest{3}(ind_VA)));
@@ -71,10 +72,14 @@ for i = 1:length(stimuli)
     if length(ind) > 1;
         ind = ind(strcmp(strrep(stimuli(i).words(8).word,'.',''),pretest{2}(ind)));
     end
-    stimuli(i).acc  = pretest{3}(ind);
-    stimuli(i).plaus = pretest{4}(ind);
+    stimuli(i).acc  = pretest{4}(ind);
+    stimuli(i).plaus = pretest{5}(ind);
+end
+
+for i = 1:length(stimuli)
+stimuli(i).words(9).word = strrep(stimuli(i).words(9).word,'.','');
 end
 
 
 %save as matfile
-save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.m','stimuli')
+save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat','stimuli')
