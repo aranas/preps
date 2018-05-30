@@ -18,6 +18,7 @@ for i = 1:size(stimuli_file{1},1)%each sentence
         tmp = [tmp ' ' x{1}];
         end
     end
+    id{i}         = i;
     sentences{i}  = {tmp};
     condition{i}  = stimuli_file{10}(i);
     pair_num{i}   = stimuli_file{11}(i);
@@ -27,9 +28,9 @@ for i = 1:size(stimuli_file{1},1)%each sentence
     answers{i}    = stimuli_file{16}(i);
 end
 
-stimuli = [sentences; condition; pair_num; attachment; verb_num; question; answers];
+stimuli = [id; sentences; condition; pair_num; attachment; verb_num; question; answers];
 
-rowHeadings = {'sent_string', 'condition', 'pair_num','attachment' ...
+rowHeadings = {'id','sent_string', 'condition', 'pair_num','attachment' ...
    'verb_num', 'question','answers'};
 
 stimuli = cell2struct(stimuli, rowHeadings,1);
