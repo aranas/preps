@@ -164,6 +164,18 @@ rowHeadings          = {'Subject','Trial','Word','Condition','PairNum'...
     'VerbNum','Attachment','Time','Duration'};
 logtxt               = cell2struct(logtxt,rowHeadings,2);
 
+%correct erroneous trigger from trl file
+if logtxt.Subject(1)==3
+    trl(2442,:) = [];
+% elseif logtxt.Subject(1)==6
+%     trl(2351,:) = [];
+elseif logtxt.Subject(1)==9
+    trl(2089,:) = [];
+elseif logtxt.Subject(1)==10
+    trl([1033 2344],:) = [];
+end
+
+
 if size(logtxt.Word,1) ~= size(trl,1)
     warning('logfile does not correspond to trigger numbers!!!')
 end
