@@ -2,8 +2,11 @@ clear all
 clc
 
 %% Specify variables
-if ~exist('subj',        'var'), subj         = 'pilot-005';  end
+if ~exist('subj',        'var'), subj         = 'sub-009';  end
 if ~exist('trigger',     'var'), trigger      = [140,240,40,31:39,110:119,120:129,210:219,220:229];  end
+if strcmp(subj,'pilot-002')
+    trigger = [130:139,110:119,120:129,210:219,220:229];
+end
 if ~exist('trigger_last','var'), trigger_last = [119,129,219,229];  end
 if ~exist('root_dir',    'var'), root_dir     = '/project/3011210.01/';  end
 
@@ -12,7 +15,7 @@ file                    = dir(strcat('/project/3011210.01/raw/',subj,'/ses-meg01
 
 cfg                     = [];
 cfg.dataset             = strcat(root_dir,'raw/',subj,'/ses-meg01/meg/',file(3).name);
-cfg.logfile             = strcat(root_dir,'logfiles/',subj, '_log.txt');
+cfg.logfile             = strcat(root_dir,'raw/',subj,'/ses-meg01/beh/',subj, '_log.txt');
 cfg.trialdef.prestim    = 0.2;
 cfg.trialdef.poststim   = 2.8;
 cfg.trialdef.eventtype  = 'UPPT001';
@@ -33,7 +36,7 @@ new_cfg.padding         = 10;
 data                    = ft_preprocessing(new_cfg);
 
 % redefine to keep longer time windows only for sentence-final words
-ind_lastword            = find(ismember(data.trialinfo,trigger_last));
+ind_lastword            = find(ismember(data.trialinfo(:,1),trigger_last));
 toi                     = repmat([data.time{1}(1) 0.8],length(data.trial),1);
 toi(ind_lastword,:)     = repmat([data.time{1}(1) data.time{1}(end)],length(ind_lastword),1);
 
@@ -43,12 +46,15 @@ cfg.trials              = 'all';
 data                    = ft_redefinetrial(cfg,data);
 
 % Inspect muscle artifacts to get feel for how noisy data is
+data.trialinfo(:,3)     = 1:length(data.trialinfo); %add numbering to trials
 cfg                     = [];
+cfg.channel             = 'MEG';
 cfg.preproc.hpfilter    = 'yes';
-cfg.preproc.hpfreq      = 100;
+cfg.preproc.hpfreq      = 200;
 tmp_data_muscle         = ft_rejectvisual(cfg, data);
 
-
+artfct                  = setdiff(data.trialinfo(:,3),tmp_data_muscle.trialinfo(:,3));
+noisy_trials            = data.trialinfo(artfct,:);
 %% compute ICA on data to remove ECG/EOG artifacts
 %downsampling data to 300 Hz for ICA analysis
 
@@ -143,4 +149,5 @@ cfg.baselinewindow  = [-inf 0];
 data                = ft_preprocessing(cfg, data);
 
 
-save(strcat(root_dir,'MEG/',subj,'_dataclean'),'data','compds','badcomp','-v7.3')
+save(strcat(root_dir,'MEG/',subj,'_dataclean'),'data','compds','badcomp','noisy_trials','-v7.3')
+%missing = [ 16 65 163 199 212   234   266   338   361   366];
