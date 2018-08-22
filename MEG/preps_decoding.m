@@ -7,15 +7,17 @@
 %% Default parameters
 if ~exist('subj',        'var'), subj         = 'pilot-005';                end
 if ~exist('root_dir',    'var'), root_dir     = '/project/3011210.01/MEG/'; end
+if ~exist('save_dir',    'var'), save_dir     = '/project/3011210.01/MEG/Classification'; end
 if ~exist('classes',     'var'), classes      = {'ART', 'NN'};              end
 if ~exist('classifier',  'var'), classifier   = 'preps_naivebayes';         end
 if ~exist('timestep',    'var'), timestep     = 0.1;                        end
-if ~exist('repeats',     'var'), repeats      = 50;                         end
+if ~exist('repeats',     'var'), repeats      = 100;                        end
 if ~exist('folds',       'var'), folds        = 20;                         end
-if ~exist('numfeat',     'var'), folds        = 250;                        end
+if ~exist('numfeat',     'var'), numfeat      = 250;                        end
 if ~exist('dopca',       'var'), dopca        = true;                       end
+if ~exist('donormal',    'var'), donormal     = true;                       end
 if ~exist('doshuffle',   'var'), doshuffle    = true;                       end
-if ~exist('doqsub',      'var'), doqsub       = true;                       end
+
 
 pos = {'ART','NN','VVFIN','ADJA','APPR','NA','VA','Fill'};
 trigger = {[111,114,121,124,211,214,221,224], %Determiner
@@ -25,7 +27,7 @@ trigger = {[111,114,121,124,211,214,221,224], %Determiner
     [116,126,216,226],                        %Preposition
     [219,229],                                %last word Noun attached
     [119,129],                                %last word Verb attached
-    [30:39]};                                 %all words in filler sentences  
+    [30:39]};                                 %all words in filler sentences
 if strcmp(subj,'pilot-002')
     warning('need to adjust trigger info')
 end
@@ -42,7 +44,17 @@ for c = 1:length(classes)
     datasel{c}      = ft_selectdata(cfg,data);
 end
 datasel = ft_appenddata([],datasel{:});
-labels  = horzcat(labels{:});
+labels  = horzcat(labels{:})';
+%check if equal amount of samples per class, if not resample
+if ~exist('do_resample', 'var')
+    if length(unique(sum(labels==labels'))) ~= 1
+        do_resample = 1;
+    else
+        do_resample = 0;
+    end
+end
+
+
 %% prepare data
 %decompose matrix and only keep 60 components
 if dopca
@@ -51,12 +63,12 @@ if dopca
     cfg.scale             =  0;
     cfg.method            = 'pca';
     cfg.numcomponent      = 60;
-    data_comp             = ft_componentanalysis(cfg, datasel);
+    datasel             = ft_componentanalysis(cfg, datasel);
 end
 
 cfg                   = [];
 cfg.keeptrials        = 'yes';
-avg_data              = ft_timelockanalysis(cfg,data_comp);
+avg_data              = ft_timelockanalysis(cfg,datasel);
 
 %% Configuration
 cfg                   = [];
@@ -65,52 +77,55 @@ cfg.mva               = classifier;
 cfg.statistic         = {'accuracy'};
 cfg.type              = 'nfold'; %'bloo' only with evenly distributed classes
 cfg.nfolds            = folds;
-cfg.resample          = 1;% default: false; resampling for 'loo' retuns zero
-cfg.design            = labels;
+cfg.resample          = do_resample;% default: false; resampling for 'loo' retuns zero
 cfg.poolsigma         = 0;
-%cfg.max_smp           = 0;
-cfg.numfeat           = 250; 
-%cfg.randomseed        = 5;
+cfg.numfeat           = numfeat;
 
 %% Loop over time & repeat
 %
-tsteps                = [timestep:timestep:avg_data.time(end)];
-jobid                 = cell(length(tsteps),repeat);
-acc                   = zeros(length(tsteps),repeat);
+tsteps                = [avg_data.time(1)+timestep:timestep:avg_data.time(end)];
+jobid                 = cell(length(tsteps),repeats);
+acc                   = zeros(length(tsteps),repeats);
+accshuf               = zeros(length(tsteps),repeats);
 
 for  t = 1:length(tsteps)
-      cfgt            = [];
-      cfgt.latency    = [tsteps(t)-timestep tsteps(t)];
-      datatmp         = ft_selectdata(cfgt,avg_data);
-      
-  for rep = 1:repeats
-    out             = ft_timelockstatistics(cfg,datatmp);
-    %permute labels
-    indx_1            = find(labels==1);
-    indx_2            = find(labels==2);
-    indx_1            = indx_1(randperm(size(indx_1,1)));
-    indx_2            = indx_2(randperm(size(indx_2,1)));
-
-    labels_perm       = labels;
-    labels_perm(indx_1(1:(length(indx_1)/2))) = 2;
-    labels_perm(indx_2(1:(length(indx_2)/2))) = 1;
-    cfg.design        = labels_perm;
-%    
-
-    if doqsub
-    jobid{t,rep}      = qsubfeval('ft_timelockstatistics',cfg,datatmp,'memreq',1024^3,'timreq',100,'batchid',strcat('naive_',int2str(t),'_',int2str(rep)));
-    else
-    end
-  %collect results for each time slice to avoid memory problems
-  for rep2 = 20:50
-        argout          = qsubget(jobid{t,rep2},'timeout',360);
-        acc(t,rep2)     = argout.statistic.accuracy;
-        if cfg.max_smp > 0
-            trainacc(t,rep2) = argout.trainacc.statistic.accuracy;
+    cfgt            = [];
+    cfgt.latency    = [tsteps(t)-timestep tsteps(t)];
+    datatmp         = ft_selectdata(cfgt,avg_data);
+    rng('default'); % ensure same 'random' behaviour for each time slice.    
+    for rep = 1:repeats
+        if donormal
+            cfg.design        = labels;
+            out               = ft_timelockstatistics(cfg,datatmp);
+            acc(t,rep)        = out.statistic.accuracy;
         end
-  end
+        if doshuffle
+            %permute labels
+            indx_1            = find(labels==1);
+            indx_2            = find(labels==2);
+            indx_1            = indx_1(randperm(size(indx_1,1)));
+            indx_2            = indx_2(randperm(size(indx_2,1)));
+            
+            labels_perm       = labels;
+            labels_perm(indx_1(1:(length(indx_1)/2))) = 2;
+            labels_perm(indx_2(1:(length(indx_2)/2))) = 1;
+            cfg.design        = labels_perm;
+            
+            outshuf           = ft_timelockstatistics(cfg,datatmp);
+            accshuf(t,rep)    = outshuf.statistic.accuracy;
+        end
+    end
 end
-toc
+%%save results to file including timesteps
+cfg.timeinfo = tsteps;
+if donormal
+    filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s',subj,folds,numfeat,horzcat(classes{:})));
+    save(filename, 'acc','cfg');
+end
+if doshuffle
+    filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s_shuf',subj,folds,numfeat,horzcat(classes{:})));
+    save(filename, 'accshuf','cfg');
+end
 
 
 
