@@ -54,6 +54,7 @@ for i = 1:size(stimuli_file{1},1)%each sentence
 end
 clear tmp
 
+
 %%  add info from pre-test (added on May 14th 2018)
 fid = fopen('/project/3011210.01/Presentation/Stimuli/pretest_values_per_item.txt');
 format = ['%s %s %s %f %f','%*[^\n]']; %attachment, penultimate word(adj), final noun, accuracy & plausibility ratings across 20 pre-test subjects
@@ -84,3 +85,63 @@ end
 
 %save as matfile
 save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat','stimuli')
+
+%% add frequency & co-occurrence info (added August 2018) based largely on wiki corpora
+load('home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat')
+%load lemmas and add to stimulus mat
+fid = fopen('/project/3011210.01/Presentation/Stimuli/lemma_stimlist.txt');
+format = ['%s %u %*[^\n]']; 
+lemmas = textscan(fid,format,'Delimiter','.');
+for i = 1:length(lemmas{1})
+    ind = lemmas{2}(i);
+    sent = strsplit(lemmas{1}{i});
+    for w = 1:9
+        stimuli(ind).words(w).lemma = {sent{w}};
+    end
+end
+fclose(fid)
+%load coocurrences
+fid = fopen('/project/3011210.01/semanticP600/corrected_csvfiles/final_cooccurrences_correct.csv');
+tLines = fgets(fid);
+numCols = numel(strfind(tLines,','));
+format = ['%s' repmat('%u', [1 numCols]),'%*[^\n]']; 
+cooc = textscan(fid,format,'Delimiter',',');
+vocab = cooc{1};
+cooc  = cell2mat(cooc(2:end));
+fclose(fid);
+%load frequencies
+fid = fopen('/project/3011210.01/semanticP600/wiki_sdewac_corpus_data/uniquestimuliwords_addedfrequency.txt');
+format = ['%*s %u %*[^\n]']; 
+freqs = textscan(fid,format,'Delimiter',' ');
+freqs = freqs{1};
+fclose(fid);
+
+%for each sentence find corresponding freq and cooccurrence
+for i = 1:length(stimuli)
+    if stimuli(i).condition ~=3 %ignore fillers
+    tmpcooc = zeros(9);
+    tmpfreqs= zeros(1,9);
+    for nword = 1:9
+        tmp = find(strcmpi(stimuli(i).words(nword).lemma{1},vocab));
+        if ~isempty(tmp)
+            indword(nword) = tmp;
+        end
+    end
+    whichwords = find(indword);
+    tmpcooc(whichwords,whichwords) = cooc([indword(whichwords)],[indword(whichwords)]);
+    stimuli(i).cooc = tmpcooc;
+    %use freq values on diagonal instead of cooc
+    tmpfreqs(whichwords) = freqs(indword(whichwords));
+    tmpcooc = tmpcooc - diag(diag(tmpcooc)); 
+    tmpcooc = tmpcooc + diag(tmpfreqs);
+    end
+end
+
+save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat','stimuli')
+
+
+
+
+
+
+
