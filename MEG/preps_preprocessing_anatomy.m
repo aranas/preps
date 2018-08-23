@@ -29,7 +29,7 @@ end
 
 if do_freesurfer
     
-    for i = 6:numel(subjects)
+    for i = 1:numel(subjects)
         
         subject = sprintf('sub-%0.3d',i);
         

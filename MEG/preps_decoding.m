@@ -4,24 +4,7 @@
 % {dml.standardizer dml.svm};
 % {dml.standardizer dml.blogreg};
 
-%% Default parameters
-
-if ~exist('subj',        'var'), subj         = 'pilot-005';                end
-if ~exist('root_dir',    'var'), root_dir     = '/project/3011210.01/MEG/'; end
-if ~exist('save_dir',    'var'), save_dir     = '/project/3011210.01/MEG/Classification'; end
-if ~exist('classes',     'var'), classes      = {'ART', 'NN'};              end
-if ~exist('classifier',  'var'), classifier   = 'preps_naivebayes';         end
-if ~exist('timestep',    'var'), timestep     = 0.1;                        end
-if ~exist('repeats',     'var'), repeats      = 100;                        end
-if ~exist('folds',       'var'), folds        = 20;                         end
-if ~exist('numfeat',     'var'), numfeat      = 250;                        end
-if ~exist('dopca',       'var'), dopca        = true;                       end
-if ~exist('donormal',    'var'), donormal     = true;                       end
-if ~exist('doshuffle',   'var'), doshuffle    = false;                      end
-if ~exist('compute_lc',  'var'), compute_lc   = false;                      end
-if ~exist('compute_acc', 'var'), compute_acc  = false;                      end
-
-
+%% Set variables
 pos = {'ART','NN','VVFIN','ADJA','APPR','NA','VA','Fill'};
 trigger = {[111,114,121,124,211,214,221,224], %Determiner
     [112,115,122,125,212,215,222,225],        %Nouns
@@ -31,8 +14,44 @@ trigger = {[111,114,121,124,211,214,221,224], %Determiner
     [219,229],                                %last word Noun attached
     [119,129],                                %last word Verb attached
     [30:39]};                                 %all words in filler sentences
+%parameters
+if ~exist('subj',        'var'), subj         = 'pilot-005';                end
+if ~exist('root_dir',    'var'), root_dir     = '/project/3011210.01/MEG/'; end
+if ~exist('save_dir',    'var'), save_dir     = '/project/3011210.01/MEG/Classification'; end
+if ~exist('classes',     'var'), classes      = {'ART', 'NN'};              end
+if ~exist('classifier',  'var'), classifier   = 'preps_naivebayes';         end
+if ~exist('timestep',    'var'), timestep     = 0.1;                        end
+if ~exist('repeats',     'var'), repeats      = 100;                        end
+if ~exist('folds',       'var'), folds        = 20;                         end
+if ~exist('numfeat',     'var'), numfeat      = 250;                        end
+
+%options to execute
+if ~exist('dopca',       'var'), dopca        = true;                       end
+if ~exist('donormal',    'var'), donormal     = true;                       end
+if ~exist('doshuffle',   'var'), doshuffle    = false;                      end
+if ~exist('compute_lc',  'var'), compute_lc   = false;                      end
+if ~exist('compute_acc', 'var'), compute_acc  = false;                      end
+if ~exist('dogeneral',   'var'), dogeneral    = false;                      end
+
 if strcmp(subj,'pilot-002')
     warning('need to adjust trigger info')
+end
+%find which trigger number belongs to specified class;
+for c = 1:length(classes)
+    trig{c} = trigger{strcmp(pos,classes{c})};
+end
+trig = horzcat(trig{:});
+
+if dogeneral
+    if ~exist('trainwindow','var'), trainwindow  = [0.3 0.4];               end
+    if ~exist('testtrig',   'var'), testtrig     = horzcat(trigger{6:7});   end
+    fprintf(strcat('generalising to events ',repmat(' %d',size(testtrig)),'\n'),testtrig)
+    
+    if ~any(ismember(testtrig,trig)) && ~exist('testlabel','var')
+        error('labels for test samples need to be specified')
+    else
+        fprintf(strcat('labeling events as ',repmat(' %d',size(testlabel)),'\n'),testlabel)
+    end
 end
 %% Load & select data
 load(strcat(root_dir,subj,'_dataclean.mat'))
@@ -40,6 +59,7 @@ clear badcomp compds
 
 for c = 1:length(classes)
     indsel          = ismember(data.trialinfo(:,1),trigger{strcmp(pos,classes{c})});
+    if dogeneral, indsel = indsel | ismember(data.trialinfo(:,1),testtrig(testlabel==c));end
     fprintf('selecting %d samples for class %d\n',sum(indsel),c)
     labels{c}       = ones(1,sum(indsel))*c;
     cfg             = [];
@@ -71,6 +91,7 @@ end
 
 cfg                   = [];
 cfg.keeptrials        = 'yes';
+cfg.vartrllength      = 1;
 avg_data              = ft_timelockanalysis(cfg,datasel);
 
 %% Configuration
@@ -101,7 +122,6 @@ if compute_acc
         rng('default'); % ensure same 'random' behaviour for each time slice.
         for rep = 1:repeats
             if donormal
-                cfg.design        = labels;
                 out               = ft_timelockstatistics(cfg,datatmp);
                 acc(t,rep)   = out.statistic.accuracy;
             end
@@ -115,9 +135,10 @@ if compute_acc
                 labels_perm       = labels;
                 labels_perm(indx_1(1:(length(indx_1)/2))) = 2;
                 labels_perm(indx_2(1:(length(indx_2)/2))) = 1;
-                cfg.design        = labels_perm;
+                cfgtmp            = cfg;
+                cfgtmp.design     = labels_perm;
                 
-                outshuf           = ft_timelockstatistics(cfg,datatmp);
+                outshuf           = ft_timelockstatistics(cfgtmp,datatmp);
                 accshuf(t,rep)    = outshuf.statistic.accuracy;
             end
         end
@@ -164,5 +185,77 @@ if compute_lc
     filename = fullfile(save_dir, subj, sprintf('classlc_%s_%dfolds_%dfeats_%s',subj,folds,numfeat,horzcat(classes{:})));
     save(filename, 'acctest','acctrain','cfg');
 end
+
+%% If do generalize over time
+if dogeneral
+    
+    %remember order of trials for appenddata
+    avg_data.trialinfo(:,end+1) = [1:length(avg_data.trialinfo)]';
+    %select time window to be trained on
+    cfgt             = [];
+    cfgt.trials       = ~ismember(avg_data.trialinfo(:,1),testtrig);
+    cfgt.latency     = trainwindow;
+    data_train       = ft_selectdata(cfgt,avg_data);
+    
+    for t = 1:length(tsteps) % for each time window to be tested on
+        cfgt              = [];
+        cfgt.trials       = ismember(avg_data.trialinfo(:,1),testtrig);
+        cfgt.latency      = [tsteps(t)-timestep tsteps(t)];
+        data_test        = ft_selectdata(cfgt,avg_data);
+        data_test.time   = data_train.time;
+        
+        cfgt              = [];
+        datatmp           = ft_appenddata(cfgt,data_train,data_test);
+        %recover original trial order
+        [~,idx]           = sort(datatmp.trialinfo(:,end));
+        datatmp.trial     = datatmp.trial(idx);
+        datatmp.trialinfo = datatmp.trialinfo(idx,:);
+        %set parameters
+        cfgtmp            = cfg;
+        cfgtmp.type       = 'split';
+        cfgtmp.max_smp    = sum(~ismember(datatmp.trialinfo(:,1),testtrig));
+        cfgtmp.testfolds  = {find(ismember(datatmp.trialinfo(:,1),testtrig))};
+        
+        if donormal
+            out             = ft_timelockstatistics(cfgtmp,datatmp);
+            acc(t)      = out.statistic.accuracy;
+            acctrain(t) = out.trainacc.statistic.accuracy;
+        end
+        if doshuffle
+            parfor rep = 1:repeats
+                indx_1            = find(labels==1);
+                indx_2            = find(labels==2);
+                indx_1            = indx_1(randperm(size(indx_1,1)));
+                indx_2            = indx_2(randperm(size(indx_2,1)));
+                
+                labels_perm       = labels;
+                labels_perm(indx_1(1:(length(indx_1)/2))) = 2;
+                labels_perm(indx_2(1:(length(indx_2)/2))) = 1;
+                cfginner            = cfgtmp;
+                cfginner.design     = labels_perm;
+                
+                outshuf             = ft_timelockstatistics(cfginner,datatmp);
+                accshuf(t,rep)      = outshuf.statistic.accuracy;
+                accshuftrain(t,rep) = outshuf.trainacc.statistic.accuracy;
+            end
+        end
+    end
+%%save results to file including timesteps
+    cfgtmp.timeinfo    = tsteps;
+    cfgtmp.trainwindow = trainwindow;
+    cfgtmp.testtrigger = testtrig;
+    cfgtmp.testlabel   = testlabel;
+    prev = datatmp.cfg.previous;
+    testpos = pos(cellfun(@(x) any(ismember(x,testtrig)),trigger));
+    if donormal
+        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:})));
+        save(filename, 'acc','acctrain','cfgtmp','prev');
+    end
+    if doshuffle
+        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s_shuf',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:})));
+        save(filename, 'accshuf','accshuftrain','cfgtmp','prev');
+    end
+end
+
 
 
