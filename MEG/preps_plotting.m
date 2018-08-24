@@ -1,14 +1,27 @@
 %% This script plots classification accuracy and saves figure as png
 
 %% Default parameters
-if ~exist('subj',        'var'), subj         = 'pilot-005';                end
-if ~exist('root_dir',    'var'), root_dir     = '/project/3011210.01/MEG/'; end
-if ~exist('save_dir',    'var'), save_dir     = '/project/3011210.01/MEG/Classification'; end
-if ~exist('classes',     'var'), classes      = {'ART', 'NN'};              end
-if ~exist('classifier',  'var'), classifier   = 'preps_naivebayes';         end
-if ~exist('folds',       'var'), folds        = 20;                         end
-if ~exist('numfeat',     'var'), numfeat      = 250;                        end
+if ~exist('subj',           'var'), subj         = 'pilot-005';                               end
+if ~exist('root_dir',       'var'), root_dir     = '/project/3011210.01/MEG/';                end
+if ~exist('save_dir',       'var'), save_dir     = '/project/3011210.01/MEG/Classification';  end
+if ~exist('classes',        'var'), classes      = {'ART', 'NN'};                             end
+if ~exist('classifier',     'var'), classifier   = 'preps_naivebayes';                        end
+if ~exist('folds',          'var'), folds        = 20;                                        end
+if ~exist('numfeat',        'var'), numfeat      = 250;                                       end
+if ~exist('do_plotacc',     'var'), do_plotacc   = true;                                      end
+if ~exist('do_plotgeneral', 'var'), do_plotacc   = true;                                      end
 
+pos = {'ART','NN','VVFIN','ADJA','APPR','NA','VA','Fill'};
+trigger = {[111,114,121,124,211,214,221,224], %Determiner
+    [112,115,122,125,212,215,222,225],        %Nouns
+    [113,123,213,223],                        %Verbs
+    [118,128,218,228],                        %Adjectives
+    [116,126,216,226],                        %Preposition
+    [219,229],                                %last word Noun attached
+    [119,129],                                %last word Verb attached
+    [30:39]};                                 %all words in filler sentences
+%% plot classification accuracy
+if do_plotacc
 filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s',subj,folds,numfeat,horzcat(classes{:})));
 
 load(filename)
@@ -42,3 +55,33 @@ end
 fname = sprintf('%s/%s/classacc_%s_%dfolds_%dfeats_%s',save_dir,subj,subj,folds,numfeat,horzcat(classes{:}));
 export_fig(fname,'-png');
 clf;
+end
+
+%% plot general classification accuracy 
+if do_plotgeneral
+    if ~exist('trainwindow','var'), trainwindow  = [0.3 0.4];               end
+    if ~exist('testtrig',   'var'), testtrig     = horzcat(trigger{6:7});   end
+
+    testpos = pos(cellfun(@(x) any(ismember(x,testtrig)),trigger));
+    filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:})));
+    load(filename)
+    load(strcat(filename,'_shuf'))
+    
+    figure()
+    h1 = plot(cfgtmp.timeinfo-0.05,accshuf,'color',[0,0,0]+0.5,'linewidt',4);
+    hold on
+    h2 = plot(cfgtmp.timeinfo-0.05,acc,'color','g','linewidt',4);
+    xlabel('time in s (center of 100ms time slice)')
+    ylabel('classification accuracy')
+    title(sprintf('classifier: %s - classes %s generalized to %s - %s',classifier, horzcat(classes{:}),horzcat(testpos{:}),subj))
+    classstr = sprintf('%s vs. %s',classes{1},classes{2});
+    legend([h1(1) h2],{'permuted',classstr}')
+    set(gca,'FontSize',25)
+    set(gca,'LineWidth',4)
+
+    fname = sprintf('%s/%s/classgeneral_%s_%dfolds_%dfeats_%sto%s',save_dir,subj,subj,folds,numfeat,horzcat(classes{:}),horzcat(testpos{:}));
+    export_fig(fname,'-png');
+    clf;
+end
+
+
