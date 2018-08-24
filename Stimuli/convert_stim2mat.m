@@ -56,26 +56,28 @@ clear tmp
 
 
 %%  add info from pre-test (added on May 14th 2018)
-fid = fopen('/project/3011210.01/Presentation/Stimuli/pretest_values_per_item.txt');
-format = ['%s %s %s %f %f','%*[^\n]']; %attachment, penultimate word(adj), final noun, accuracy & plausibility ratings across 20 pre-test subjects
+fid = fopen('/project/3011210.01/Presentation/Stimuli/preps_pretest_results.txt');
+format = [strcat('%*u %*s %*u %*u %*u',repmat('%s ',1,10),'%*u %*u %f %f %*[^\n]')]; %attachment, penultimate word(adj), final noun, accuracy & plausibility ratings across 20 pre-test subjects
 pretest = textscan(fid,format,'Headerlines',1,'Delimiter','\t');
 
-ind_VA = find(strcmp('VA',pretest{1}));
-ind_NA = find(strcmp('NA',pretest{1}));
+ind_VA = find(strcmp('VA',pretest{10}));
+ind_NA = find(strcmp('NA',pretest{10}));
 
-%fix some acc/plaus values are missing, need to be extracted from R
 %notebook
 for i = 1:length(stimuli)
     if strcmp('VA',stimuli(i).attachment);
-        ind             = ind_VA(strcmp(strrep(stimuli(i).words(9).word,'.',''),pretest{3}(ind_VA)));
+        ind             = ind_VA(strcmp(strrep(stimuli(i).words(9).word,'.',''),pretest{9}(ind_VA)));
     else strcmp('NA',stimuli(i).attachment);
-        ind             = ind_NA(strcmp(strrep(stimuli(i).words(9).word,'.',''),pretest{3}(ind_NA)));
+        ind             = ind_NA(strcmp(strrep(stimuli(i).words(9).word,'.',''),pretest{9}(ind_NA)));
     end
     if length(ind) > 1;
-        ind = ind(strcmp(strrep(stimuli(i).words(8).word,'.',''),pretest{2}(ind)));
+        ind = ind(strcmp(strrep(stimuli(i).words(8).word,'.',''),pretest{8}(ind)));
     end
-    stimuli(i).acc  = pretest{4}(ind);
-    stimuli(i).plaus = pretest{5}(ind);
+    if length(ind) > 1;
+        ind = ind(strcmp(strrep(stimuli(i).words(3).word,'.',''),pretest{3}(ind)));
+    end
+    stimuli(i).acc  = pretest{11}(ind);
+    stimuli(i).plaus = pretest{12}(ind);
 end
 
 for i = 1:length(stimuli)

@@ -18,6 +18,7 @@ trigger = {[111,114,121,124,211,214,221,224], %Determiner
 if ~exist('subj',        'var'), subj         = 'pilot-005';                end
 if ~exist('root_dir',    'var'), root_dir     = '/project/3011210.01/MEG/'; end
 if ~exist('save_dir',    'var'), save_dir     = '/project/3011210.01/MEG/Classification'; end
+if ~exist('suffix',      'var'), suffix       = '';                         end %might change later in code depending on selected options
 if ~exist('classes',     'var'), classes      = {'ART', 'NN'};              end
 if ~exist('classifier',  'var'), classifier   = 'preps_naivebayes';         end
 if ~exist('timestep',    'var'), timestep     = 0.1;                        end
@@ -32,6 +33,7 @@ if ~exist('doshuffle',   'var'), doshuffle    = false;                      end
 if ~exist('compute_lc',  'var'), compute_lc   = false;                      end
 if ~exist('compute_acc', 'var'), compute_acc  = false;                      end
 if ~exist('dogeneral',   'var'), dogeneral    = false;                      end
+if ~exist('dopretest100','var'), dopretest100 = false;                      end
 
 if strcmp(subj,'pilot-002')
     warning('need to adjust trigger info')
@@ -56,6 +58,18 @@ end
 %% Load & select data
 load(strcat(root_dir,subj,'_dataclean.mat'))
 clear badcomp compds
+
+%% 
+if dopretest100
+    load preps_stimuli
+    accs        = [stimuli(1:200).acc]; 
+    idsel       = find(accs>=0.9);
+    cfg         = [];
+    cfg.trials  = ismember(data.trialinfo(:,2),idsel);
+    data        = ft_selectdata(cfg,data);
+    suffix      = '_pretest100';
+end
+%%
 
 for c = 1:length(classes)
     indsel          = ismember(data.trialinfo(:,1),trigger{strcmp(pos,classes{c})});
@@ -146,11 +160,11 @@ if compute_acc
     %%save results to file including timesteps
     cfg.timeinfo = tsteps;
     if donormal
-        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s',subj,folds,numfeat,horzcat(classes{:})));
+        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s%s',subj,folds,numfeat,horzcat(classes{:}),suffix));
         save(filename, 'acc','cfg');
     end
     if doshuffle
-        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s_shuf',subj,folds,numfeat,horzcat(classes{:})));
+        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s%s_shuf',subj,folds,numfeat,horzcat(classes{:}),suffix));
         save(filename, 'accshuf','cfg');
     end
 end
@@ -182,7 +196,7 @@ if compute_lc
     end
     %%save results to file including timesteps
     cfg.timeinfo = tsteps;
-    filename = fullfile(save_dir, subj, sprintf('classlc_%s_%dfolds_%dfeats_%s',subj,folds,numfeat,horzcat(classes{:})));
+    filename = fullfile(save_dir, subj, sprintf('classlc_%s_%dfolds_%dfeats_%s%s',subj,folds,numfeat,horzcat(classes{:}),suffix));
     save(filename, 'acctest','acctrain','cfg');
 end
 
@@ -248,11 +262,11 @@ if dogeneral
     prev = datatmp.cfg.previous;
     testpos = pos(cellfun(@(x) any(ismember(x,testtrig)),trigger));
     if donormal
-        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:})));
+        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s%s',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
         save(filename, 'acc','acctrain','cfgtmp','prev');
     end
     if doshuffle
-        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s_shuf',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:})));
+        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s%s_shuf',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
         save(filename, 'accshuf','accshuftrain','cfgtmp','prev');
     end
 end
