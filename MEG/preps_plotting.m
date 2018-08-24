@@ -8,8 +8,8 @@ if ~exist('classes',        'var'), classes      = {'ART', 'NN'};               
 if ~exist('classifier',     'var'), classifier   = 'preps_naivebayes';                        end
 if ~exist('folds',          'var'), folds        = 20;                                        end
 if ~exist('numfeat',        'var'), numfeat      = 250;                                       end
-if ~exist('do_plotacc',     'var'), do_plotacc   = true;                                      end
-if ~exist('do_plotgeneral', 'var'), do_plotacc   = true;                                      end
+if ~exist('do_plotacc',     'var'), do_plotacc   = false;                                      end
+if ~exist('do_plotgeneral', 'var'), do_plotgeneral   = false;                                      end
 
 pos = {'ART','NN','VVFIN','ADJA','APPR','NA','VA','Fill'};
 trigger = {[111,114,121,124,211,214,221,224], %Determiner
@@ -37,7 +37,8 @@ distributionPlot(acc','color','b');
 xticklabels(time)
 xlabel('time in ms (center of 100ms time slice)')
 ylabel('classification accuracy')
-title(sprintf('classifier: %s - classes:%s - %s',classifier, horzcat(classes{:}),subj))
+ylim([0.2 0.9])
+title(sprintf('classifier: %s - classes:%s - %s',classifier, horzcat(classes{:}),subj),'interpreter','none')
 classstr = sprintf('%s vs. %s',classes{1},classes{2});
 h = get(gca,'Children');
 legend([h(3) h(15)],{classstr,'permuted'}')
@@ -52,14 +53,13 @@ if length(xt) > 10
   xticklabels(time)
 end
 
-fname = sprintf('%s/%s/classacc_%s_%dfolds_%dfeats_%s',save_dir,subj,subj,folds,numfeat,horzcat(classes{:}));
+fname = sprintf('%s/Figures/classacc_%s_%dfolds_%dfeats_%s',save_dir,subj,folds,numfeat,horzcat(classes{:}));
 export_fig(fname,'-png');
 clf;
 end
 
 %% plot general classification accuracy 
 if do_plotgeneral
-    if ~exist('trainwindow','var'), trainwindow  = [0.3 0.4];               end
     if ~exist('testtrig',   'var'), testtrig     = horzcat(trigger{6:7});   end
 
     testpos = pos(cellfun(@(x) any(ismember(x,testtrig)),trigger));
@@ -67,19 +67,22 @@ if do_plotgeneral
     load(filename)
     load(strcat(filename,'_shuf'))
     
-    figure()
+    figure('units','normalized','outerposition',[0 0 1 1])
     h1 = plot(cfgtmp.timeinfo-0.05,accshuf,'color',[0,0,0]+0.5,'linewidt',4);
     hold on
     h2 = plot(cfgtmp.timeinfo-0.05,acc,'color','g','linewidt',4);
     xlabel('time in s (center of 100ms time slice)')
     ylabel('classification accuracy')
-    title(sprintf('classifier: %s - classes %s generalized to %s - %s',classifier, horzcat(classes{:}),horzcat(testpos{:}),subj))
+    title(sprintf('classifier: %s - classes %s generalized to %s - %s',classifier, horzcat(classes{:}),horzcat(testpos{:}),subj),'interpreter','none')
     classstr = sprintf('%s vs. %s',classes{1},classes{2});
     legend([h1(1) h2],{'permuted',classstr}')
     set(gca,'FontSize',25)
     set(gca,'LineWidth',4)
 
-    fname = sprintf('%s/%s/classgeneral_%s_%dfolds_%dfeats_%sto%s',save_dir,subj,subj,folds,numfeat,horzcat(classes{:}),horzcat(testpos{:}));
+    traintim = cfgtmp.trainwindow*1000;
+    fname = sprintf('%s/Figures/classgeneral_%s_%dfolds_%dfeats_trainwindow%dto%d_%sto%s',...
+        save_dir,subj,folds,numfeat,traintim(1),...
+        traintim(2),horzcat(classes{:}),horzcat(testpos{:}));
     export_fig(fname,'-png');
     clf;
 end
