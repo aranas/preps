@@ -141,9 +141,55 @@ end
 
 save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat','stimuli')
 
+%% adding subject-specific post-test results per item to stimulus mat (S.A. august 2018)
+
+%read in post-test results per subject
+load preps_stimuli
+datadir          = '/project/3011210.01/raw/';
+files              = dir(strcat(datadir,'sub*'));
 
 
 
+for sub = 1:length(files)
+    dirname = fullfile(datadir,files(sub).name);
+    filename=fullfile(dirname,sprintf('ses-beh01/results-survey2%0.2d_reduced.csv',sub));
+    fid = fopen(filename);
+    items = fgets(fid);
+    items = strsplit(items,',');
+    items = strrep(items,'"','');
+    responses = fgets(fid);
+    responses = strsplit(responses,',');
+    responses = strrep(responses,'"','');
+    [sortedI ind] = sort(items);
+    post_test{sub} = responses(ind);
+    if sub==10, sortedI(144)= {sortedI{144}(1:end-2)}; end
+end
+
+for i = 1:200 % only for first 200 stimuli, ignoring fillers
+    ind = find(strcmp(strrep(stimuli(i).sent_string{1},' ','_'),sortedI));
+    for sub = 1:length(files)
+    stimuli(i).post_test(sub).attachment = post_test{sub}{ind};
+    end
+end
+save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat','stimuli')
+%FIXME: double check if assigned values are correct
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 
