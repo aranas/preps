@@ -173,10 +173,22 @@ for i = 1:200 % only for first 200 stimuli, ignoring fillers
 end
 save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat','stimuli')
 %FIXME: double check if assigned values are correct
-    
 
-    
-    
+%% adding w2v info directly to stimulus mat file
+load preps_stimuli
+load('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_w2v.mat')
+
+for i = 1:size(stimuli,1)%each sentence
+    for j = 1:9%each word  
+        ind = find(strcmpi(w2v.word,stimuli(i).words(j).word{1}));
+        if ~isempty(ind) && size(ind,2)==1
+            stimuli(i).words(j).word{1}
+            w2v.word{ind}
+            stimuli(i).words(j).w2v = w2v.feat(ind,:);
+        end
+    end
+end
+save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat','stimuli')   
     
     
     

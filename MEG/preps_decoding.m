@@ -343,6 +343,27 @@ if compute_general
     end
 end
 
+%% if do Hidden markov model as described in Vidaurre et al. 2018
+if compute_tuda
+    modelfile = fullfile(save_dir,subj,strcat('classacc_',subj,'_20folds_250feats_NNVVFINADJA_w2v.mat'));
+    if ~exist(modelfile, 'file')
+        qsubfeval('preps_execute_pipeline','preps_decoding',{'subj',subj},{'classes',classes},{'compute_acc',1},{'repeats',1},{'dow2v',1},{'timestep','all'},'memreq',10*1024^3,'timreq',3*60*60,'batchid',sprintf('preps_decoding_w2v_allt%s',subj));
+        error('models have not been computed yet, job has been deployed')
+    end
+    
+    load(modelfile)
+
+    %compute error of each model e(t,j) = sum(sqrt(X(j)v(t) - Y(j)));
+    
+    %compute divergence between model v(t) and v(j);
+    
+    %weights = group T decoding models into K clusters (hierarchical clustering)
+    
+    %refine weights by expectations maximisation
+    
+    %get rid of synchrony across trials using bayesian appraoch (hmm-mar
+    %toolbox)
+end
 
 
 
