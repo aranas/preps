@@ -4,13 +4,13 @@
 if ~exist('subj',           'var'), subj         = 'pilot-005';                               end
 if ~exist('root_dir',       'var'), root_dir     = '/project/3011210.01/MEG/';                end
 if ~exist('save_dir',       'var'), save_dir     = '/project/3011210.01/MEG/Classification';  end
-if ~exist('classes',        'var'), classes      = {'ART', 'NN'};                             end
+if ~exist('classes',        'var'), classes      = {'VA', 'NA'};                             end
 if ~exist('classifier',     'var'), classifier   = 'preps_naivebayes';                        end
 if ~exist('folds',          'var'), folds        = 20;                                        end
 if ~exist('numfeat',        'var'), numfeat      = 250;                                       end
-if ~exist('do_plotacc',     'var'), do_plotacc   = false;                                      end
-if ~exist('do_plotgeneral', 'var'), do_plotgeneral   = false;                                      end
-
+if ~exist('do_plotacc',     'var'), do_plotacc   = false;                                     end
+if ~exist('do_plotgeneral', 'var'), do_plotgeneral   = false;                                 end
+if ~exist('suffix',         'var'), suffix       = '';                                        end
 pos = {'ART','NN','VVFIN','ADJA','APPR','NA','VA','Fill'};
 trigger = {[111,114,121,124,211,214,221,224], %Determiner
     [112,115,122,125,212,215,222,225],        %Nouns
@@ -22,7 +22,7 @@ trigger = {[111,114,121,124,211,214,221,224], %Determiner
     [30:39]};                                 %all words in filler sentences
 %% plot classification accuracy
 if do_plotacc
-filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s',subj,folds,numfeat,horzcat(classes{:})));
+filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s%s',subj,folds,numfeat,horzcat(classes{:}),suffix));
 
 load(filename)
 load(strcat(filename,'_shuf'))
@@ -53,7 +53,7 @@ if length(xt) > 10
   xticklabels(time)
 end
 
-fname = sprintf('%s/Figures/classacc_%s_%dfolds_%dfeats_%s',save_dir,subj,folds,numfeat,horzcat(classes{:}));
+fname = sprintf('%s/Figures/classacc_%s_%dfolds_%dfeats_%s%s',save_dir,subj,folds,numfeat,horzcat(classes{:}),suffix);
 export_fig(fname,'-png');
 clf;
 end
