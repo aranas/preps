@@ -116,7 +116,7 @@ if doposttest
     suffix      = '_posttest';
 end
 
-if dow2v
+if dow2v || compute_tuda
     load preps_stimuli
     
     % replace categorical labels with w2v info
@@ -141,9 +141,9 @@ if dow2v
     classifier         = 'ridgeregression_sa';
     statfun            = {'eval_correlation'};
     div                = divisors(size(feat,1));
-    folds              = size(feat,1)/div(3);
+    folds              = size(feat,1)/div(4);
     do_resample        = 0;
-    %cfg.lambda         = 7.9207e+06;
+    lambda             = 7.9207e+06;
     suffix = '_w2v';
 end
 
@@ -158,11 +158,10 @@ cfg.resample          = do_resample;% default: false; resampling for 'loo' retun
 cfg.poolsigma         = 0;
 cfg.numfeat           = numfeat;
 cfg.design            = labels;
+cfg.lambda            = lambda;
 
 tsteps                = [datasel.time{1}(1)+timestep:timestep:datasel.time{1}(end)];
-if strcmp(tmpstep,'all')
-    tsteps            = datasel.time{1};
-end
+
 %% prepare data
 %decompose matrix and only keep 60 components
 if dopca
@@ -171,7 +170,7 @@ if dopca
     cfgtmp.scale             =  0;
     cfgtmp.method            = 'pca';
     cfgtmp.numcomponent      = 60;
-    datasel             = ft_componentanalysis(cfgtmp, datasel);
+    datasel                  = ft_componentanalysis(cfgtmp, datasel);
 end
 
 cfgtmp                   = [];
@@ -183,13 +182,10 @@ avg_data              = ft_timelockanalysis(cfgtmp,datasel);
 if compute_acc
     %% Loop over time & repeats
     %
-    acc                   = zeros(length(tsteps),repeats);
-    accshuf               = zeros(length(tsteps),repeats);
     
     for  t = 1:length(tsteps)
         cfgt            = [];
         cfgt.latency    = [tsteps(t)-timestep tsteps(t)];
-        if strcmp(timestep,'all'), cfgt.latency = tsteps(t);  end
         datatmp         = ft_selectdata(cfgt,avg_data);
         rng('default'); % ensure same 'random' behaviour for each time slice.
         for rep = 1:repeats
@@ -197,8 +193,9 @@ if compute_acc
             if docateg
                 acc(t,rep)   = out.statistic.accuracy;
             elseif dow2v
-                acc(t,rep)   = out.statistic{1};
-                model(t,rep,:,:) = out.model;
+                acc.acc(t,rep)   = out.statistic{1};
+                acc.model(t,rep,:,:) = out.model;
+                acc.out{t,rep} = out.out;
             end
             if doshuffle_strat
                 %permute labels
@@ -345,24 +342,48 @@ end
 
 %% if do Hidden markov model as described in Vidaurre et al. 2018
 if compute_tuda
-    modelfile = fullfile(save_dir,subj,strcat('classacc_',subj,'_20folds_250feats_NNVVFINADJA_w2v.mat'));
-    if ~exist(modelfile, 'file')
-        qsubfeval('preps_execute_pipeline','preps_decoding',{'subj',subj},{'classes',classes},{'compute_acc',1},{'repeats',1},{'dow2v',1},{'timestep','all'},'memreq',10*1024^3,'timreq',3*60*60,'batchid',sprintf('preps_decoding_w2v_allt%s',subj));
-        error('models have not been computed yet, job has been deployed')
+    cfg.constant = 0;
+    ncluster = 4;
+    
+    for  t = 1:20%size(datasel.time{1},2)
+        t
+        datatmp = squeeze(avg_data.trial(:,:,t));
+        [betas(t,:,:),~,~,~,Mu(t,:),Sigma(t,:)] = ridgeregression_sa(cfg,datatmp,datatmp,labels);
+        for j = 1:20%size(datasel.time{1},2)
+            datatmpj        = squeeze(avg_data.trial(:,:,j));
+            Yhat            = predictdata(squeeze(betas(t,:,:)), Mu(t,:), Sigma(t,:), datatmpj,cfg);
+            %compute error of each model e(t,j) = sum(sqrt(X(j)v(t) - Y(j)));
+            e(t,j,:) = sum((Yhat - labels).^2);
+        end
     end
+    %compute divergence between all models; d(vi,vj) =  eij  +  eji  .
+    for i = 1:size(e,3)
+        d(:,:,i) = squeeze(e(:,:,i) + e(:,:,i)');
+    end
+    %representative weights = group T decoding models into K clusters (hierarchical clustering)
+    Z = linkage(squeeze(d(:,:,1)));
     
-    load(modelfile)
-
-    %compute error of each model e(t,j) = sum(sqrt(X(j)v(t) - Y(j)));
+    c = cluster(Z,'Maxclust',ncluster);
+    %how to find representatives?
+    %for now simply take first one
+    for i = 1:ncluster
+        ind = find(c == i);
+        betas_rep(i,:,:) = betas(ind(1),:,:);
+    end
+    %refine weights by expectations maximisation?
     
-    %compute divergence between model v(t) and v(j);
-    
-    %weights = group T decoding models into K clusters (hierarchical clustering)
-    
-    %refine weights by expectations maximisation
-    
-    %get rid of synchrony across trials using bayesian appraoch (hmm-mar
+    %get rid of synchrony across trials using bayesian approach (hmm-mar
     %toolbox)
+    %% Resolve dipole sign ambiguity
+    % do using toolbox
+    [m n z] = size(avg_data.trial);
+    datatmp = reshape(permute(avg_data.trial,[1 3 2]),[m*z n]);
+    datatmp(any(isnan(datatmp),2),:) = [];
+    T = cellfun(@(c) length(c), datasel.time);
+    options.K = ncluster;
+    options.parallel_trials = 1;
+    [tuda,Gamma] = tudatrain (datatmp,labels,T,options);
+    
 end
 
 
