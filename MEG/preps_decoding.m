@@ -14,56 +14,71 @@ trigger = {[111,114,121,124,211,214,221,224], %Determiner
     [219,229],                                %last word Noun attached
     [119,129],                                %last word Verb attached
     [30:39]};                                 %all words in filler sentences
+
 %parameters
 if ~exist('subj',           'var'), subj         = 'pilot-005';                end
 if ~exist('root_dir',       'var'), root_dir     = '/project/3011210.01/MEG/'; end
 if ~exist('save_dir',       'var'), save_dir     = '/project/3011210.01/MEG/Classification'; end
 if ~exist('suffix',         'var'), suffix       = '';                         end %might change later in code depending on selected options
-if ~exist('classes',        'var'), classes      = {'VA', 'NA'};              end
-if ~exist('classifier',     'var'), classifier   = 'preps_naivebayes';         end
+if ~exist('datasuffix',     'var'), datasuffix   = '';                         end
 if ~exist('timestep',       'var'), timestep     = 0.1;                        end
-if ~exist('repeats',        'var'), repeats      = 100;                        end
-if ~exist('folds',          'var'), folds        = 20;                         end
-if ~exist('numfeat',        'var'), numfeat      = 250;                        end
-if ~exist('statfun',        'var'), statfun      = {'accuracy'};               end
-
+cfgcv                   = [];%config for call to ft_timelockstatistics later on
+cfgcv.method            = 'crossvalidate';
+%options to execute
+if ~exist('dow2v',          'var'), dow2v       = false;                       end
+if ~exist('docateg',        'var'), docateg      = false;                      end
+if ~exist('compute_acc',         'var'), compute_acc       = false;            end
+if ~exist('compute_lc',          'var'), compute_lc        = false;            end
+if ~exist('compute_general',     'var'), compute_general   = false;            end
+if docateg
+    %default parameters for doing binary classification
+    if ~exist('doshuffle_strat','var'), doshuffle_strat = true;                end
+    if ~exist('doshuffle_rand', 'var'), doshuffle_rand = false;                end
+    if ~exist('classes',        'var'), classes      = {'VA', 'NA'};           end
+    if ~exist('classifier',     'var'), classifier   = 'preps_naivebayes';     end
+    if ~exist('folds',          'var'), folds        = 20;                     end
+    if ~exist('numfeat',        'var'), numfeat      = 250;                    end
+    cfgcv.numfeat           = numfeat;
+    if ~exist('statfun',        'var'), statfun      = {'accuracy'};           end
+    if compute_general
+        %specify training and testing time window/trials when generalising
+        %over time
+        if ~exist('trainwindow','var'), trainwindow  = [0.3 0.4];              end
+        if ~exist('testtrig',   'var'), testtrig     = horzcat(trigger{6:7});  end
+        fprintf(strcat('generalising to events ',repmat(' %d',size(testtrig)),'\n'),testtrig)
+    end
+elseif dow2v
+    %default parameters for doing regression on continuous variable (ie
+    %word embedding)
+    if ~exist('doshuffle_strat','var'), doshuffle_strat = false;               end
+    if ~exist('doshuffle_rand', 'var'), doshuffle_rand = true;                 end
+    if ~exist('classes',        'var'), classes      = {'NN','VVFIN','ADJA','NA','VA'};           end
+    if ~exist('classifier',     'var'), classifier   = 'ridgeregression_sa';   end
+    if ~exist('statfun',        'var'), statfun      = {'eval_correlation'};   end
+    if ~exist('lambda',         'var'), lambda      = [];                       end
+    if ~exist('lambdaeval',     'var'), lambdaeval      = 'mse';              end
+    cfgcv.lambdaeval = lambdaeval;
+    cfgcv.lambda = lambda;
+    %folds will be set according to number of trials
+    suffix = '_w2v';
+    do_resample = 0;
+end
+if ~compute_lc
+    %compute 100 models for different folding schemes
+    if ~exist('repeats',        'var'), repeats      = 100;                end
+end
+if ~exist('compute_tuda',        'var'), compute_tuda      = false;            end
 %options to prepare data
 if ~exist('dopca',          'var'), dopca        = true;                       end
-if ~exist('docateg',        'var'), docateg      = false;                      end
-if ~exist('dow2v',          'var'), dow2v       = false;                       end
-if ~exist('doshuffle_rand', 'var'), doshuffle_rand = false;                    end
-if ~exist('doshuffle_strat','var'), doshuffle_strat = false;                   end
 if ~exist('dopretest100',   'var'), dopretest100 = false;                      end
 if ~exist('doposttest',     'var'), doposttest   = false;                      end
-%options to execute
-if ~exist('compute_lc',          'var'), compute_lc        = false;                      end
-if ~exist('compute_acc',         'var'), compute_acc       = false;                      end
-if ~exist('compute_general',     'var'), compute_general   = false;                      end
-if ~exist('compute_tuda',        'var'), compute_tuda      = false;                      end
 
 
 if strcmp(subj,'pilot-002')
     warning('need to adjust trigger info')
 end
-%find which trigger number belongs to specified class;
-for c = 1:length(classes)
-    trig{c} = trigger{strcmp(pos,classes{c})};
-end
-trig = horzcat(trig{:});
-
-if compute_general
-    if ~exist('trainwindow','var'), trainwindow  = [0.3 0.4];               end
-    if ~exist('testtrig',   'var'), testtrig     = horzcat(trigger{6:7});   end
-    fprintf(strcat('generalising to events ',repmat(' %d',size(testtrig)),'\n'),testtrig)
-    
-    if ~any(ismember(testtrig,trig)) && ~exist('testlabel','var')
-        error('labels for test samples need to be specified')
-    else
-        fprintf(strcat('labeling events as ',repmat(' %d',size(testlabel)),'\n'),testlabel)
-    end
-end
 %% Load & select data
-load(strcat(root_dir,subj,'_dataclean.mat'))
+load(strcat(root_dir,subj,'_dataclean',datasuffix,'.mat'))
 clear badcomp compds
 
 % if dopretest100 only keep trials that scored high on pre-test
@@ -77,8 +92,24 @@ if dopretest100
     suffix      = '_pretest100';
 end
 
+
+%find which trigger number belongs to specified class;
+trig = cell(length(classes),1);
+for c = 1:length(classes)
+    trig{c} = trigger{strcmp(pos,classes{c})};
+end
+trig = horzcat(trig{:});
+if compute_general
+    if ~any(ismember(testtrig,trig)) && ~exist('testlabel','var')
+        error('labels for test samples need to be specified')
+    else
+        fprintf(strcat('labeling events as ',repmat(' %d',size(testlabel)),'\n'),testlabel)
+    end
+end
 % select all trials belonging to specified class and construct
 % class-specific labels
+labels = cell(length(classes),1);
+datasel = cell(length(classes),1);
 for c = 1:length(classes)
     indsel          = ismember(data.trialinfo(:,1),trigger{strcmp(pos,classes{c})});
     if compute_general, indsel = indsel | ismember(data.trialinfo(:,1),testtrig(testlabel==c));end
@@ -91,14 +122,6 @@ end
 datasel = ft_appenddata([],datasel{:});
 labels  = horzcat(labels{:})';
 
-% check if equal amount of samples per class, if not resample
-if ~exist('do_resample', 'var')
-    if length(unique(sum(labels==labels'))) ~= 1
-        do_resample = 1;
-    else
-        do_resample = 0;
-    end
-end
 
 % if doposttest relabel samples according to individual post tests;
 if doposttest
@@ -118,7 +141,6 @@ end
 
 if dow2v || compute_tuda
     load preps_stimuli
-    
     % replace categorical labels with w2v info
     feat = zeros(size(datasel.trial,2),300);
     indsel = false(1,size(datasel.trial,2));
@@ -136,32 +158,36 @@ if dow2v || compute_tuda
     cfg.trials      = indsel;
     datasel         = ft_selectdata(cfg,datasel);
     
-    % overwrite some variables
+    % set some variables
     labels             = feat;
-    classifier         = 'ridgeregression_sa';
-    statfun            = {'eval_correlation'};
     div                = divisors(size(feat,1));
+    div                = div(mod(div,2)==0);
     folds              = size(feat,1)/div(4);
-    do_resample        = 0;
-    lambda             = 7.9207e+06;
-    suffix = '_w2v';
 end
 
-%% Configuration
-cfg                   = [];
-cfg.method            = 'crossvalidate';
-cfg.mva               = classifier;
-cfg.statistic         = statfun;
-cfg.type              = 'nfold'; %'bloo' only with evenly distributed classes
-cfg.nfolds            = folds;
-cfg.resample          = do_resample;% default: false; resampling for 'loo' retuns zero
-cfg.poolsigma         = 0;
-cfg.numfeat           = numfeat;
-cfg.design            = labels;
-cfg.lambda            = lambda;
 
+% check if equal amount of samples per class, if not resample
+if ~exist('do_resample', 'var')
+    if length(unique(sum(labels==labels'))) ~= 1
+        do_resample = 1;
+    else
+        do_resample = 0;
+    end
+end
+%% Continue setting parameters in Configuration
+cfgcv.mva               = classifier;
+cfgcv.statistic         = statfun;
+cfgcv.type              = 'nfold'; %'bloo' only with evenly distributed classes
+cfgcv.nfolds            = folds;
+cfgcv.poolsigma         = 0;
+cfgcv.design            = labels;
+cfgcv.resample          = do_resample;% default: false; resampling for 'loo' retuns zero
+if size(timestep,2)>1
+    tsteps = timestep;
+    timestep     = 0.1;   
+else
 tsteps                = [datasel.time{1}(1)+timestep:timestep:datasel.time{1}(end)];
-
+end
 %% prepare data
 %decompose matrix and only keep 60 components
 if dopca
@@ -189,7 +215,7 @@ if compute_acc
         datatmp         = ft_selectdata(cfgt,avg_data);
         rng('default'); % ensure same 'random' behaviour for each time slice.
         for rep = 1:repeats
-            out               = ft_timelockstatistics(cfg,datatmp);
+            out               = ft_timelockstatistics(cfgcv,datatmp);
             if docateg
                 acc(t,rep)   = out.statistic.accuracy;
             elseif dow2v
@@ -207,20 +233,20 @@ if compute_acc
                 labels_perm       = labels;
                 labels_perm(indx_1(1:(length(indx_1)/2))) = 2;
                 labels_perm(indx_2(1:(length(indx_2)/2))) = 1;
-                cfgtmp            = cfg;
-                cfgtmp.design     = labels_perm;
             end
             if doshuffle_rand
                 labels_perm       = labels(randperm(size(labels,1)),:);
             end
             if doshuffle_strat || doshuffle_rand
-                cfgtmp            = cfg;
+                cfgtmp            = cfgcv;
                 cfgtmp.design     = labels_perm;
+                cfgtmp.lambda     = 1.0960e+06;
                 outshuf           = ft_timelockstatistics(cfgtmp,datatmp);
                 if docateg
-                    acc(t,rep)   = outshuf.statistic.accuracy;
+                    accshuf(t,rep)   = outshuf.statistic.accuracy;
                 elseif dow2v
-                    acc(t,rep)   = outshuf.statistic{1};
+                    cfg.lambda   = lambda;
+                    accshuf(t,rep)   = outshuf.statistic{1};
                     model(t,rep,:,:) = out.model;
                 end
             end
@@ -229,34 +255,30 @@ if compute_acc
     %%save results to file including timesteps
     cfg.timeinfo = tsteps;
     if docateg
-        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s%s',subj,folds,numfeat,horzcat(classes{:}),suffix));
+        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%s_%dfolds_%dfeats_%s%s',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
         save(filename, 'acc','cfg');
     end
     if doshuffle_strat || doshuffle_rand
-        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s%s_shuf',subj,folds,numfeat,horzcat(classes{:}),suffix));
+        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%s_%dfolds_%dfeats_%s%s_shuf',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
         save(filename, 'accshuf','cfg');
     end
 end
 
 %% if compute learning curve
 if compute_lc
-    if doshuffle_strat
-        warning ('cannot compute both shuffles/repeats & learning curve')
-    end
-    repeats   = 1;
     m         = length(labels);
     grid_smp  = [2:4:m-m/20];
     
     %% Loop over time & repeats
-    acc                   = zeros(length(tsteps),length(grid_smp));
-    
+    acctest                   = zeros(length(tsteps),length(grid_smp));
+    acctrain                   = zeros(length(tsteps),length(grid_smp));
     for  t = 1:length(tsteps)
         cfgt            = [];
         cfgt.latency    = [tsteps(t)-timestep tsteps(t)];
         datatmp         = ft_selectdata(cfgt,avg_data);
         rng('default'); % ensure same 'random' behaviour for each time slice.
         parfor nsmp = 1:size(grid_smp,2)
-            cfgtmp             = cfg; %need to assign variable within parfor loop
+            cfgtmp             = cfgcv; %need to assign variable within parfor loop
             cfgtmp.max_smp     = grid_smp(nsmp);
             out                = ft_timelockstatistics(cfgtmp,datatmp);
             acctest(t,nsmp)    = out.statistic.accuracy;
@@ -265,7 +287,7 @@ if compute_lc
     end
     %%save results to file including timesteps
     cfg.timeinfo = tsteps;
-    filename = fullfile(save_dir, subj, sprintf('classlc_%s_%dfolds_%dfeats_%s%s',subj,folds,numfeat,horzcat(classes{:}),suffix));
+    filename = fullfile(save_dir, subj, sprintf('classlc_%s_%s_%dfolds_%dfeats_%s%s',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
     save(filename, 'acctest','acctrain','cfg');
 end
 
@@ -294,7 +316,7 @@ if compute_general
         datatmp.trial     = datatmp.trial(idx);
         datatmp.trialinfo = datatmp.trialinfo(idx,:);
         %set parameters
-        cfgtmp            = cfg;
+        cfgtmp            = cfgcv;
         cfgtmp.type       = 'split';
         cfgtmp.max_smp    = sum(~ismember(datatmp.trialinfo(:,1),testtrig));
         cfgtmp.testfolds  = {find(ismember(datatmp.trialinfo(:,1),testtrig))};
@@ -331,11 +353,11 @@ if compute_general
     prev = datatmp.cfg.previous;
     testpos = pos(cellfun(@(x) any(ismember(x,testtrig)),trigger));
     if docateg
-        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s%s',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
+        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%s_%dfeats_%sto%s%s',subj,datasuffix,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
         save(filename, 'acc','acctrain','cfgtmp','prev');
     end
     if doshuffle_strat
-        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s%s_shuf',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
+        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%s_%dfeats_%sto%s%s_shuf',subj,datasuffix,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
         save(filename, 'accshuf','accshuftrain','cfgtmp','prev');
     end
 end
