@@ -1,4 +1,4 @@
-function [R, lambda] = get_R_and_lambda(x_train,K, Y, k, n,lambda) % K = X_train * X_train' (covariance of training data), k = number of fold, n = number of lambda values
+function [R, lambda, mse, norme, normb, nrmsd] = get_R_and_lambda(x_train,K, Y, k, n,lambda) % K = X_train * X_train' (covariance of training data), k = number of fold, n = number of lambda values
 
 d       = size(Y);
 %create new cross-validation set within training data for finding optimal lambda
@@ -6,6 +6,9 @@ Indices = sort(crossvalind('Kfold', d(1), k));
 if ~exist('lambda','var')
      lambda  = get_lambda(K, n);
 end
+%force regularisation
+lambda = lambda(2:end);
+n = n-1;
 
 Y_hat   = NaN(d(1), d(2), n);
 
@@ -24,11 +27,11 @@ for index_1 = 1 : k % for each fold
     parfor index_2 = 1 : n %for each lambda
         
         N(:, :, index_2) = (foo + lambda(index_2) * I) \ bar; % (XX' + Lambda*I) \ Y ---> 1st part of solution for beta weights, where: Betas = X_train'(X_trainX_train' + Lambda*I) \ Y_train
-
+        betatmp(:,:,index_2) = x_train(Train,:)'*((foo + lambda(index_2) * I) \ bar);
     end
     Y_hat(Test, :, :) = reshape(K(Test, Train) * reshape(N, S, d(2) * n), sum(Test), d(2), n); % ----> 2nd part of solution for Beta weights + prediction of Y_hat
                                                                                                % if Y = X * Betas or Y_test = X_test * Betas then after inserting Beta formula from above:
-                                                                                               % Y = X_test*X_train'(X_train*X_train' + Lambda*I)\ Y_train, so that X_test*X_train' is K(Test,Train).
+    Y_train(Train,:,:) = reshape(K(Train,Train) * reshape(N,S, d(2) *n), sum(Train), d(2), n);                                                                                           % Y = X_test*X_train'(X_train*X_train' + Lambda*I)\ Y_train, so that X_test*X_train' is K(Test,Train).
     % Y_hat contains predicted data for all observations as it is filled
     % for each fold
     
@@ -42,7 +45,17 @@ for index = 1 : n
     C_2 = bsxfun(@minus, Y_hat(:, :, index), mean(Y_hat(:, :, index)));
     %compute correlation between data & predicted data
     R(:, index) = sum(C_1 .* C_2) ./ (sqrt(sum(C_1 .^ 2)) .* sqrt(sum(C_2 .^ 2)));
+    
+    r = Y-Y_train(:,:,index);
  
+    mse(index,:) = mean(r.^2);
+    
+    norme(index,:) = sqrt(sum(r.^2,1));
+    
+    normb(index,:) = sqrt(sum(betatmp(:,:,index).^2,1));
+    
+    nrmsd(index,:) = sqrt(mean(r.^2))./(max(Y_hat(:,:,index))-min(Y_hat(:,:,index)));
+    
 end
 
 end
