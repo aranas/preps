@@ -1,5 +1,3 @@
-clear all
-clc
 
 %% Specify variables
 if ~exist('subj',        'var'), subj         = 'sub-009';  end
@@ -9,6 +7,7 @@ if strcmp(subj,'pilot-002')
 end
 if ~exist('trigger_last','var'), trigger_last = [119,129,219,229];  end
 if ~exist('root_dir',    'var'), root_dir     = '/project/3011210.01/';  end
+if ~exist('do_artfct',    'var'), do_artfct     = 0;  end
 
 %% epoch data from raw files
 file                    = dir(strcat('/project/3011210.01/raw/',subj,'/ses-meg01/meg/'));
@@ -22,25 +21,33 @@ cfg.trialdef.eventtype  = 'UPPT001';
 cfg.trialdef.eventvalue = trigger;
 cfg.trialfun            = 'ft_trialfun_preps';
 new_cfg                 = ft_definetrial(cfg);
+new_cfg.continuous      = 'yes';
 
 %% before filtering data, identify trials with muscle activity
-new_cfg.continuous      = 'yes';
+if do_artfct
 new_cfg.demean          = 'yes';
-%new_cfg.dftfilter       = 'yes';    %get rid of line noise
+new_cfg.dftfilter       = 'yes';    %get rid of line noise
 data                    = ft_preprocessing(new_cfg);
 data.trialinfo(:,3)     = 1:length(data.trialinfo); %add numbering to trials
+
 % redefine to keep longer time windows only for sentence-final words
 ind_lastword            = find(ismember(data.trialinfo(:,1),trigger_last));
 toi                     = repmat([data.time{1}(1) 0.8],length(data.trial),1);
 toi(ind_lastword,:)     = repmat([data.time{1}(1) data.time{1}(end)],length(ind_lastword),1);
+cfg = [];
+cfg.toilim = toi;
+tmpdata = ft_redefinetrial(cfg,data);
 
 cfg                     = [];
 cfg.channel             = 'MEG';
-cfg.latency             = toi; %adapt rejectvisual_summary
-cfg.preproc.hpfilter    = 'yes';
-cfg.preproc.hpfreq      = 100;
+cfg.preproc.bpfilter    = 'yes';
+cfg.preproc.bpfreq      = [110 140];
+cfg.preproc.bpfiltord   =  8;
+cfg.preproc.bpfilttype  = 'but';
+cfg.preproc.rectify     = 'yes';
+cfg.preproc.boxcar      = 0.2;
 cfg.metric              = 'zvalue';
-tmp_data_muscle         = ft_rejectvisual(cfg, tmpdata);
+tmp_data_muscle         = ft_rejectvisual(cfg, data);
 artfct                  = setdiff(data.trialinfo(:,3),tmp_data_muscle.trialinfo(:,3));
 noisy_trials            = data.trialinfo(artfct,:);
 % cfg = [];
@@ -49,7 +56,10 @@ noisy_trials            = data.trialinfo(artfct,:);
 
 save(strcat(root_dir,'MEG/',subj,'_muscle'),'noisy_trials','-v7.3')
 clear tmpdata tmp_data_muscle noisy_trials
+end
 %% filter
+new_cfg.continuous      = 'yes';
+new_cfg.demean          = 'yes';
 new_cfg.channel             = {'MEG', 'EEG'};
 new_cfg.lpfilter            = 'yes';
 new_cfg.lpfreq              = 40;
@@ -63,14 +73,18 @@ data                        = ft_preprocessing(new_cfg);
 
 data.trialinfo(:,3)     = 1:length(data.trialinfo); %add numbering to trials
 
+ind_lastword            = find(ismember(data.trialinfo(:,1),trigger_last));
+toi                     = repmat([data.time{1}(1) 0.8],length(data.trial),1);
+toi(ind_lastword,:)     = repmat([data.time{1}(1) data.time{1}(end)],length(ind_lastword),1);
+
 cfg                     = [];
 cfg.toilim              = toi;
 cfg.trials              = 'all';
 data                    = ft_redefinetrial(cfg,data);
 % 
-% cfg = [];
-% cfg.channel = 'MEG';
-% ft_databrowser(cfg,data)
+cfg = [];
+cfg.channel = 'MEG';
+ft_databrowser(cfg,data)
 
 %% compute ICA on data to remove ECG/EOG artifacts
 %downsampling data to 300 Hz for ICA analysis
@@ -152,7 +166,7 @@ data                = ft_rejectcomponent(cfg, comp, data);
 
 cfg                 = [];
 cfg.resamplefs      = 300;
-cfg.detrend         = 'no';  % not good for evoked data
+cfg.detrend         = 'no';  
 cfg.demean          = 'no';
 cfg.trials          = 'all';
 data                = ft_resampledata(cfg, data);
@@ -161,10 +175,9 @@ data                = ft_resampledata(cfg, data);
 cfg                 = [];
 cfg.channel         = 'MEG';
 cfg.detrend         = 'no';
-cfg.demean          = 'yes';
-cfg.baselinewindow  = [-inf 0];
-data                = ft_preprocessing(cfg, data);
+%cfg.demean          = 'yes';
+%cfg.baselinewindow  = [-inf 0];
+data                 = ft_preprocessing(cfg, data);
 
 
-save(strcat(root_dir,'MEG/',subj,'_dataclean'),'data','compds','badcomp','-v7.3')
-%missing = [ 16 65 163 199 212   234   266   338   361   366];
+save(strcat(root_dir,'MEG/',subj,'_dataclean_lp01'),'data','compds','badcomp','-v7.3')
