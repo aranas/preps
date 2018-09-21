@@ -7,8 +7,8 @@ if strcmp(subj,'pilot-002')
 end
 if ~exist('trigger_last','var'), trigger_last = [119,129,219,229];  end
 if ~exist('root_dir',    'var'), root_dir     = '/project/3011210.01/';  end
-if ~exist('do_artfct',    'var'), do_artfct     = 0;  end
-
+if ~exist('do_artfct',   'var'), do_artfct    = 0;  end
+if ~exist('do_ica',      'var'), do_ica       = 0;  end
 %% epoch data from raw files
 file                    = dir(strcat('/project/3011210.01/raw/',subj,'/ses-meg01/meg/'));
 
@@ -25,28 +25,27 @@ new_cfg.continuous      = 'yes';
 
 %% before filtering data, identify trials with muscle activity
 if do_artfct
+new_cfg.channel         = 'MEG';
 new_cfg.demean          = 'yes';
-new_cfg.dftfilter       = 'yes';    %get rid of line noise
+%new_cfg.dftfilter       = 'yes';    %get rid of line noise
+new_cfg.bpfilter        = 'yes';
+new_cfg.bpfreq          = [110 140];
+new_cfg.bpfiltord       = 8;
+new_cfg.bpfilttype      = 'but';
+new_cfg.rectify         = 'yes';
+new_cfg.boxcar          = 0.2;
 data                    = ft_preprocessing(new_cfg);
-data.trialinfo(:,3)     = 1:length(data.trialinfo); %add numbering to trials
 
 % redefine to keep longer time windows only for sentence-final words
+data.trialinfo(:,3)     = 1:length(data.trialinfo); %add numbering to trials
 ind_lastword            = find(ismember(data.trialinfo(:,1),trigger_last));
 toi                     = repmat([data.time{1}(1) 0.8],length(data.trial),1);
 toi(ind_lastword,:)     = repmat([data.time{1}(1) data.time{1}(end)],length(ind_lastword),1);
 cfg = [];
 cfg.toilim = toi;
-tmpdata = ft_redefinetrial(cfg,data);
+data = ft_redefinetrial(cfg,data);
 
 cfg                     = [];
-cfg.channel             = 'MEG';
-cfg.preproc.bpfilter    = 'yes';
-cfg.preproc.bpfreq      = [110 140];
-cfg.preproc.bpfiltord   =  8;
-cfg.preproc.bpfilttype  = 'but';
-cfg.preproc.rectify     = 'yes';
-cfg.preproc.boxcar      = 0.2;
-cfg.metric              = 'zvalue';
 tmp_data_muscle         = ft_rejectvisual(cfg, data);
 artfct                  = setdiff(data.trialinfo(:,3),tmp_data_muscle.trialinfo(:,3));
 noisy_trials            = data.trialinfo(artfct,:);
@@ -55,8 +54,9 @@ noisy_trials            = data.trialinfo(artfct,:);
 % ft_databrowser(cfg,tmpdata)
 
 save(strcat(root_dir,'MEG/',subj,'_muscle'),'noisy_trials','-v7.3')
-clear tmpdata tmp_data_muscle noisy_trials
+clear tmp_data_muscle noisy_trials
 end
+if do_ica
 %% filter
 new_cfg.continuous      = 'yes';
 new_cfg.demean          = 'yes';
@@ -181,3 +181,4 @@ data                 = ft_preprocessing(cfg, data);
 
 
 save(strcat(root_dir,'MEG/',subj,'_dataclean_lp01'),'data','compds','badcomp','-v7.3')
+end
