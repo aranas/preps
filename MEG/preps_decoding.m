@@ -7,7 +7,7 @@
 %% Set variables
 pos = {'ART','NN','VVFIN','ADJA','APPR','NA','VA','Fill'};
 trigger = {[111,114,121,124,211,214,221,224], %Determiner
-    [112,115,122,125,212,215,222,225,119,129,219,229],        %Nouns
+    [112,115,122,125,212,215,222,225],        %Nouns
     [113,123,213,223],                        %Verbs
     [118,128,218,228],                        %Adjectives
     [116,126,216,226],                        %Preposition
@@ -70,6 +70,7 @@ end
 if ~exist('compute_tuda',        'var'), compute_tuda      = false;            end
 %options to prepare data
 if ~exist('dopca',          'var'), dopca        = true;                       end
+if ~exist('clean_muscle',   'var'), clean_muscle = false;                      end
 if ~exist('dopretest100',   'var'), dopretest100 = false;                      end
 if ~exist('doposttest',     'var'), doposttest   = false;                      end
 
@@ -92,6 +93,12 @@ if dopretest100
     suffix      = '_pretest100';
 end
 
+if clean_muscle
+    load(fullfile(root_dir,strcat(subj,'_muscle')));
+    cfg         = [];
+    cfg.trials  = ~ismember(data.trialinfo(:,3),noisy_trials(:,end));
+    data        = ft_selectdata(cfg,data);
+end
 
 %find which trigger number belongs to specified class;
 trig = cell(length(classes),1);
@@ -139,7 +146,7 @@ if doposttest
     suffix      = '_posttest';
 end
 
-if dow2v || compute_tuda
+if dow2v 
     load preps_stimuli
     % replace categorical labels with w2v info
     feat = zeros(size(datasel.trial,2),300);
@@ -162,7 +169,7 @@ if dow2v || compute_tuda
     labels             = feat;
     div                = divisors(size(feat,1));
     div                = div(mod(div,2)==0);
-    folds              = size(feat,1)/div(4);
+    folds              = size(feat,1)/div(6);
 end
 
 
@@ -195,7 +202,7 @@ if dopca
     cfgtmp.demean            = 'yes';
     cfgtmp.scale             =  0;
     cfgtmp.method            = 'pca';
-    cfgtmp.numcomponent      = 60;
+    cfgtmp.numcomponent      = 270;
     datasel                  = ft_componentanalysis(cfgtmp, datasel);
 end
 
@@ -240,7 +247,6 @@ if compute_acc
             if doshuffle_strat || doshuffle_rand
                 cfgtmp            = cfgcv;
                 cfgtmp.design     = labels_perm;
-                cfgtmp.lambda     = 1.0960e+06;
                 outshuf           = ft_timelockstatistics(cfgtmp,datatmp);
                 if docateg
                     accshuf(t,rep)   = outshuf.statistic.accuracy;
@@ -255,19 +261,27 @@ if compute_acc
     %%save results to file including timesteps
     cfg.timeinfo = tsteps;
     if docateg
-        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%s_%dfolds_%dfeats_%s%s',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
-        save(filename, 'acc','cfg');
+        filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
+        save(filename, 'acc','cfgcv');
     end
-    if doshuffle_strat || doshuffle_rand
-        filename = fullfile(save_dir, subj, sprintf('classacc_%s_%s_%dfolds_%dfeats_%s%s_shuf',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
-        save(filename, 'accshuf','cfg');
+    if doshuffle_strat
+        filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_%dfeats_%s%s_shuf',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
+        save(filename, 'accshuf','cfgtmp');
+    end
+    if dow2v
+        filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,folds,cfgcv.lambda,horzcat(classes{:}),suffix));
+        save(filename, 'acc','cfgcv');
+    end
+    if doshuffle_rand
+        filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_lambda%d_%s%s_shuf',subj,datasuffix,folds,cfgcv.lambda,horzcat(classes{:}),suffix));
+        save(filename, 'accshuf','cfgtmp');
     end
 end
 
 %% if compute learning curve
 if compute_lc
-    m         = length(labels);
-    grid_smp  = [2:4:m-m/20];
+    N         = length(labels);
+    grid_smp  = [2:4:N-N/20];
     
     %% Loop over time & repeats
     acctest                   = zeros(length(tsteps),length(grid_smp));
@@ -287,8 +301,8 @@ if compute_lc
     end
     %%save results to file including timesteps
     cfg.timeinfo = tsteps;
-    filename = fullfile(save_dir, subj, sprintf('classlc_%s_%s_%dfolds_%dfeats_%s%s',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
-    save(filename, 'acctest','acctrain','cfg');
+    filename = fullfile(save_dir, subj, sprintf('classlc_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
+    save(filename, 'acctest','acctrain','cfgtmp');
 end
 
 %% if do generalize over time
@@ -353,11 +367,11 @@ if compute_general
     prev = datatmp.cfg.previous;
     testpos = pos(cellfun(@(x) any(ismember(x,testtrig)),trigger));
     if docateg
-        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%s_%dfeats_%sto%s%s',subj,datasuffix,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
+        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s%s_%dfeats_%sto%s%s',subj,datasuffix,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
         save(filename, 'acc','acctrain','cfgtmp','prev');
     end
     if doshuffle_strat
-        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%s_%dfeats_%sto%s%s_shuf',subj,datasuffix,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
+        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s%s_%dfeats_%sto%s%s_shuf',subj,datasuffix,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
         save(filename, 'accshuf','accshuftrain','cfgtmp','prev');
     end
 end
@@ -365,7 +379,70 @@ end
 %% if do Hidden markov model as described in Vidaurre et al. 2018
 if compute_tuda
     cfg.constant = 0;
-    ncluster = 4;
+    K = 4;
+    if docateg
+    labels(labels==2) = -1;
+    
+   
+    [N p ttrial] = size(avg_data.trial);
+    datatmp = reshape(permute(avg_data.trial,[3 1 2]),[ttrial*N p]);
+    datatmp(any(isnan(datatmp),2),:) = [];
+    T = cellfun(@(c) length(c), datasel.time);
+    
+    options.K = K;
+    options.parallel_trials = 1;
+    [tuda,Gamma] = tudatrain (datatmp,labels,T,options);
+    
+    cfgcv.Gamma = Gamma; 
+    out               = ft_timelockstatistics(cfgcv,avg_data);
+    
+    options = [];
+    options.lossfunc = 'quadratic';
+    R2 = tudacv(datatmp,labels,T,options);
+    figure
+    plot(R2)
+    
+%       for icv = 1:NCV
+%             Ntr = sum(c.training{icv}); Nte = sum(c.test{icv});
+%             Xtrain = reshape(X(:,c.training{icv},:),[ttrial*Ntr p]);
+%             ytrain = reshape(Y(:,c.training{icv},:),[ttrial*Ntr q]);
+%             Xtest = reshape(X(:,c.test{icv},:),[ttrial*Nte p]);
+%             Gammatrain = reshape(G(:,c.training{icv},:),[ttrial*Ntr K]);
+%             Gammatest = reshape(Gp(:,c.test{icv},:),[ttrial*Nte K]);
+%             for k = 1:K
+%                 sGamma = repmat(sqrt(Gammatrain(:,k)),1,p);
+%                 Xtrain_k = Xtrain .* sGamma;
+% !!!!!!!!!! Multiply (weight) data for each fold and each state, and
+% compute model coefficients and predict data for each state, then sum all
+% statewise predictions together.
+%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+%                 ytrain_k = ytrain .* sGamma(:,1:q);
+%                 Beta = (Xtrain_k' * Xtrain_k + RidgePen) \ (Xtrain_k' * ytrain_k);
+%                 sGamma = repmat(Gammatest(:,k),[1 q]); 
+%                 Ypred(:,c.test{icv},:) = Ypred(:,c.test{icv},:) + ...
+%                     reshape( (Xtest * Beta) .* sGamma , [ttrial Nte q]);
+%             end
+%         end
+    %plot
+    Gammax = reshape(Gamma,[ttrial N K]);
+    figure(); 
+    subplot(2,2,1); plot(squeeze(mean(Gammax,2)),'LineWidth',3); ylim([-0.05 1.05])
+    subplot(2,2,2); plot(squeeze(Gammax(:,1,:)),'LineWidth',3); ylim([-0.05 1.05])
+    subplot(2,2,3); plot(squeeze(Gammax(:,2,:)),'LineWidth',3); ylim([-0.05 1.05])
+    subplot(2,2,4); plot(squeeze(Gammax(:,3,:)),'LineWidth',3); ylim([-0.05 1.05])
+    %accuracy
+    options.NCV = 5;
+    options.lossfunc = 'quadratic';
+    R2 = tudacv(datatmp,labels,T,options);
+    figure()
+    plot(R2,'LineWidth',3);% ylim([-0.05 1.05])
+    end
+    
+    
+    
+    
+    cfg.constant = 0;
+    K = 4;
     
     for  t = 1:20%size(datasel.time{1},2)
         t
@@ -385,10 +462,10 @@ if compute_tuda
     %representative weights = group T decoding models into K clusters (hierarchical clustering)
     Z = linkage(squeeze(d(:,:,1)));
     
-    c = cluster(Z,'Maxclust',ncluster);
+    c = cluster(Z,'Maxclust',K);
     %how to find representatives?
     %for now simply take first one
-    for i = 1:ncluster
+    for i = 1:K
         ind = find(c == i);
         betas_rep(i,:,:) = betas(ind(1),:,:);
     end
@@ -398,11 +475,11 @@ if compute_tuda
     %toolbox)
     %% Resolve dipole sign ambiguity
     % do using toolbox
-    [m n z] = size(avg_data.trial);
-    datatmp = reshape(permute(avg_data.trial,[1 3 2]),[m*z n]);
+    [N p ttrial] = size(avg_data.trial);
+    datatmp = reshape(permute(avg_data.trial,[1 3 2]),[N*ttrial p]);
     datatmp(any(isnan(datatmp),2),:) = [];
     T = cellfun(@(c) length(c), datasel.time);
-    options.K = ncluster;
+    options.K = K;
     options.parallel_trials = 1;
     [tuda,Gamma] = tudatrain (datatmp,labels,T,options);
     
