@@ -67,7 +67,11 @@ if ~compute_lc
     %compute 100 models for different folding schemes
     if ~exist('repeats',        'var'), repeats      = 100;                end
 end
-if ~exist('compute_tuda',        'var'), compute_tuda      = false;            end
+if ~exist('compute_tuda',        'var')
+    compute_tuda      = false;
+    clear numfeat
+end
+
 %options to prepare data
 if ~exist('dopca',          'var'), dopca        = true;                       end
 if ~exist('clean_muscle',   'var'), clean_muscle = false;                      end
@@ -149,27 +153,26 @@ end
 if dow2v 
     load preps_stimuli
     % replace categorical labels with w2v info
-    feat = zeros(size(datasel.trial,2),300);
+    labels = zeros(size(datasel.trial,2),300);
     indsel = false(1,size(datasel.trial,2));
     for smp = 1:size(datasel.trial,2)
         id          = datasel.trialinfo(smp,2);
         trig        = num2str(datasel.trialinfo(smp,1));
         w2vtmp      = stimuli(id).words(str2num(trig(end))).w2v;
         if size(w2vtmp,2)~=0
-            feat(smp,:) = stimuli(id).words(str2num(trig(end))).w2v;
+            labels(smp,:) = stimuli(id).words(str2num(trig(end))).w2v;
             indsel(smp) = 1;
         end
     end
-    feat            = feat(indsel,:);
+    labels            = labels(indsel,:);
     cfg             = [];
     cfg.trials      = indsel;
     datasel         = ft_selectdata(cfg,datasel);
     
     % set some variables
-    labels             = feat;
-    div                = divisors(size(feat,1));
+    div                = divisors(size(labels,1));
     div                = div(mod(div,2)==0);
-    folds              = size(feat,1)/div(6);
+    folds              = size(labels,1)/div(6);
 end
 
 
@@ -181,6 +184,9 @@ if ~exist('do_resample', 'var')
         do_resample = 0;
     end
 end
+
+%clear some memory
+clear data
 %% Continue setting parameters in Configuration
 cfgcv.mva               = classifier;
 cfgcv.statistic         = statfun;
@@ -202,14 +208,14 @@ if dopca
     cfgtmp.demean            = 'yes';
     cfgtmp.scale             =  0;
     cfgtmp.method            = 'pca';
-    cfgtmp.numcomponent      = 270;
+    cfgtmp.numcomponent      = 60;
     datasel                  = ft_componentanalysis(cfgtmp, datasel);
 end
 
 cfgtmp                   = [];
 cfgtmp.keeptrials        = 'yes';
 cfgtmp.vartrllength      = 1;
-avg_data              = ft_timelockanalysis(cfgtmp,datasel);
+datasel                  = ft_timelockanalysis(cfgtmp,datasel);
 
 %% if compute accuracy
 if compute_acc
@@ -219,7 +225,7 @@ if compute_acc
     for  t = 1:length(tsteps)
         cfgt            = [];
         cfgt.latency    = [tsteps(t)-timestep tsteps(t)];
-        datatmp         = ft_selectdata(cfgt,avg_data);
+        datatmp         = ft_selectdata(cfgt,datasel);
         rng('default'); % ensure same 'random' behaviour for each time slice.
         for rep = 1:repeats
             out               = ft_timelockstatistics(cfgcv,datatmp);
@@ -289,7 +295,7 @@ if compute_lc
     for  t = 1:length(tsteps)
         cfgt            = [];
         cfgt.latency    = [tsteps(t)-timestep tsteps(t)];
-        datatmp         = ft_selectdata(cfgt,avg_data);
+        datatmp         = ft_selectdata(cfgt,datasel);
         rng('default'); % ensure same 'random' behaviour for each time slice.
         parfor nsmp = 1:size(grid_smp,2)
             cfgtmp             = cfgcv; %need to assign variable within parfor loop
@@ -309,18 +315,18 @@ end
 if compute_general
     
     %remember order of trials for appenddata
-    avg_data.trialinfo(:,end+1) = [1:length(avg_data.trialinfo)]';
+    datasel.trialinfo(:,end+1) = [1:length(datasel.trialinfo)]';
     %select time window to be trained on
     cfgt             = [];
-    cfgt.trials       = ~ismember(avg_data.trialinfo(:,1),testtrig);
+    cfgt.trials       = ~ismember(datasel.trialinfo(:,1),testtrig);
     cfgt.latency     = trainwindow;
-    data_train       = ft_selectdata(cfgt,avg_data);
+    data_train       = ft_selectdata(cfgt,datasel);
     
     for t = 1:length(tsteps) % for each time window to be tested on
         cfgt              = [];
-        cfgt.trials       = ismember(avg_data.trialinfo(:,1),testtrig);
+        cfgt.trials       = ismember(datasel.trialinfo(:,1),testtrig);
         cfgt.latency      = [tsteps(t)-timestep tsteps(t)];
-        data_test        = ft_selectdata(cfgt,avg_data);
+        data_test        = ft_selectdata(cfgt,datasel);
         data_test.time   = data_train.time;
         
         cfgt              = [];
@@ -380,108 +386,19 @@ end
 if compute_tuda
     cfg.constant = 0;
     K = 4;
-    if docateg
-    labels(labels==2) = -1;
     
    
-    [N p ttrial] = size(avg_data.trial);
-    datatmp = reshape(permute(avg_data.trial,[3 1 2]),[ttrial*N p]);
+    [N p ttrial] = size(datasel.trial);
+    datatmp = reshape(permute(datasel.trial,[3 1 2]),[ttrial*N p]);
     datatmp(any(isnan(datatmp),2),:) = [];
-    T = cellfun(@(c) length(c), datasel.time);
+    T =repmat(length(datasel.time),[N 1]);
     
     options.K = K;
     options.parallel_trials = 1;
     [tuda,Gamma] = tudatrain (datatmp,labels,T,options);
     
     cfgcv.Gamma = Gamma; 
-    out               = ft_timelockstatistics(cfgcv,avg_data);
-    
-    options = [];
-    options.lossfunc = 'quadratic';
-    R2 = tudacv(datatmp,labels,T,options);
-    figure
-    plot(R2)
-    
-%       for icv = 1:NCV
-%             Ntr = sum(c.training{icv}); Nte = sum(c.test{icv});
-%             Xtrain = reshape(X(:,c.training{icv},:),[ttrial*Ntr p]);
-%             ytrain = reshape(Y(:,c.training{icv},:),[ttrial*Ntr q]);
-%             Xtest = reshape(X(:,c.test{icv},:),[ttrial*Nte p]);
-%             Gammatrain = reshape(G(:,c.training{icv},:),[ttrial*Ntr K]);
-%             Gammatest = reshape(Gp(:,c.test{icv},:),[ttrial*Nte K]);
-%             for k = 1:K
-%                 sGamma = repmat(sqrt(Gammatrain(:,k)),1,p);
-%                 Xtrain_k = Xtrain .* sGamma;
-% !!!!!!!!!! Multiply (weight) data for each fold and each state, and
-% compute model coefficients and predict data for each state, then sum all
-% statewise predictions together.
-%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-%                 ytrain_k = ytrain .* sGamma(:,1:q);
-%                 Beta = (Xtrain_k' * Xtrain_k + RidgePen) \ (Xtrain_k' * ytrain_k);
-%                 sGamma = repmat(Gammatest(:,k),[1 q]); 
-%                 Ypred(:,c.test{icv},:) = Ypred(:,c.test{icv},:) + ...
-%                     reshape( (Xtest * Beta) .* sGamma , [ttrial Nte q]);
-%             end
-%         end
-    %plot
-    Gammax = reshape(Gamma,[ttrial N K]);
-    figure(); 
-    subplot(2,2,1); plot(squeeze(mean(Gammax,2)),'LineWidth',3); ylim([-0.05 1.05])
-    subplot(2,2,2); plot(squeeze(Gammax(:,1,:)),'LineWidth',3); ylim([-0.05 1.05])
-    subplot(2,2,3); plot(squeeze(Gammax(:,2,:)),'LineWidth',3); ylim([-0.05 1.05])
-    subplot(2,2,4); plot(squeeze(Gammax(:,3,:)),'LineWidth',3); ylim([-0.05 1.05])
-    %accuracy
-    options.NCV = 5;
-    options.lossfunc = 'quadratic';
-    R2 = tudacv(datatmp,labels,T,options);
-    figure()
-    plot(R2,'LineWidth',3);% ylim([-0.05 1.05])
-    end
-    
-    
-    
-    
-    cfg.constant = 0;
-    K = 4;
-    
-    for  t = 1:20%size(datasel.time{1},2)
-        t
-        datatmp = squeeze(avg_data.trial(:,:,t));
-        [betas(t,:,:),~,~,~,Mu(t,:),Sigma(t,:)] = ridgeregression_sa(cfg,datatmp,datatmp,labels);
-        for j = 1:20%size(datasel.time{1},2)
-            datatmpj        = squeeze(avg_data.trial(:,:,j));
-            Yhat            = predictdata(squeeze(betas(t,:,:)), Mu(t,:), Sigma(t,:), datatmpj,cfg);
-            %compute error of each model e(t,j) = sum(sqrt(X(j)v(t) - Y(j)));
-            e(t,j,:) = sum((Yhat - labels).^2);
-        end
-    end
-    %compute divergence between all models; d(vi,vj) =  eij  +  eji  .
-    for i = 1:size(e,3)
-        d(:,:,i) = squeeze(e(:,:,i) + e(:,:,i)');
-    end
-    %representative weights = group T decoding models into K clusters (hierarchical clustering)
-    Z = linkage(squeeze(d(:,:,1)));
-    
-    c = cluster(Z,'Maxclust',K);
-    %how to find representatives?
-    %for now simply take first one
-    for i = 1:K
-        ind = find(c == i);
-        betas_rep(i,:,:) = betas(ind(1),:,:);
-    end
-    %refine weights by expectations maximisation?
-    
-    %get rid of synchrony across trials using bayesian approach (hmm-mar
-    %toolbox)
-    %% Resolve dipole sign ambiguity
-    % do using toolbox
-    [N p ttrial] = size(avg_data.trial);
-    datatmp = reshape(permute(avg_data.trial,[1 3 2]),[N*ttrial p]);
-    datatmp(any(isnan(datatmp),2),:) = [];
-    T = cellfun(@(c) length(c), datasel.time);
-    options.K = K;
-    options.parallel_trials = 1;
-    [tuda,Gamma] = tudatrain (datatmp,labels,T,options);
+    out               = ft_timelockstatistics(cfgcv,datasel);
     
 end
 
