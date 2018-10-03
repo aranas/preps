@@ -167,8 +167,8 @@ logtxt               = cell2struct(logtxt,rowHeadings,2);
 %correct erroneous trigger from trl file
 if logtxt.Subject(1)==3
     trl(2442,:) = [];
-% elseif logtxt.Subject(1)==6
-%     trl(2351,:) = [];
+ elseif logtxt.Subject(1)==6
+     trl(2351,:) = [];
 elseif logtxt.Subject(1)==9
     trl(2089,:) = [];
 elseif logtxt.Subject(1)==10
