@@ -11,6 +11,7 @@ if ~exist('numfeat',        'var'), numfeat      = 250;                         
 if ~exist('do_plotacc',     'var'), do_plotacc   = false;                                     end
 if ~exist('do_plotgeneral', 'var'), do_plotgeneral   = false;                                 end
 if ~exist('suffix',         'var'), suffix       = '';                                        end
+if ~exist('datasuffix',     'var'), datasuffix   = '';                                        end
 pos = {'ART','NN','VVFIN','ADJA','APPR','NA','VA','Fill'};
 trigger = {[111,114,121,124,211,214,221,224], %Determiner
     [112,115,122,125,212,215,222,225],        %Nouns
@@ -22,7 +23,7 @@ trigger = {[111,114,121,124,211,214,221,224], %Determiner
     [30:39]};                                 %all words in filler sentences
 %% plot classification accuracy
 if do_plotacc
-filename = fullfile(save_dir, subj, sprintf('classacc_%s_%dfolds_%dfeats_%s%s',subj,folds,numfeat,horzcat(classes{:}),suffix));
+filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
 
 load(filename)
 load(strcat(filename,'_shuf'))
@@ -37,7 +38,7 @@ distributionPlot(acc','color','b');
 xticklabels(time)
 xlabel('time in ms (center of 100ms time slice)')
 ylabel('classification accuracy')
-ylim([0.2 0.9])
+ylim([0.3 1])
 title(sprintf('classifier: %s - classes:%s - %s',classifier, horzcat(classes{:}),subj),'interpreter','none')
 classstr = sprintf('%s vs. %s',classes{1},classes{2});
 h = get(gca,'Children');
@@ -53,7 +54,7 @@ if length(xt) > 10
   xticklabels(time)
 end
 
-fname = sprintf('%s/Figures/classacc_%s_%dfolds_%dfeats_%s%s',save_dir,subj,folds,numfeat,horzcat(classes{:}),suffix);
+fname = sprintf('%s/Figures/classacc_%s%s_%dfolds_%dfeats_%s%s',save_dir,subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix);
 export_fig(fname,'-png');
 clf;
 end
