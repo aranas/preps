@@ -9,11 +9,12 @@ trigger = {[111,114,121,124,211,214,221,224], %Determiner
     [219,229],                                %last word Noun attached
     [119,129],                                %last word Verb attached
     [30:39]};                                 %all words in filler sentences
-neg = {'Det','Noun','Verb','Adj','Prep','NA','VA','Fill'};
+pos = {'Det','Noun','Verb','Adj','Prep','NA','VA','Fill'};
 if ~exist('root_dir',     'var'), root_dir     = '/project/3011210.01/';  end
 if ~exist('split_attach', 'var'), split_attach = 0;                       end
 if ~exist('split_corpus', 'var'), split_corpus = 0;                       end
 if ~exist('split_freq', 'var'),   split_freq = 1;                       end
+if ~exist('dodemean', 'var'),   dodemean = 1;                       end
 %% Load data & convert to planar gradients
 filenames = '/project/3011210.01/MEG/sub*dataclean_lp01.mat';
 d = dir(filenames);
@@ -22,11 +23,9 @@ for subj = 1:length(d)
     clear badcomp compds
     
     %reject noisy trials
-%     load(fullfile(root_dir,'MEG',sprintf('sub-%0.3d_outlier',subj)));
-%     ind_clean               = ~ismember(data.trialinfo(:,3),outlier_trials(:,end));
-    cfg         = [];
-    cfg.method  = 'summary';
-    data        = ft_rejectvisual(cfg,data);
+    load(fullfile(root_dir,'MEG',sprintf('sub-%0.3d_muscle',subj)));
+    ind_clean               = ~ismember(data.trialinfo(:,3),noisy_trials(:,end));
+
     %split conditions
     if split_attach
         cfg           = [];
@@ -85,14 +84,15 @@ for subj = 1:length(d)
     end
     
     %Baselining
-%     cfg           = [];
-%     cfg.demean    = 'yes';
-%     cfg.baselinewindow = [-0.2 0];
-%     data1          = ft_preprocessing(cfg,data1);
-%     data2          = ft_preprocessing(cfg,data2);
+    if dodemean
+    cfg           = [];
+    cfg.demean    = 'yes';
+    cfg.baselinewindow = [-0.2 0];
+    data1          = ft_preprocessing(cfg,data1);
+    data2          = ft_preprocessing(cfg,data2);
+    end
     
     cfg           = [];
-    cfg.removemean= 'yes';
     cfg.vartrllength = 2;
     avg1{subj}          = ft_timelockanalysis(cfg, data1);
     avg2{subj}          = ft_timelockanalysis(cfg, data2);
@@ -135,10 +135,10 @@ end
 
 
 cfg           = [];
-ga1           = ft_timelockgrandaverage(cfg, avg1planarComb{:});
-ga2           = ft_timelockgrandaverage(cfg, avg2planarComb{:});
+gaVA           = ft_timelockgrandaverage(cfg, avg1planarComb{:});
+gaNA          = ft_timelockgrandaverage(cfg, avg2planarComb{:});
 
-save('/project/3011210.01/MEG/groupdata/group_erf_lowfreqvshighfreq_allwords','gaV','gaN','sens','avg1planarComb','avg2planarComb');
+save('/project/3011210.01/MEG/groupdata/group_erf_VAvsNA_lp01','gaVA','gaNA','sens','avg1planarComb','avg2planarComb');
 
 %% Plotting
 cfg = [];
@@ -147,7 +147,7 @@ cfg.xlim = [0.7 0.8];
 cfg.colorbar = 'yes';
 cfg.layout = 'CTF275_helmet.mat';
 figure()
-ft_topoplotER(cfg,ga2,ga1)
+ft_topoplotER(cfg,gaVA,gaNA)
 
 
 %% Stats
