@@ -4,7 +4,7 @@
 if ~exist('subj',           'var'), subj         = 'pilot-005';                               end
 if ~exist('root_dir',       'var'), root_dir     = '/project/3011210.01/MEG/';                end
 if ~exist('save_dir',       'var'), save_dir     = '/project/3011210.01/MEG/Classification';  end
-if ~exist('classes',        'var'), classes      = {'VA', 'NA'};                             end
+if ~exist('classes',        'var'), classes      = {'NN', 'VVFIN'};                             end
 if ~exist('classifier',     'var'), classifier   = 'preps_naivebayes';                        end
 if ~exist('folds',          'var'), folds        = 20;                                        end
 if ~exist('numfeat',        'var'), numfeat      = 250;                                       end
@@ -86,6 +86,34 @@ if do_plotgeneral
         traintim(2),horzcat(classes{:}),horzcat(testpos{:}));
     export_fig(fname,'-png');
     clf;
+end
+
+if do_plotbl
+load(filename)
+% compute confidence intervals   
+accbounds       = std(acc,[],2);              
+accshufbounds   = std(accshuf,[],2);   
+macc            = mean(acc,2);
+maccshuf        = mean(accshuf,2);
+
+figure('units','normalized','outerposition',[0 0 1 1])
+hold on;
+[hl, hp] = boundedline(round(cfgcv.timeinfo*1000), [macc maccshuf], [accbounds accshufbounds],'alpha');
+set(hl,'linewidth',3)
+
+xticklabels(time)
+xlabel(sprintf('time in ms (center of %d ms sliding window)',cfgcv.twidth*1000))
+ylabel('classification accuracy')
+ylim([0.3 1])
+title(sprintf('classifier: %s - classes:%s - %s',classifier, horzcat(classes{:}),subj),'interpreter','none')
+legend('multiclass','permuted classes')
+set(legend,'Location','best')
+set(gca,'FontSize',25)
+set(gca,'LineWidth',4)
+
+fname = fullfile(save_dir,'/Figures/',filename);
+export_fig(fname,'-png');
+clf;
 end
 
 
