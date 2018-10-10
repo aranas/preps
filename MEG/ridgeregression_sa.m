@@ -15,11 +15,16 @@ if cfg.constant == 1
     Mu = 0;
     Sigma = 0;
 else
-    [x_train, Mu, Sigma] = zscore(x_train);
+    %scaling part of normalization already taken care of in
+    %ft_statistics_crossvalidate
+    Sigma   = cfg.sigma;
+    Mu      = mean(x_train);
+    mu2     = sum(Mu.^2);
+    xmu     = x_train*Mu';
+    
+    varx    = cfg.datvar;
+    varx    = varx-xmu-xmu'+mu2;
 end
-%pre-compute data variance
-varx                 = x_train * x_train';
-
 % train ridge regression with several lambda values using cross-validation
 if ~isempty(lambdas) && exist('lambdas','var') && size(lambdas,1)<2
     lambda_hat       = repmat(lambdas,n,1);
