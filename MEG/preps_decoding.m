@@ -37,7 +37,7 @@ switch classifier
     
     case 'preps_naivebayes'
         %needs classes - derive from seltrig
-        if ~exist('statfun',    'var'), statfun = {'accuracy'};                 end
+        if ~exist('statfun',    'var'), statfun = {'accuracy','confusion'};     end
         if ~exist('numfeat',    'var'), numfeat = 250;                          end
         
     case 'ridgeregression_sa'
@@ -121,9 +121,9 @@ switch dattype
         rng(5)
         nsmp       = length(data.time{1}) - nearest(data.time{1},0);
         smp0       = nearest(data.time{1},0);
-        beta       = rand(300,270*nsmp);%simulating 60 component data trained on in 100ms (31smp) window
-        bsltmp     = 0.1*randn(length(labels),270*smp0);
-        datatmp    = labels * beta + 0.1 * randn(length(labels),270*nsmp);
+        beta       = rand(300,270*nsmp);%simulating 270 channel data trained on in 100ms (31smp) window
+        bsltmp     = max(max(labels))*randn(length(labels),270*smp0);
+        datatmp    = labels * beta + 0.1*randn(length(labels),270*nsmp);
         
         datasel             = data;
         datasel             = rmfield(datasel,'sampleinfo');
@@ -179,7 +179,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% Create dependent variable %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if ~exist('labels','var')
+if ~strcmp(dattype,'simulate')
     fprintf('retrieving trial labels based on part of speech\n')
     [~,loctrial]        = ismember(datasel.trialinfo(:,1),seltrig);
     [upos, ulabel , labels]  = unique(pos(loctrial));
@@ -196,7 +196,7 @@ if doposttest % relabel samples according to individual post tests;
     for smp = 1:size(datasel.trial,2)
         id = datasel.trialinfo(smp,2);
         if strcmp(stimuli(id).post_test(subjn).attachment,'Nomen')
-            labels(smp) = ulabel(find(strcmp(upos,'NA')));
+            labels(smp) = ulabel(find(strcmp(upos,'NA')));%FIXME is the use of ulabel correct here?
         else
             labels(smp) = ulabel(find(strcmp(upos,'VA')));
         end
@@ -284,7 +284,7 @@ fprintf('precomputing randomisations...\n')
 labels_perm = cell(repeats,1);
 
 for rep = 1:repeats
-    if ulabel==2% if two classes do stratified permutation
+    if length(unique(labels))==2% if two classes do stratified permutation
         %FIXME: adapt for multiclass case.
         indx_1            = find(labels==1);
         indx_2            = find(labels==2);
@@ -302,41 +302,41 @@ end
 switch mode    
     case 'normal'
         fprintf('train & test model looping over time\n')
-        acc         = zeros(nearest(time,endtim-twidth),1);
-        accshuf     = zeros(nearest(time,endtim-twidth),1);
+        stat         = cell(nearest(time,endtim-twidth),1);
+        statshuf     = cell(nearest(time,endtim-twidth),1);
 
         %% Loop over time & repeats
+        %remove cfg field for time & memory reasons
+        if isfield(datasel,'grad')
+         datasel = rmfield(datasel,{'cfg','elec','grad','sampleinfo'});
+        end
         for  t = 1:nearest(time,endtim-twidth)
             fprintf('timeslice %u: %d to %d ms\n',t,round(time(t)*1000),round((time(t)+twidth)*1000))
             rng('default'); % ensure same 'random' folding behaviour for each time slice.
             cfgcv.latency           = [time(t) time(t)+twidth];
-
+            
             for rep = 1:repeats
                 out                = ft_timelockstatistics(cfgcv,datasel);
-
+                
                 cfgtmp              = cfgcv;
                 cfgtmp.design       = labels_perm{rep};
                 outshuf             = ft_timelockstatistics(cfgtmp,datasel);
-            switch classifier
-                case 'preps_naivebayes'
-                    acc(t,rep)        = out.statistic.accuracy;
-                    accshuf(t,rep)    = outshuf.statistic.accuracy;
-                case 'ridgeregression_sa'
-                    acc(t,rep)        = out.statistic{1};
-                    accshuf(t,rep)    = outshuf.statistic{1};
-            end
+                
+                stat{t,rep}        = out.statistic;
+                statshuf{t,rep}    = outshuf.statistic;
             end
         end
         %%save results to file including timesteps
-        cfgcv.time = time;
-        cfgcv.twidth   = twidth;
+        cfgcv.time      = time;
+        cfgcv.twidth    = twidth;
+        cfgcv.vocab     = upos;
         switch classifier
             case 'preps_naivebayes'
                 filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
-                save(filename, 'acc','accshuf','cfgcv');
+                save(filename, 'stat','statshuf','cfgcv');
             case 'ridgeregression_sa'
                 filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
-                save(filename, 'acc','accshuf','cfgcv');
+                save(filename, 'stat','statshuf','cfgcv');
         end
         
     case 'lc'
@@ -396,7 +396,7 @@ switch mode
             cfgtmp.testfolds  = {find(ismember(datatmp.trialinfo(:,1),testtrig))};
             
             out             = ft_timelockstatistics(cfgtmp,datatmp);
-            acc(t)      = out.statistic.accuracy;
+            stat(t)      = out.statistic.accuracy;
             acctrain(t) = out.trainacc.statistic.accuracy;
             
             parfor rep = 1:repeats
@@ -404,7 +404,7 @@ switch mode
                 cfginner.design     = labels_perm{rep};
                 
                 outshuf             = ft_timelockstatistics(cfginner,datatmp);
-                accshuf(t,rep)      = outshuf.statistic.accuracy;
+                statshuf(t,rep)      = outshuf.statistic.accuracy;
                 accshuftrain(t,rep) = outshuf.trainacc.statistic.accuracy;
             end
         end
