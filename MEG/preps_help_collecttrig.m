@@ -8,7 +8,7 @@ trigger     = {[111,114,121,124,211,214,221,224,117,127,217,227], %Determiner
                 [116,126,216,226],                        %Preposition
                 [219,229],                                %last word Noun attached
                 [119,129],                                %last word Verb attached
-                [30:39]};                                 %all words in filler sentences
+                [31:39]};                                 %all words in filler sentences
                 %[40 140 240] questions
 if strcmp(subj,'pilot-002')
     warning('need to adjust trigger info')
@@ -22,7 +22,10 @@ if isempty(seltrig{1})
     seltrig = {horzcat(trigger{:})};
 end
 
-if isa(seltrig{1},'double')
+if length(seltrig) == 1 && strcmp(seltrig{1},'Fill')
+    seltrig = trigger{strcmp(pos,seltrig{1})};
+    selpos = {'ART','NN','VVFIN','ART','NN','APPR','ART','ADJA','NN'};
+elseif isa(seltrig{1},'double')
     selpos = cell(1,length(seltrig{1}));
     for i = 1:length(trigger)
         selind = find(ismember(seltrig{1},trigger{i}));
