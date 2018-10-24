@@ -5,11 +5,11 @@
 % {dml.standardizer dml.blogreg};
 
 %% Set variables
-
+load preps_stimuli
 root_dir     = '/project/3011210.01/MEG/';
 save_dir     = '/project/3011210.01/MEG/Classification';
 
-
+%need to be specified!!
 if ~exist('mode',               'var'), mode  = '';                            end
 if ~exist('classifier',         'var'), classifier  = '';                      end
 
@@ -20,18 +20,25 @@ if ~exist('datasuffix',     'var'), datasuffix   = '';                         e
 if ~exist('twidth',         'var'), twidth       = 0.1;                        end %width of sliding time window in s
 if ~exist('toverlap',       'var'), toverlap     = 0.1;                        end %how much sliding time windows will overlap in %
 if ~exist('time',           'var'), time         = 'all';                      end %total time to cover
-%data selection & preprocessing options
+%how to treat data
 if ~exist('seltrig',        'var'), seltrig      = '';                         end %default selects all
 if ~exist('dattype',        'var'), dattype      = 'sensor';                   end %which data to load for decoding. Can be sensor (default), lcmv or simulate
 if ~exist('dopca',          'var'), dopca        = false;                      end
 if ~exist('clean_muscle',   'var'), clean_muscle = false;                      end
+%how to label data
 if ~exist('dopretest100',   'var'), dopretest100 = false;                      end
 if ~exist('doposttest',     'var'), doposttest   = false;                      end
 if ~exist('dow2v',          'var'), dow2v        = false;                      end % if false (default) dependent variable will be part of speech label
-
-%preproc trigger info
+if ~exist('dow2vcateg',     'var'), dow2vcateg   = false;                      end
+%how to treat time
+if ~exist('time_avg',       'var'), time_avg     = false;                      end
+suffix              = [suffix '_avg'];
+if ~exist('time_concat',    'var'), time_concat  = false;                      end
+suffix              = [suffix '_concat'];
+%preproc trigger infofile
+if ~exist('pos','var') || isempty(seltrig)
 [seltrig, pos] = preps_help_collecttrig(subj, seltrig);
-
+end
 %classifier-specific parameters
 switch classifier
     
@@ -75,13 +82,13 @@ switch mode
         warning('no mode specified - nothing is computed')
         return;
 end
+
 %filenames
 lcmvfile        = fullfile(root_dir,strcat(subj,'_preps_lcmv_parc.mat'));
 channelfile     = fullfile(root_dir,sprintf('%s_dataclean%s.mat',subj, datasuffix));
 artfctfile      = fullfile(root_dir,strcat(subj,'_muscle'));
 subjn           = str2num(subj(end-2:end));
 
-load preps_stimuli
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% Load & Select data (Design matrix)%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -117,24 +124,35 @@ switch dattype
                 end
             end
         end
-        %independent variable is linear mixture of random betas + noise
-        rng(5)
-        nsmp       = length(data.time{1}) - nearest(data.time{1},0);
-        smp0       = nearest(data.time{1},0);
-        beta       = rand(300,270*nsmp);%simulating 270 channel data trained on in 100ms (31smp) window
-        bsltmp     = max(max(labels))*randn(length(labels),270*smp0);
-        datatmp    = labels * beta + 0.1*randn(length(labels),270*nsmp);
         
-        datasel             = data;
-        datasel             = rmfield(datasel,'sampleinfo');
+        %independent variable is linear mixture of random betas + noise
+        [N,q]       = size(labels);        
+        [p,ttrial]  = size(data.trial{1});
+        
+        % random regression coefficients
+        rng(5)
+        beta        = rand(q,p);
+        
+        datasel     = data;
+        datasel     = rmfield(datasel,'sampleinfo');
         datasel.trialinfo   = 1:length(labels);
-        for i = 1:size(datatmp,1)
-            datasel.trial{i}  = [reshape(squeeze(bsltmp(i,:)),[270 smp0]) reshape(squeeze(datatmp(i,:)),[270 nsmp])];
-            datasel.time{i}   = data.time{1};
+        
+        datasel.trial = cell(N,1); % data
+        datasel.time  = cell(N,1);
+        for n = 1:N
+            t = 1;
+            for t=1:ttrial
+                if t<nearest(data.time{1},0) %if baseline
+                    Y = labels(1,randperm(size(labels,2)));
+                else
+                    Y = labels(n,:);
+                end
+                datasel.trial{n}(:,t) = Y * beta(:,:) + 0.1 * randn(1,p);  
+            end
+            datasel.time{n} = data.time{1};
         end
-        datasel.trial   = datasel.trial(1:size(datatmp,1));
-        datasel.time    = datasel.time(1:size(datatmp,1));
-        suffix          = [suffix '_simulated']; 
+
+        suffix       = [suffix '_simulated']; 
     otherwise
         warning('no datatype is specified')
         return
@@ -205,26 +223,14 @@ if doposttest % relabel samples according to individual post tests;
 end
 
 if dow2v  % replace categorical labels with w2v info
-    fprintf('replacing categorical labels with continuous word embedding values\n')
-    labels = zeros(size(datasel.trial,2),300);
-    indsel = false(1,size(datasel.trial,2));
-    for smp = 1:size(datasel.trial,2)
-        id          = datasel.trialinfo(smp,2);
-        trig        = num2str(datasel.trialinfo(smp,1));
-        w2vtmp      = stimuli(id).words(str2num(trig(end))).w2v;
-        if size(w2vtmp,2)~=0
-            labels(smp,:) = stimuli(id).words(str2num(trig(end))).w2v;
-            indsel(smp) = 1;
-        end
-    end
-    %only keep trials for which w2v is known
-    labels          = labels(indsel,:);
-    cfg             = [];
-    cfg.trials      = indsel;
-    datasel         = ft_selectdata(cfg,datasel);
-    suffix          = [suffix '_w2v'];
+    [w2v,datasel,labels]   = preps_getw2v(datasel);
+    suffix              = [suffix '_w2v'];
 end
 
+if dow2vcateg
+    [w2v,datasel,labels]   = preps_getw2v(datasel,'ncluster',4);
+    suffix              = [suffix '_w2vcateg'];
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Set Configuration %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -305,16 +311,34 @@ switch mode
         stat         = cell(nearest(time,endtim-twidth),1);
         statshuf     = cell(nearest(time,endtim-twidth),1);
 
-        %% Loop over time & repeats
         %remove cfg field for time & memory reasons
-        if isfield(datasel,'grad')
+        if isfield(datasel,'elec')
          datasel = rmfield(datasel,{'cfg','elec','grad','sampleinfo'});
         end
+        %loop over time
+        datatmp = datasel;
+        labels_perm2 = labels_perm;
         for  t = 1:nearest(time,endtim-twidth)
             fprintf('timeslice %u: %d to %d ms\n',t,round(time(t)*1000),round((time(t)+twidth)*1000))
             rng('default'); % ensure same 'random' folding behaviour for each time slice.
-            cfgcv.latency           = [time(t) time(t)+twidth];
             
+            % with time dimension
+            if time_avg
+                cfgcv.latency       = [time(t) time(t)+twidth];
+                cfgcv.avgovertime   = 'yes'; 
+            elseif time_concat
+                seltime             = nearest(datatmp.time,[time(t) time(t)+twidth]);
+               
+                [n,ncomp,ntime]     = size(datatmp.trial(:,:,seltime(1):seltime(2)));
+                datasel.trial       = reshape(permute(datatmp.trial(:,:,seltime(1):seltime(2)) ,[1 3 2]),[n*ntime ncomp]);
+                datasel.time        = datatmp.time(1);
+                
+                cfgcv.design        = repmat(labels, ntime,1);
+                labels_perm         = cellfun(@(x) repmat(x, ntime,1),labels_perm2,'UniformOutput',false);
+            else
+                cfgcv.latency           = [time(t) time(t)+twidth];
+            end
+            %loop over repetitions
             for rep = 1:repeats
                 out                = ft_timelockstatistics(cfgcv,datasel);
                 
@@ -330,12 +354,13 @@ switch mode
         cfgcv.time      = time;
         cfgcv.twidth    = twidth;
         cfgcv.vocab     = upos;
+        cfgcv.trialinfo = datatmp.trialinfo;
         switch classifier
             case 'preps_naivebayes'
-                filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, subj, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
                 save(filename, 'stat','statshuf','cfgcv');
             case 'ridgeregression_sa'
-                filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, subj, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
                 save(filename, 'stat','statshuf','cfgcv');
         end
         
@@ -425,20 +450,46 @@ switch mode
         
         %% if do Hidden markov model as described in Vidaurre et al. 2018
     case 'tuda'
-        cfgcv.constant          = 0;
-        K                       = 4;
-        [N p ttrial]            = size(datasel.trial);
-        datatmp                 = reshape(permute(datasel.trial,[3 1 2]),[ttrial*N p]);
-        datatmp(any(isnan(datatmp),2),:) = [];
-        T                       = repmat(length(datasel.time),[N 1]);
+        for  t = 1:nearest(time,endtim-twidth)
+            fprintf('timeslice %u: %d to %d ms\n',t,round(time(t)*1000),round((time(t)+twidth)*1000))
+            rng('default'); % ensure same 'random' folding behaviour for each time slice.
+            cfgt = [];
+            cfgt.latency           = [time(t) time(t)+twidth];
+            datasel2    = ft_selectdata(cfgt,datasel);
+            
+            K                       = 4;
+            [N p ttrial]            = size(datasel2.trial);
+            datatmp                 = reshape(permute(datasel2.trial,[3 1 2]),[ttrial*N p]);
+            datatmp(any(isnan(datatmp),2),:) = [];
+            T                       = repmat(length(datasel2.time),[N 1]);
+            
+            options.K               = K;
+            options.parallel_trials = 1;
+            [tuda,Gamma]            = tudatrain (datatmp,labels,T,options);
+            
+            cfgcv.Gamma             = Gamma;
+            for rep = 1:repeats
+                out                     = ft_timelockstatistics(cfgcv,datasel2);
+                
+                
+                cfgtmp              = cfgcv;
+                cfgtmp.design       = labels_perm{rep};
+                outshuf             = ft_timelockstatistics(cfgtmp,datasel2);
+                
+                stat{t,rep}        = out.statistic;
+                statshuf{t,rep}    = outshuf.statistic;
+            end
+        end
         
-        options.K               = K;
-        options.parallel_trials = 1;
-        [tuda,Gamma]            = tudatrain (datatmp,labels,T,options);
-        
-        cfgcv.Gamma             = Gamma;
-        out                     = ft_timelockstatistics(cfgcv,datasel);
-        
+        suffix = [suffix '_tuda'];
+        %%save results to file including timesteps
+        cfgcv.time      = time;
+        cfgcv.twidth    = twidth;
+        cfgcv.vocab     = upos;
+        cfgcv.Gamma     = Gamma;
+        cfgcv.trialinfo = datasel.trialinfo;
+        filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+        save(filename, 'stat','statshuf','cfgcv');
 end
 
 
