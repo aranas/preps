@@ -4,20 +4,21 @@
 %which plot to generate
 if ~exist('do_plotacc',     'var'), do_plotacc      = false;            end
 if ~exist('do_plotgeneral', 'var'), do_plotgeneral  = false;            end
-if ~exist('do_plotbl',      'var'), do_plotbl       = false;            end
+if ~exist('do_plotbl',      'var'), do_plotbl       = true;            end
 if ~exist('do_confusion',   'var'), do_confusion    = false;            end
 
-if ~exist('filename',       'var'), filename        = '';               end
+if ~exist('file',       'var'), file        = '';               end
 
-root_dir    = '/project/3011210.01/MEG';
-fileparts   = strsplit(filename,'_');
-mode        = fileparts{1};
-subj        = fileparts{2};
-save_file   = fullfile(root_dir,'figures',mode,strrep(strjoin(fileparts(2:end),'_'),'mat','png'));
+root_dir                = '/project/3011210.01/MEG';
+[filepath, name, ext]   = fileparts(file);
+parts                   = strsplit(name,'_');
+mode                    = parts{1};
+subj                    = parts{2};
+save_file               = fullfile(root_dir,'figures',mode,strcat(name,'.png'));
 
 %% plot classification accuracy
 if do_plotacc
-load(filename)
+load(name)
 
 time = cfg.timeinfo-0.05;%fixme:outdated
 time = round(time*1000);
@@ -55,9 +56,9 @@ if do_plotgeneral
     if ~exist('testtrig',   'var'), testtrig     = horzcat(trigger{6:7});   end
 
     testpos = pos(cellfun(@(x) any(ismember(x,testtrig)),trigger));
-    filename = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:})));
-    load(filename)
-    load(strcat(filename,'_shuf'))
+    name = fullfile(save_dir, subj, sprintf('classgeneral_%s_%dfeats_%sto%s',subj,numfeat,horzcat(classes{:}),horzcat(testpos{:})));
+    load(name)
+    load(strcat(name,'_shuf'))
     
     figure('units','normalized','outerposition',[0 0 1 1])
     h1 = plot(cfgtmp.timeinfo-0.05,accshuf,'color',[0,0,0]+0.5,'linewidt',4);
@@ -80,15 +81,19 @@ if do_plotgeneral
 end
 
 if do_plotbl
-    load(fullfile(root_dir,'Classification',subj,filename))
+    load(fullfile(root_dir,'Classification',subj,name))
     if strcmp(cfgcv.mva,'ridgeregression_sa')
         [m,n] = size(stat);
-        acc = reshape(vertcat(stat{:}),[m n 4]);
+        z     = size(stat{1},2);
+        acc = reshape(vertcat(stat{:}),[m n z]);
         acc = cell2mat(squeeze(acc(:,:,1)));
         
-        accshuf = reshape(vertcat(statshuf{:}),[m n 4]);
+        accshuf = reshape(vertcat(statshuf{:}),[m n z]);
         accshuf = cell2mat(squeeze(accshuf(:,:,1)));
     else
+        c =  length(cfgcv.vocab);
+        [m, n, ~] = size(stat);
+        
         stat = cell2mat(stat);
         stat = struct2cell(stat);
         statshuf = cell2mat(statshuf);
@@ -96,8 +101,8 @@ if do_plotbl
         
         confusion = squeeze(stat(2,:,:));
         confusionshuf = squeeze(statshuf(2,:,:));
-        mconf = mean(reshape(cat(3,confusion{:}),[5 5 19 50]),4);
-        stdconf = std(reshape(cat(3,confusion{:}),[5 5 19 50]),[],4);
+        mconf = mean(reshape(cat(3,confusion{:}),[c c m n]),4);
+        stdconf = std(reshape(cat(3,confusion{:}),[c c m n]),[],4);
         
         acc = cell2mat(squeeze(stat(1,:,:)));
         accshuf = cell2mat(squeeze(statshuf(1,:,:)));
@@ -112,20 +117,18 @@ if do_plotbl
     hold on;
     taxis = round(cfgcv.time(1:nearest(cfgcv.time,cfgcv.time(end)-cfgcv.twidth))*1000);
     [hl, hp] = boundedline(taxis, [macc maccshuf], [accbounds accshufbounds],'alpha');
-    set(hl,'linewidth',3)
+
     
-    xticklabels(cfg.cvtime)
     xlabel(sprintf('time in ms (center of %d ms sliding window)',cfgcv.twidth*1000))
     ylabel('classification accuracy')
     ylim([0 1])
-    title(sprintf('classifier: %s - classes:%s - %s',classifier, horzcat(classes{:}),subj),'interpreter','none')
+    title(sprintf('classifier: %s - classes:%s - %s',cfgcv.mva, horzcat(cfgcv.vocab{:}),subj),'interpreter','none')
     legend('multiclass','permuted classes')
     set(legend,'Location','best')
     set(gca,'FontSize',25)
     set(gca,'LineWidth',4)
     
     export_fig(save_file,'-png');
-    clf;
 end
 
 if do_confusion
