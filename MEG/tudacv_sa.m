@@ -96,7 +96,7 @@ if isfield(cfg,'mode')
 else, mode = 1;
 end
 if isfield(cfg,'CVmethod')
-    CVmethod = cfg.conservative; cfg = rmfield(cfg,'CVmethod');
+    CVmethod = cfg.CVmethod; cfg = rmfield(cfg,'CVmethod');
 else, CVmethod = 1;
 end
 if isfield(cfg,'Nperm')
@@ -209,21 +209,22 @@ Gp = Gammapred;
 for icv = 1:NCV
     Ntr = length(c.training{icv}); Nte = length(c.test{icv});
     Xtrain = reshape(X(:,c.training{icv},:),[ttrial*Ntr p]);
-    ytrain = reshape(Y(:,c.training{icv},:),[ttrial*Ntr q]);
-    Xtest = reshape(X(:,c.test{icv},:),[ttrial*Nte p]);
+    ytrain = squeeze(Y(1,c.training{icv},:));
+    Xtest = reshape(permute(X(:,c.test{icv},:),[2 1 3]),[Nte ttrial*p]);
     Gammatrain = reshape(G(:,c.training{icv},:),[ttrial*Ntr K]);
     Gammatest = reshape(Gp(:,c.test{icv},:),[ttrial*Nte K]);
     for k = 1:K
         sGamma = repmat(sqrt(Gammatrain(:,k)),1,p);
         Xtrain_k = Xtrain .* sGamma;
+        Xtrain_k = reshape(permute(reshape(Xtrain_k,[ttrial Ntr p]),[2 1 3]),[Ntr ttrial*p]);
         %ytrain_k = ytrain .* sGamma(:,1:q);%% FIXME:valid to skip
         %this ste;??
         %Beta = (Xtrain_k' * Xtrain_k + RidgePen) \ (Xtrain_k' * ytrain_k);
-        [model{k},result]  = mvafun(cfg,Xtrain_k,Xtest,ytrain);
+        [model{k},result]  = mvafun(cfg,Xtrain_k,Xtest,ytrain');
         %sGamma = repmat(Gammatest(:,k),[1 q]);
         [maxval,maxind] = max(Gammatest,[],2);
         sGamma = (maxind==k);
-        Ypred(:,c.test{icv},:) = Ypred(:,c.test{icv},:) + reshape(result .* sGamma, [ttrial Nte size(result,2)]);
+        Ypred(:,c.test{icv},:) = Ypred(:,c.test{icv},:) + reshape(result .* sGamtuma, [ttrial Nte size(result,2)]);
     end
     results{icv} = reshape(Ypred(:,c.test{icv},:),[ttrial*Nte size(result,2)]);
     ytest = reshape(Y(:,c.test{icv},:),[ttrial*Nte q]);
