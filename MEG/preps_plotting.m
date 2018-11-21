@@ -113,17 +113,25 @@ if do_plotbl
     macc            = mean(acc,2);
     maccshuf        = mean(accshuf,2);
     
+    
     figure('units','normalized','outerposition',[0 0 1 1])
     hold on;
     taxis = round(cfgcv.time(1:nearest(cfgcv.time,cfgcv.time(end)-cfgcv.twidth))*1000);
-    [hl, hp] = boundedline(taxis, [macc maccshuf], [accbounds accshufbounds],'alpha');
-
+    [hl, hp] = boundedline(taxis, [macc maccshuf], reshape([accbounds accshufbounds],[length(accbounds) 1 2]), ...
+        'alpha');
+    set(hl,'Linewidt',3);
     
     xlabel(sprintf('time in ms (center of %d ms sliding window)',cfgcv.twidth*1000))
     ylabel('classification accuracy')
-    ylim([0 1])
+    ylim([0.2 1])
     title(sprintf('classifier: %s - classes:%s - %s',cfgcv.mva, horzcat(cfgcv.vocab{:}),subj),'interpreter','none')
-    legend('multiclass','permuted classes')
+    legend('binary classes','permuted classes')
+    ax = gca();
+    ax.XAxisLocation = 'origin';
+    ax.YAxisLocation = 'origin';
+    ax.TickDir = 'out';
+    box off;
+    set(gca,'Layer','Top')
     set(legend,'Location','best')
     set(gca,'FontSize',25)
     set(gca,'LineWidth',4)
@@ -131,8 +139,34 @@ if do_plotbl
     export_fig(save_file,'-png');
 end
 
-if do_confusion
+%% plot frequency spectrum of decoding accuracy
+if 0
+    subjects = strsplit(sprintf('sub-%.3d ', [1:10]));
+    subjects = subjects(~cellfun(@isempty, subjects));
+    Fs  = 303;
+    N = 303;
+    t = ((1:N)/Fs)-0.2;
+    for s = 1:10
+        subj = subjects{s};
+        file = sprintf('nbayes_%s_20folds_60feats_NNVVFIN_allt_cleaned.mat',subj);
+        [filepath, name, ext]   = fileparts(file);
+        load(fullfile(root_dir,'Classification',subj,name))
+        stat = cell2mat(stat);
+        stat = struct2cell(stat);
+        acc = cell2mat(squeeze(stat(1,:,:)));
+        macc            = mean(acc,2);
+        fftacc= fft(macc,N)/(N/2);
+        fftacc = fftacc(1:N/2+1);
+        freqs = (Fs/N)*(1:N/2+1);
+        spctrm(s,:) = real(fftacc).^2 + imag(fftacc).^2;
+        %figure
+        %plot(freqs,spctrm(s,:));xlim([0 60]);ylim([0 0.002]);
+    end
+    allspctrm = mean(spctrm);
+    figure;
+    hl = plot(freqs,allspctrm);xlim([0 60]);ylim([0 0.001]);
     
 end
+
 
 
