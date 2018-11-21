@@ -25,16 +25,18 @@ if ~exist('seltrig',        'var'), seltrig      = '';                         e
 if ~exist('dattype',        'var'), dattype      = 'sensor';                   end %which data to load for decoding. Can be sensor (default), lcmv or simulate
 if ~exist('dopca',          'var'), dopca        = false;                      end
 if ~exist('clean_muscle',   'var'), clean_muscle = false;                      end
+if ~exist('avgrpt',         'var'), avgrpt       = false;                      end
 %how to label data
 if ~exist('dopretest100',   'var'), dopretest100 = false;                      end
 if ~exist('doposttest',     'var'), doposttest   = false;                      end
 if ~exist('dow2v',          'var'), dow2v        = false;                      end % if false (default) dependent variable will be part of speech label
 if ~exist('dow2vcateg',     'var'), dow2vcateg   = false;                      end
+if ~exist('ncluster',       'var'), ncluster     = 2;                          end
 %how to treat time
 if ~exist('time_avg',       'var'), time_avg     = false;                      end
-suffix              = [suffix '_avg'];
+if time_avg, suffix              = [suffix '_avg'];                            end
 if ~exist('time_concat',    'var'), time_concat  = false;                      end
-suffix              = [suffix '_concat'];
+if time_concat, suffix              = [suffix '_concat'];                      end
 %preproc trigger infofile
 if ~exist('pos','var') || isempty(seltrig)
 [seltrig, pos] = preps_help_collecttrig(subj, seltrig);
@@ -42,7 +44,7 @@ end
 %classifier-specific parameters
 switch classifier
     
-    case 'preps_naivebayes'
+    case {'preps_naivebayes','blogreg','svm'}
         %needs classes - derive from seltrig
         if ~exist('statfun',    'var'), statfun = {'accuracy','confusion'};     end
         if ~exist('numfeat',    'var'), numfeat = 250;                          end
@@ -52,7 +54,7 @@ switch classifier
         if ~exist('lambda',     'var'), lambda = [];                            end
         if ~exist('lambdaeval', 'var'), lambdaeval = 'mse';                     end
     otherwise
-        warning('no classifier is specified')
+        warning('no known classifier is specified')
         return;
 end
 
@@ -94,22 +96,7 @@ subjn           = str2num(subj(end-2:end));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 switch dattype
-    case 'lcmv'
-        fprintf('retrieving source time courses\n')
-        if exist(lcmvfile,'file') == 2 %if precomputed source data exist, simply load
-            load(lcmvfile);
-            data        = source_parc;
-            clear source_parc
-        else%otherwise compute from scratch
-            load(channelfile,'data')
-            cfg         = [];
-            cfg.trials  = ismember(data.trialinfo(:,1),cat(2,trigger{:}));
-            data        = ft_selectdata(cfg,data);
-            
-            [source_parc, filterlabel, source] = preps_lcmv(subj, data);
-            save(lcmvfile,'source_parc','filterlabel','source','-v7.3')
-        end
-    case 'sensor' %if using channel level data
+    case {'sensor', 'lcmv'} %if using channel level data
         fprintf('retrieving channel time courses\n')
         load(channelfile,'data')
     case 'simulate'
@@ -183,6 +170,23 @@ if ~strcmp(dattype,'simulate')
 end
 %clear some memory
 clear data
+if strcmp(dattype,'lcmv')
+    fprintf('retrieving source time courses\n')
+    if ~exist(lcmvfile,'file') == 2 %if source data doesn't exist compute from scratch
+        load(channelfile,'data')
+        cfg         = [];
+        cfg.trials  = ismember(data.trialinfo(:,1),cat(2,trigger{:}));
+        data        = ft_selectdata(cfg,data);
+        
+        [source_parc, filterlabel, source] = preps_lcmv(subj, data);
+        save(lcmvfile,'source_parc','filterlabel','source','-v7.3')
+    else% otherwise simply load
+        load(lcmvfile);
+    end
+    source_parc.filterlabel = filterlabel;
+    datasel = preps_sensor2parcel(datasel,source_parc);
+    clear source_parc source filterlabel
+end
 
 if dopca
     fprintf('decomposing data into 60 principal components\n')
@@ -192,6 +196,52 @@ if dopca
     cfgtmp.method            = 'pca';
     cfgtmp.numcomponent      = 60;
     datasel                  = ft_componentanalysis(cfgtmp, datasel);
+end
+
+if avgrpt
+    %doesn't work for all triggers defined
+    indxreps = [];
+    for i = 1:length(datasel.trialinfo)
+        id = datasel.trialinfo(i,2);
+        ipos = num2str(datasel.trialinfo(i,1));
+        ipos = str2num(ipos(end));
+        if ~ismember(i,indxreps)
+            if stimuli(id).condition == 1
+                paired = find(ismember([stimuli.condition],stimuli(id).condition) & ismember([stimuli.pair_num],stimuli(id).pair_num));
+                if ipos == 3 % verb repeats across sentence pairs
+                    paired = find(ismember([stimuli.condition],stimuli(id).condition) & ismember([stimuli.verb_num],stimuli(id).verb_num));
+                end
+            elseif stimuli(id).condition == 2
+                if ipos == 2; ipos = 5; elseif ipos == 5; ipos = 2; end
+                paired = find(ismember([stimuli.condition],stimuli(id).condition) & ismember([stimuli.pair_num],stimuli(id).pair_num));
+            end
+            if stimuli(id).condition ~=3
+                paired = paired(~ismember([stimuli(paired).id],id));
+                paired = find(datasel.trialinfo(:,2)==paired);
+                pairpos = num2str(datasel.trialinfo(paired,1));
+                indx = [];
+                for l = 1:size(pairpos,1)
+                    if str2double(pairpos(l,3))==ipos
+                        indx = paired(l);
+                    end
+                end
+                indxreps = [indxreps indx];
+                
+                datasel.trial{i} = mean(cat(3,datasel.trial{indx},datasel.trial{i}),3);
+            end
+        end
+    end  
+    sel = ones(length(datasel.trialinfo),1);
+    sel(indxreps) = 0;
+    sel = boolean(sel);
+    cfg = [];
+    cfg.trials = sel;
+    datasel = ft_selectdata(cfg,datasel);
+    if ~dow2v
+    cfg.trials = ~ismember(datasel.trialinfo(:,1),[112 122 212 222]);
+    datasel     = ft_selectdata(cfg,datasel);
+    end
+    
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -228,8 +278,9 @@ if dow2v  % replace categorical labels with w2v info
 end
 
 if dow2vcateg
-    [w2v,datasel,labels]   = preps_getw2v(datasel,'ncluster',4);
-    suffix              = [suffix '_w2vcateg'];
+    [w2v,datasel,labels]   = preps_getw2v(datasel,'ncluster',ncluster);
+    suffix                 = [suffix '_w2vcateg'];
+    upos                   = {unique(labels)}; 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Set Configuration %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -246,15 +297,33 @@ switch classifier
     
     case 'preps_naivebayes'
         %needs classes - derive from seltrig
-        cfgcv.numfeat       = numfeat;
+        if ~strcmp(numfeat,'all'), cfgcv.numfeat = numfeat; end
         cfgcv.poolsigma     = 0;
-        if ~exist('nfolds','var'), cfgcv.nfolds = 20; end
+        if ~exist('nfolds','var'), nfolds = 20; end
+        cfgcv.nfolds = nfolds;
         if length(unique(sum(labels==labels'))) ~= 1
             cfgcv.resample = 1;
         else
             cfgcv.resample = 0;
         end
-        
+    case 'blogreg'
+        cfgcv.mva = {dml.standardizer dml.blogreg};
+        if ~exist('nfolds','var'), nfolds = 20; end
+        cfgcv.nfolds = nfolds;
+        if length(unique(sum(labels==labels'))) ~= 1
+            cfgcv.resample = 1;
+        else
+            cfgcv.resample = 0;
+        end
+    case 'svm'
+        cfgcv.mva = {dml.standardizer dml.svm};
+        if ~exist('nfolds','var'), nfolds = 20; end
+        cfgcv.nfolds = nfolds;
+        if length(unique(sum(labels==labels'))) ~= 1
+            cfgcv.resample = 1;
+        else
+            cfgcv.resample = 0;
+        end
     case 'ridgeregression_sa'
         cfgcv.lambdaeval   = lambdaeval;
         cfgcv.lambda       = lambda;
@@ -279,15 +348,22 @@ time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%% Loop over time & repeats %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%% ft_timelockstatistics %%%%%%%%%%%%%%%%%%%%%%%%%
+if strcmp(dattype,'sensor')
+    cfg                   = [];
+    cfg.keeptrials        = 'yes';
+    cfg.vartrllength      = 1;
+    datasel               = ft_timelockanalysis(cfg,datasel);
+end
 
-cfg                   = [];
-cfg.keeptrials        = 'yes';
-cfg.vartrllength      = 1;
-datasel               = ft_timelockanalysis(cfg,datasel);
-
+datatmp = datasel;
 %permute labels
 fprintf('precomputing randomisations...\n')
 labels_perm = cell(repeats,1);
+
+if time_concat
+        ntime = diff(nearest(datasel.time,[0 twidth]))+1;
+        labels  = repmat(labels, ntime,1);
+end
 
 for rep = 1:repeats
     if length(unique(labels))==2% if two classes do stratified permutation
@@ -298,8 +374,8 @@ for rep = 1:repeats
         indx_2            = indx_2(randperm(size(indx_2,1)));
         
         labels_perm{rep}       = labels;
-        labels_perm{rep}(indx_1(1:(length(indx_1)/2))) = 2;
-        labels_perm{rep}(indx_2(1:(length(indx_2)/2))) = 1;
+        labels_perm{rep}(indx_1(1:(floor(length(indx_1)/2)))) = 2;
+        labels_perm{rep}(indx_2(1:(floor(length(indx_2)/2)))) = 1;
     else
         labels_perm{rep}       = labels(randperm(size(labels,1)),:);
     end
@@ -316,53 +392,65 @@ switch mode
          datasel = rmfield(datasel,{'cfg','elec','grad','sampleinfo'});
         end
         %loop over time
-        datatmp = datasel;
-        labels_perm2 = labels_perm;
+        %f = waitbar(0,'looping over time slices...');
+
         for  t = 1:nearest(time,endtim-twidth)
             fprintf('timeslice %u: %d to %d ms\n',t,round(time(t)*1000),round((time(t)+twidth)*1000))
             rng('default'); % ensure same 'random' folding behaviour for each time slice.
-            
+            %waitbar(t/nearest(time,endtim-twidth),f,sprintf('timeslice %u: %d to %d ms\n repetition %d',t,round(time(t)*1000),round((time(t)+twidth)*1000),0));
             % with time dimension
             if time_avg
                 cfgcv.latency       = [time(t) time(t)+twidth];
                 cfgcv.avgovertime   = 'yes'; 
             elseif time_concat
-                seltime             = nearest(datatmp.time,[time(t) time(t)+twidth]);
+                seltime             = nearest(datasel.time,[time(t) time(t)+twidth]);
                
-                [n,ncomp,ntime]     = size(datatmp.trial(:,:,seltime(1):seltime(2)));
-                datasel.trial       = reshape(permute(datatmp.trial(:,:,seltime(1):seltime(2)) ,[1 3 2]),[n*ntime ncomp]);
-                datasel.time        = datatmp.time(1);
+                [n,ncomp,ntime]     = size(datasel.trial(:,:,seltime(1):seltime(2)));
+                datatmp.trial       = reshape(permute(datasel.trial(:,:,seltime(1):seltime(2)) ,[1 3 2]),[n*ntime ncomp]);
+                datatmp.time        = datasel.time(1);
                 
-                cfgcv.design        = repmat(labels, ntime,1);
-                labels_perm         = cellfun(@(x) repmat(x, ntime,1),labels_perm2,'UniformOutput',false);
+                cfgcv.design        = labels;
+                %labels_perm         = cellfun(@(x) repmat(x, ntime,1),labels_perm,'UniformOutput',false); 
             else
                 cfgcv.latency           = [time(t) time(t)+twidth];
             end
             %loop over repetitions
             for rep = 1:repeats
-                out                = ft_timelockstatistics(cfgcv,datasel);
+                %waitbar(t/nearest(time,endtim-twidth)+(0.01*rep),f,sprintf('timeslice %u: %d to %d ms\n repetition %d',t,round(time(t)*1000),round((time(t)+twidth)*1000),rep));
+                out                = ft_timelockstatistics(cfgcv,datatmp);
                 
                 cfgtmp              = cfgcv;
                 cfgtmp.design       = labels_perm{rep};
-                outshuf             = ft_timelockstatistics(cfgtmp,datasel);
+                outshuf             = ft_timelockstatistics(cfgtmp,datatmp);
                 
                 stat{t,rep}        = out.statistic;
                 statshuf{t,rep}    = outshuf.statistic;
             end
         end
+        %close(f)
         %%save results to file including timesteps
         cfgcv.time      = time;
         cfgcv.twidth    = twidth;
         cfgcv.vocab     = upos;
-        cfgcv.trialinfo = datatmp.trialinfo;
+        cfgcv.trialinfo = datasel.trialinfo;
+        if strcmp(numfeat,'all'), numfeat = length(out.out{1}.Mu);end
+        cfgcv.numfeat   = numfeat;
         switch classifier
             case 'preps_naivebayes'
+                if dow2vcateg
+                    filename = fullfile(save_dir, subj, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',subj,datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
+                else
                 filename = fullfile(save_dir, subj, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
-                save(filename, 'stat','statshuf','cfgcv');
+                end
             case 'ridgeregression_sa'
                 filename = fullfile(save_dir, subj, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
-                save(filename, 'stat','statshuf','cfgcv');
+            case 'svm'
+                filename = fullfile(save_dir, subj, sprintf('svm_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+            case 'blogreg'
+                filename = fullfile(save_dir, subj, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+
         end
+        save(filename, 'stat','statshuf','cfgcv');
         
     case 'lc'
         N         = length(labels);
@@ -478,6 +566,9 @@ switch mode
                 
                 stat{t,rep}        = out.statistic;
                 statshuf{t,rep}    = outshuf.statistic;
+                
+                if ~isfield(out,'out')
+                end
             end
         end
         
