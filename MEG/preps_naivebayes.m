@@ -36,10 +36,12 @@ else
     end
     
     beta_hat               = nbayes_train(trainX, trainY', cfg.poolsigma); %third argument yes/no pool sigma?
-    out                    = [Mu Sigma];
+    out.Mu                 = Mu;
+    out.Sigma              = Sigma;
 end
 % use top N features
-beta_hat.sortedFeats   = sortGNBfeaturesByMuDifference(beta_hat,1); %2nd argument useSigma to normalize MuDifference yes/no
+[beta_hat.sortedFeats, vals]  = sortGNBfeaturesByMuDifference(beta_hat,1); %2nd argument useSigma to normalize MuDifference yes/no
+out.Mudiff             = vals;
 selectedFeats          = beta_hat.sortedFeats(1:cfg.numfeat);
 
 probs                  = nbayes_apply(testX, beta_hat,selectedFeats);
