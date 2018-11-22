@@ -13,6 +13,7 @@ save_dir     = '/project/3011210.01/MEG/Classification';
 if ~exist('mode',               'var'), mode  = '';                            end
 if ~exist('classifier',         'var'), classifier  = '';                      end
 
+if ~exist('save_full',          'var'), save_full = false;                     end
 %parameters
 if ~exist('subj',           'var'), subj         = 'pilot-005';                end
 if ~exist('suffix',         'var'), suffix       = '';                         end %might change later in code depending on selected options
@@ -341,7 +342,7 @@ else
     begtim = time(1);
     endtim = time(2);
 end
-
+endtim = endtim - (toverlap*twidth);
 time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
     (twidth - toverlap * twidth)) + 1);
 
@@ -384,9 +385,10 @@ end
 switch mode    
     case 'normal'
         fprintf('train & test model looping over time\n')
-        stat         = cell(nearest(time,endtim-twidth),1);
-        statshuf     = cell(nearest(time,endtim-twidth),1);
-
+        stat         = cell(nearest(time,endtim-twidth/2),1);
+        statshuf     = cell(nearest(time,endtim-twidth/2),1);
+        param        = cell(nearest(time,endtim-twidth/2),repeats,1);
+        paramshuf    = cell(nearest(time,endtim-twidth/2),repeats,1);
         %remove cfg field for time & memory reasons
         if isfield(datasel,'elec')
          datasel = rmfield(datasel,{'cfg','elec','grad','sampleinfo'});
@@ -394,7 +396,7 @@ switch mode
         %loop over time
         %f = waitbar(0,'looping over time slices...');
 
-        for  t = 1:nearest(time,endtim-twidth)
+        for  t = 1:nearest(time,endtim-twidth/2)
             fprintf('timeslice %u: %d to %d ms\n',t,round(time(t)*1000),round((time(t)+twidth)*1000))
             rng('default'); % ensure same 'random' folding behaviour for each time slice.
             %waitbar(t/nearest(time,endtim-twidth),f,sprintf('timeslice %u: %d to %d ms\n repetition %d',t,round(time(t)*1000),round((time(t)+twidth)*1000),0));
@@ -425,29 +427,40 @@ switch mode
                 
                 stat{t,rep}        = out.statistic;
                 statshuf{t,rep}    = outshuf.statistic;
+                
+                if save_full
+                    nout                    = size(out.out,1);
+                    param(t,rep,1:nout)     = out.out;
+                    paramshuf(t,rep,1:nout) = outshuf.out;
+                end
             end
         end
         %close(f)
+        
         %%save results to file including timesteps
         cfgcv.time      = time;
         cfgcv.twidth    = twidth;
         cfgcv.vocab     = upos;
         cfgcv.trialinfo = datasel.trialinfo;
+        if save_full
+            cfgcv.param = param;
+            cfgcv.paramshuf = paramshuf;
+        end
         if strcmp(numfeat,'all'), numfeat = length(out.out{1}.Mu);end
         cfgcv.numfeat   = numfeat;
         switch classifier
             case 'preps_naivebayes'
                 if dow2vcateg
-                    filename = fullfile(save_dir, subj, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',subj,datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
+                    filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',subj,datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
                 else
-                filename = fullfile(save_dir, subj, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
                 end
             case 'ridgeregression_sa'
-                filename = fullfile(save_dir, subj, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, subj, dattype, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
             case 'svm'
-                filename = fullfile(save_dir, subj, sprintf('svm_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, subj, dattype, sprintf('svm_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
             case 'blogreg'
-                filename = fullfile(save_dir, subj, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, subj, dattype, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
 
         end
         save(filename, 'stat','statshuf','cfgcv');
