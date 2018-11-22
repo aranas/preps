@@ -7,6 +7,7 @@ if ~exist('do_plotgeneral', 'var'), do_plotgeneral  = false;            end
 if ~exist('do_plotbl',      'var'), do_plotbl       = true;             end
 if ~exist('do_confusion',   'var'), do_confusion    = false;            end
 if ~exist('compute_freq',   'var'), compute_freq    = false;            end
+if ~exist('plot_featimportance','var'), plot_featimportance = false;    end
 
 if ~exist('file',       'var'), file        = '';               end
 
@@ -46,7 +47,7 @@ load(fullfile(root_dir,'Classification',subj,filepath, name))
         accshuf = cell2mat(squeeze(statshuf(1,:,:)));
     end
     
-if plot_featureimportance
+if plot_featimportance
     if strcmp(filepath,'lcmv')
         load atlas_subparc374_8k
         if strcmp(cfgcv.mva,'preps_naivebayes') %plotting normalized mean differences bt conditions
@@ -137,31 +138,34 @@ if do_plotbl
 end
 
 %% plot frequency spectrum of decoding accuracy
-if computefreq
+if compute_freq
     subjects = strsplit(sprintf('sub-%.3d ', [1:10]));
     subjects = subjects(~cellfun(@isempty, subjects));
     Fs  = 303;
     N = 303;
     t = ((1:N)/Fs)-0.2;
+    taper = hanning(N);
     for s = 1:10
         subj = subjects{s};
-        file = sprintf('nbayes_%s_20folds_60feats_NNVVFIN_allt_cleaned.mat',subj);
+        file = sprintf('sensor/nbayes_%s_20folds_60feats_NNVVFIN_allt_cleaned.mat',subj);
         [filepath, name, ext]   = fileparts(file);
-        load(fullfile(root_dir,'Classification',subj,name))
+        load(fullfile(root_dir,'Classification',subj,filepath,name))
         stat = cell2mat(stat);
         stat = struct2cell(stat);
         acc = cell2mat(squeeze(stat(1,:,:)));
         macc            = mean(acc,2);
-        fftacc= fft(macc,N)/(N/2);
+        macc            = macc - mean(macc);
+        
+        fftacc= fft(taper.*macc,N)/(N/2);
         fftacc = fftacc(1:N/2+1);
         freqs = (Fs/N)*(1:N/2+1);
         spctrm(s,:) = real(fftacc).^2 + imag(fftacc).^2;
         %figure
-        %plot(freqs,spctrm(s,:));xlim([0 60]);ylim([0 0.002]);
+        %plot(freqs,spctrm(s,:));xlim([0 60]);
     end
     allspctrm = mean(spctrm);
     figure;
-    hl = plot(freqs,allspctrm);xlim([0 60]);ylim([0 0.001]);
+    hl = plot(freqs,allspctrm);xlim([0 60]);
     
 end
 
