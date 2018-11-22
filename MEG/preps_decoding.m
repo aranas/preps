@@ -141,6 +141,8 @@ switch dattype
         end
 
         suffix       = [suffix '_simulated']; 
+    case 'hyperalign'
+        %load weights
     otherwise
         warning('no datatype is specified')
         return
@@ -185,7 +187,7 @@ if strcmp(dattype,'lcmv')
         load(lcmvfile);
     end
     source_parc.filterlabel = filterlabel;
-    datasel = preps_sensor2parcel(datasel,source_parc);
+    datasel = preps_sensor2parcel(datasel,source_parc,1);
     clear source_parc source filterlabel
 end
 
@@ -463,7 +465,7 @@ switch mode
                 filename = fullfile(save_dir, subj, dattype, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
 
         end
-        save(filename, 'stat','statshuf','cfgcv');
+        save(filename, 'stat','statshuf','cfgcv','-v7.3');
         
     case 'lc'
         N         = length(labels);
