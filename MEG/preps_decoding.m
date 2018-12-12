@@ -27,9 +27,11 @@ if ~exist('dattype',        'var'), dattype      = 'sensor';                   e
 if ~exist('dopca',          'var'), dopca        = false;                      end
 if ~exist('clean_muscle',   'var'), clean_muscle = false;                      end
 if ~exist('avgrpt',         'var'), avgrpt       = false;                      end
+if ~exist('resample',       'var'), resample     = false;                      end
 %how to label data
 if ~exist('dopretest100',   'var'), dopretest100 = false;                      end
 if ~exist('doposttest',     'var'), doposttest   = false;                      end
+if ~exist('matchlength',    'var'), matchlength  = false;                      end
 if ~exist('dow2v',          'var'), dow2v        = false;                      end % if false (default) dependent variable will be part of speech label
 if ~exist('dow2vcateg',     'var'), dow2vcateg   = false;                      end
 if ~exist('ncluster',       'var'), ncluster     = 2;                          end
@@ -100,6 +102,54 @@ switch dattype
     case {'sensor', 'lcmv'} %if using channel level data
         fprintf('retrieving channel time courses\n')
         load(channelfile,'data')
+    case 'mscca'
+        if ~exist('mscca_concat', 'var'), mscca_concat = 1; end
+        suffix      = [suffix '_mscca' int2str(mscca_concat)];
+        root_dir    = '/project/3011210.01/MEG/mscca';
+        files       = dir(root_dir);
+        files       = files(3:end);
+        if mscca_concat == 1
+            parcellabel = {};
+            for f = 1:length(files)%for each parcel
+                load(fullfile(root_dir,files(f).name),'comp')
+                cfg             = [];
+                cfg.trials      = ismember(comp.trialinfo(:,1),seltrig);
+                comp            = ft_selectdata(cfg,comp);
+                ntrials         = size(comp.trial,2);
+                [nchan,ntime]   = size(comp.trial{1});
+                parceldata(f,:,:,:) = reshape(cell2mat(comp.trial),[nchan ntime ntrials]);
+                parcellabel     = vertcat(parcellabel,strrep(comp.label,'mscca001',sprintf('parcel%03d',f)));
+            end
+            data = comp;
+            for t = 1:ntrials
+                data.trial{t}   = reshape(squeeze(parceldata(:,:,:,t)),[f*nchan 301]);
+                data.label      = parcellabel;
+            end
+        elseif mscca_concat == 2
+            load atlas_subparc374_8k
+            for f = 1:length(files)%for each parcel
+                load(fullfile(root_dir,files(f).name),'comp')
+                cfg             = [];
+                cfg.trials      = ismember(comp.trialinfo(:,1),seltrig);
+                comp            = ft_selectdata(cfg,comp);
+                if f == 1
+                    ntrials         = size(comp.trial,2);
+                    [nchan,ntime]   = size(comp.trial{1});
+                    data            = comp;
+                    data.trial      = cell(1,size(comp.trial,2)*nchan);
+                end
+                for chan = 1:nchan
+                    for t = 1:ntrials
+                    ind = t + (ntrials*chan) - ntrials;
+                    data.trial{ind} = [data.trial{ind};comp.trial{t}(chan,:)];
+                    end
+                end
+            end
+            data.time       = repmat(data.time,1,nchan);
+            data.trialinfo  = repmat(data.trialinfo,nchan,1);
+            data.label      = atlas.parcellationlabel;
+            data.label([1 2 188 189]) = []; 
+        end
     case 'simulate'
         fprintf('simulating channel time courses\n')
         load(channelfile,'data')
@@ -173,12 +223,17 @@ if ~strcmp(dattype,'simulate')
 end
 %clear some memory
 clear data
+
 if strcmp(dattype,'lcmv')
+    if ~exist('parcel_indx',    'var'), parcel_indx = [];       end
+    if ~isempty(parcel_indx), num_comp = 5; else, num_comp = 1; end
+    
     fprintf('retrieving source time courses\n')
     if ~exist(lcmvfile,'file') == 2 %if source data doesn't exist compute from scratch
         load(channelfile,'data')
+        %trigger     = [30:39,110:119,120:129,210:219,220:229];
         cfg         = [];
-        cfg.trials  = ismember(data.trialinfo(:,1),cat(2,trigger{:}));
+        cfg.trials  = ismember(data.trialinfo(:,1),cat(2,seltrig));
         data        = ft_selectdata(cfg,data);
         
         [source_parc, filterlabel, source] = preps_lcmv(subj, data);
@@ -187,7 +242,17 @@ if strcmp(dattype,'lcmv')
         load(lcmvfile);
     end
     source_parc.filterlabel = filterlabel;
-    datasel = preps_sensor2parcel(datasel,source_parc,1);
+    
+    if resample
+        cfg                 = [];
+        cfg.resamplefs      = 150;
+        cfg.detrend         = 'no';
+        datasel             = ft_resampledata(cfg, datasel);
+        suffix              = [suffix '_150hz'];
+        
+    end
+    
+    datasel = preps_sensor2parcel(datasel,source_parc,num_comp,parcel_indx);
     clear source_parc source filterlabel
 end
 
@@ -255,21 +320,20 @@ if ~strcmp(dattype,'simulate')
     [~,loctrial]        = ismember(datasel.trialinfo(:,1),seltrig);
     [upos, ulabel , labels]  = unique(pos(loctrial));
 else
-    ulabel = length(unique(labels));
     upos = {''};
 end
 
 if doposttest % relabel samples according to individual post tests;
     fprintf('relabeling trials according to individual post test\n')
-    if length(upos)>2 || contains({'VA','NA'},upos)
+    if length(upos)>2 
         warning('relabeling only makes sense when selected classes are VA & NA')
     end
     for smp = 1:size(datasel.trial,2)
         id = datasel.trialinfo(smp,2);
         if strcmp(stimuli(id).post_test(subjn).attachment,'Nomen')
-            labels(smp) = ulabel(find(strcmp(upos,'NA')));%FIXME is the use of ulabel correct here?
+            labels(smp) = find(strcmp(upos,'NA'));
         else
-            labels(smp) = ulabel(find(strcmp(upos,'VA')));
+            labels(smp) = find(strcmp(upos,'VA'));
         end
     end
     suffix      = [suffix '_posttest'];
@@ -285,6 +349,42 @@ if dow2vcateg
     suffix                 = [suffix '_w2vcateg'];
     upos                   = {unique(labels)}; 
 end
+
+%%%% Further subselections based on classes
+%make subselection to have same distribution of number of letters across
+%classes
+if matchlength
+    ntrials = length(datasel.trialinfo);
+    n = zeros(1,ntrials);
+    for i = 1:ntrials
+        tmppos = num2str(datasel.trialinfo(i,1));
+        n(i) = length(stimuli(datasel.trialinfo(i,2)).words(str2double(tmppos(end))).word{1});
+    end
+    indx1 = find(labels==1);
+    indx2 = find(labels==2);
+    figure;
+    h1 = histogram(n(indx1));hold on
+    h2 = histogram(n(indx2));
+    
+    minVal = min(h1.Values,h2.Values);
+    nletter = [3:11];
+    rng(9)
+    sel = [];
+    for l = 1:length(nletter) % for each length
+        indl = find(n==nletter(l));
+        tmp1 = intersect(indx1,indl)';
+        tmp2 = intersect(indx2,indl)';
+        sel = [sel tmp1(randperm(length(tmp1),minVal(l))) tmp2(randperm(length(tmp2),minVal(l)))];
+    end
+    cfg         = [];
+    cfg.trials  = false(1,length(datasel.trialinfo));
+    cfg.trials(sel) = 1;
+    datasel     = ft_selectdata(cfg,datasel);
+    labels      = labels(cfg.trials);
+    
+    suffix      = [suffix '_matchlength'];
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Set Configuration %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -368,6 +468,7 @@ if time_concat
         labels  = repmat(labels, ntime,1);
 end
 
+rng(5);
 for rep = 1:repeats
     if length(unique(labels))==2% if two classes do stratified permutation
         %FIXME: adapt for multiclass case.
@@ -444,6 +545,8 @@ switch mode
         cfgcv.twidth    = twidth;
         cfgcv.vocab     = upos;
         cfgcv.trialinfo = datasel.trialinfo;
+        cfgcv.previous  = datatmp.cfg;
+        cfgcv.previous  = rmfield(cfgcv.previous,'previous');
         if save_full
             cfgcv.param = param;
             cfgcv.paramshuf = paramshuf;
@@ -454,9 +557,12 @@ switch mode
             case 'preps_naivebayes'
                 if dow2vcateg
                     filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',subj,datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
+                elseif strcmp(dattype,'lcmv') && ~isempty(parcel_indx)
+                    filename = fullfile(save_dir, subj, dattype, 'searchlight',sprintf('nbayes_%s%s_%dfolds_%dfeats_%s_parcel%03d%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),parcel_indx,suffix));
                 else
                 filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
                 end
+                
             case 'ridgeregression_sa'
                 filename = fullfile(save_dir, subj, dattype, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
             case 'svm'
