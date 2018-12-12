@@ -3,6 +3,8 @@
 if ~exist('nfold',            'var'), nfold          = 5;                end
 if ~exist('parcel_indx',      'var'), error('a parcel index needs to be specified');  end
 if ~exist('datasuffix',       'var'), datasuffix    = '';                end
+if ~exist('resample',         'var'), resample      = false;             end
+if ~exist('suffix',           'var'), suffix        = '';                end
 
 root_dir     = '/project/3011210.01/MEG/';
 
@@ -14,6 +16,7 @@ subjectdata   = cell(1,numel(subjects));
 subjecttiming = cell(1,numel(subjects));
 %add for loop for parcels?
 for s = 1:numel(subjects)
+    s
     % load in the data
     subj = subjects{s};
     channelfile     = fullfile(root_dir,sprintf('%s_dataclean%s.mat',subj, datasuffix));
@@ -33,6 +36,14 @@ for s = 1:numel(subjects)
     data = ft_selectdata(cfg,data);
     
     load(lcmvfile);
+    
+    if resample
+        cfg                 = [];
+        cfg.resamplefs      = 150;
+        cfg.detrend         = 'no';
+        data                = ft_resampledata(cfg, data);
+        suffix              = [suffix '_150hz'];
+    end
     
     % convert the sensor-level data into  parcel-level data, for the
     % requested
@@ -70,5 +81,5 @@ comp                 = ft_struct2single(comp);
 
 savedir = '/project/3011210.01/MEG/mscca';
 
-filename = fullfile(savedir, sprintf('mscca_parcel%03d%s',parcel_indx));
+filename = fullfile(savedir, sprintf('mscca_parcel%03d%s',parcel_indx,suffix));
 save(filename, 'rho', 'W', 'A', 'comp');
