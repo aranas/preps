@@ -46,15 +46,18 @@ load(fullfile(root_dir,'Classification',subj,filepath, name))
         acc = cell2mat(squeeze(stat(1,:,:)));
         accshuf = cell2mat(squeeze(statshuf(1,:,:)));
     end
+
     
 if plot_featimportance
     if strcmp(filepath,'lcmv')
         load atlas_subparc374_8k
+        nparc = 370;
+        nt = 31;
         if strcmp(cfgcv.mva,'preps_naivebayes') %plotting normalized mean differences bt conditions
             %select output of interest (difference in normalised mean
             %between conditions)
             [t rep nfolds] = size(cfgcv.param);
-            nfeat = size(cfgcv.param{3,2,20}.Mudiff,2)
+            nfeat = size(cfgcv.param{1,1,1}.Mudiff,2);
             param = cell2mat(cfgcv.param);
             paramshuf = cell2mat(cfgcv.paramshuf);
             %reshape into TimeslicexRepxFoldxFeaturexTime
@@ -62,11 +65,10 @@ if plot_featimportance
             Mudiff = reshape([param.Mudiff],nfeat,t,rep,nfolds);            
             MudiffShuf = reshape([paramshuf.Mudiff],nfeat,t,rep,nfolds);
             
-            Mudiff = reshape(Mudiff,370,31,3,2,20);
-            MudiffShuf = reshape(MudiffShuf,370,31,3,2,20);
+            Mudiff = reshape(Mudiff,nparc,nt,t,rep,nfolds);
+            MudiffShuf = reshape(MudiffShuf,nparc,nt,t,rep,nfolds);
             
             %reshape to full voxel space instead of parcels
-            [nparc,nt,t,rep,nfold] = size(Mudiff);
             pindx = 1:length(atlas.parcellationlabel);
             pindx([1 2 188 189]) = []; %ignore medial wall parcels
             for p = 1:size(Mudiff,1)
@@ -110,18 +112,18 @@ if do_plotbl
     accshufbounds   = std(accshuf,[],2);
     macc            = mean(acc,2);
     maccshuf        = mean(accshuf,2);
-    
-    
+      
     figure('units','normalized','outerposition',[0 0 1 1])
     hold on;
-    taxis = round(cfgcv.time(1:nearest(cfgcv.time,cfgcv.time(end)-cfgcv.twidth))*1000);
+    taxis = round(cfgcv.time(1:nearest(cfgcv.time,cfgcv.time(end)-cfgcv.twidth/2))*1000);
+    %taxis = taxis(1:end-2);
     [hl, hp] = boundedline(taxis, [macc maccshuf], reshape([accbounds accshufbounds],[length(accbounds) 1 2]), ...
         'alpha');
     set(hl,'Linewidt',3);
     
     xlabel(sprintf('time in ms (center of %d ms sliding window)',cfgcv.twidth*1000))
     ylabel('classification accuracy')
-    ylim([0.2 1])
+    ylim([0.4 0.7])
     title(sprintf('classifier: %s - classes:%s - %s',cfgcv.mva, horzcat(cfgcv.vocab{:}),subj),'interpreter','none')
     legend('binary classes','permuted classes')
     ax = gca();
@@ -141,8 +143,8 @@ end
 if compute_freq
     subjects = strsplit(sprintf('sub-%.3d ', [1:10]));
     subjects = subjects(~cellfun(@isempty, subjects));
-    Fs  = 303;
-    N = 303;
+    Fs  = 304;
+    N = 304;
     t = ((1:N)/Fs)-0.2;
     taper = hanning(N);
     for s = 1:10
@@ -235,6 +237,48 @@ end
 %     clf;
 % end
 
-
-
-
+%plot feature importance separately for peaks and troughs
+% file = 'sensor/nbayes_sub-001_lp01_20folds_270feats_NNVVFIN_allt_avgrpt_cleaned.mat';
+% preps_plotting
+% hold on
+%
+% macc = macc-mean(macc);
+% maccshuf = maccshuf-mean(maccshuf);
+% [pks,plocs] = findpeaks(macc(62:end),'MinPeakProminence',0.020);
+% [trhs,tlocs] = findpeaks(-macc(62:end),'MinPeakProminence',0.020);
+% scatter(taxis(plocs+62),pks,400,'.')
+% scatter(taxis(tlocs+62),-trhs,400,'.')
+% 
+% [t rep nfolds] = size(cfgcv.param);
+% nfeat = size(cfgcv.param{1,1,1}.Mudiff,2);
+% indxtmp = [];
+% for i = 1:t
+%     if size(cfgcv.param{i,1,1}.Mudiff,2)~=nfeat
+%         indxtmp = [indxtmp i];
+%     end
+% end
+% 
+% param = cell2mat(cfgcv.param);
+% paramshuf = cell2mat(cfgcv.paramshuf);
+% 
+% for s = indxtmp
+% for i = 1:50
+% for j = 1:20
+% param(s,i,j).Mudiff = param(s-1,i,j).Mudiff;
+% paramshuf(s,i,j).Mudiff = paramshuf(s-1,i,j).Mudiff;
+% end
+% end
+% end
+% %paramshuf = cell2mat(cfgcv.paramshuf);
+% %reshape into TimeslicexRepxFoldxFeaturexTime
+% 
+% Mudiff = reshape([param.Mudiff],nfeat,t,rep,nfolds);
+% Mudiffshuf = reshape([paramshuf.Mudiff],nfeat,t,rep,nfolds);
+% 
+% imp = mean(mean(Mudiff,4),3);
+% imp = squeeze(mean(reshape(imp,270,2,304),2));
+% impshuf = mean(mean(Mudiffshuf,4),3);
+% impshuf = squeeze(mean(reshape(impshuf,270,2,304),2));
+% 
+% figure;imagesc(imp(:,plocs(1:end-1)));caxis([0 0.8])
+% figure;imagesc(imp(:,tlocs(1:end-1)));caxis([0 0.8])
