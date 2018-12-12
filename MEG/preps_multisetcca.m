@@ -35,7 +35,7 @@ if (numel(nfold)==1 && nfold>1) || iscell(nfold)
   % loop over the folds
   for k = 1:nfold
     fprintf('Computing fold %d/%d\n',k,nfold);
-    [W(:,:,:,k), A(:,:,:,k), rho(:,:,k), Rtest(:,:,k), Xtest(k,:)] = mous_multisetcca(X,testfold{k},K,lambda);
+    [W(:,:,:,k), A(:,:,:,k), rho(:,:,k), Rtest(:,:,k), Xtest(k,:)] = preps_multisetcca(X,testfold{k},K,lambda);
   end
   
   % do a polarity check on the weights and get a majority vote: Note that
