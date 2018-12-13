@@ -1,6 +1,7 @@
 function [trc, tlck] = mous_multisetcca_trc(data, varargin)
 
 output            = ft_getopt(varargin, 'output', 'rho');
+dosmooth          = ft_getopt(varargin, 'dosmooth', 0);
 output2           = ft_getopt(varargin, 'output2', 'average_mod');
 
 switch output
@@ -31,6 +32,13 @@ if outputflag>0
     % compute a d.f.
     for n = 1:length(tlck.trial)
         tlck.trial{n}(tlck.trial{n}==0) = nan;
+    end
+end
+
+if dosmooth>0
+    % do a boxcar smoothing of the time series
+    for m = 1:size(tlck.trial,1)
+        tlck.trial{m} = ft_preproc_smooth(squeeze(tlck.trial{m}),dosmooth); % use a smoothing kernel of odd number of samples
     end
 end
 
