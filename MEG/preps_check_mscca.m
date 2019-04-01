@@ -106,8 +106,8 @@ for parcel_indx = 1:length(files)
     cfg.trials = ismember(comp.trialinfo(:,1),[229,219]);
     compNA = ft_selectdata(cfg,comp);
     
-    trcVA = preps_multisetcca_trc(compVA,'output','Z_scaled','dosmooth',9);
-    trcNA = preps_multisetcca_trc(compNA,'output','Z_scaled','dosmooth',9);
+    trcVA = preps_multisetcca_trc(compVA,'output','Z_scaled','dosmooth',19);
+    trcNA = preps_multisetcca_trc(compNA,'output','Z_scaled','dosmooth',19);
     
     %alltrc(pindx(parcel_indx),:) = trc.rho;
     alltrcVA(pindx(parcel_indx),:) = trcVA.rho;

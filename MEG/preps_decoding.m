@@ -65,20 +65,16 @@ end
 switch mode
     case 'normal'
         if ~exist('repeats',    'var'), repeats = 50;                          end
-        %     case 'general'%generalising over time
-        %         %FIXME not fully integrated yet!!!
-        %         if ~exist('folds',  'var'), folds= 20;end
-        %         %specify training and testing time window/trials when generalising
-        %         %over time
-        %         if ~exist('trainwindow','var'), trainwindow  = [0.3 0.4];              end
-        %         if ~exist('testtrig',   'var'), testtrig     = horzcat(trigger{6:7});  end
-        %         fprintf(strcat('generalising to events ',repmat(' %d',size(testtrig)),'\n'),testtrig)
-        %         if ~any(ismember(testtrig,seltrig)) && ~exist('testlabel','var')
-        %             error('labels for test samples need to be specified')
-        %         else
-        %             fprintf(strcat('labeling events as ',repmat(' %d',size(testlabel)),'\n'),testlabel)
-        %         end
-        
+    
+    case 'general'%generalising over time
+         if ~exist('folds',  'var'), folds= 20;end
+         if ~exist('repeats',    'var'), repeats = 50; end
+                %specify training and testing time window/trials when generalising
+                %over time
+         if ~exist('trainwindow','var'), trainwindow  = [0.3 0.4];              end
+         if ~exist('testtrig',   'var'), error('labels for test samples need to be specified'); end 
+         seltrig    = [seltrig;testtrig'];
+         pos        = vertcat(pos,testpos);
     case 'lc'
         if ~exist('repeats',    'var'), repeats = 50;                          end
     case 'tuda'
@@ -108,9 +104,10 @@ switch dattype
         root_dir    = '/project/3011210.01/MEG/mscca';
         files       = dir(root_dir);
         files       = files(3:end);
-        if mscca_concat == 1
+        if mscca_concat == 1 % concat subjects as features/predictors
             parcellabel = {};
             for f = 1:length(files)%for each parcel
+                f
                 load(fullfile(root_dir,files(f).name),'comp')
                 cfg             = [];
                 cfg.trials      = ismember(comp.trialinfo(:,1),seltrig);
@@ -220,6 +217,11 @@ if ~strcmp(dattype,'simulate')
     cfg             = [];
     cfg.trials      = sel;
     datasel         = ft_selectdata(cfg,data);
+    %fix:why does this step also slightly shift time axis?
+    tn = size(datasel.time{1},2);
+    for i = 1:length(datasel.trial)
+        datasel.time{i}(1:tn) = datasel.time{1}(1:tn);
+    end
 end
 %clear some memory
 clear data
@@ -602,27 +604,28 @@ switch mode
         %% if do generalize over time
     case 'general'
         
-        %remember order of trials for appenddata
-        datasel.trialinfo(:,end+1) = [1:length(datasel.trialinfo)]';
+        suffix              = [suffix '_general'];
         %select time window to be trained on
         cfgt             = [];
         cfgt.trials       = ~ismember(datasel.trialinfo(:,1),testtrig);
         cfgt.latency     = trainwindow;
         data_train       = ft_selectdata(cfgt,datasel);
         
-        for t = 1:(length(time)-1)
+        for t = 1:nearest(time,endtim-twidth/2)
             cfgt              = [];
             cfgt.trials       = ismember(datasel.trialinfo(:,1),testtrig);
             cfgt.latency      = [time(t) time(t)+twidth];
             data_test        = ft_selectdata(cfgt,datasel);
-            data_test.time   = data_train.time;
+            %data_test.time   = data_train.time;
             
             cfgt              = [];
             datatmp           = ft_appenddata(cfgt,data_train,data_test);
             %recover original trial order
-            [~,idx]           = sort(datatmp.trialinfo(:,end));
-            datatmp.trial     = datatmp.trial(idx);
-            datatmp.trialinfo = datatmp.trialinfo(idx,:);
+             [~,idx]           = sort(datatmp.trialinfo(:,end));
+             datatmp.trial     = datatmp.trial(idx);
+             datatmp.trialinfo = datatmp.trialinfo(idx,:);
+             datatmp.time      = repmat({datatmp.time{1}},[1,size(datatmp.time,2)]);
+             
             %set parameters
             cfgtmp            = cfgcv;
             cfgtmp.type       = 'split';
@@ -630,32 +633,49 @@ switch mode
             cfgtmp.testfolds  = {find(ismember(datatmp.trialinfo(:,1),testtrig))};
             
             out             = ft_timelockstatistics(cfgtmp,datatmp);
-            stat(t)      = out.statistic.accuracy;
-            acctrain(t) = out.trainacc.statistic.accuracy;
+            stat(t)         = out.statistic.accuracy;
+            acctrain(t)     = out.trainacc.statistic.accuracy;
             
             parfor rep = 1:repeats
                 cfginner            = cfgtmp;
                 cfginner.design     = labels_perm{rep};
                 
                 outshuf             = ft_timelockstatistics(cfginner,datatmp);
-                statshuf(t,rep)      = outshuf.statistic.accuracy;
+                statshuf(t,rep)     = outshuf.statistic.accuracy;
                 accshuftrain(t,rep) = outshuf.trainacc.statistic.accuracy;
             end
         end
         %%save results to file including timesteps
-        cfgtmp.timeinfo    = time;
-        cfgtmp.twidth      = twidth;
-        cfgtmp.trainwindow = trainwindow;
-        cfgtmp.testtrigger = testtrig;
-        cfgtmp.testlabel   = testlabel;
-        prev = datatmp.cfg.previous;
-        testpos = pos(cellfun(@(x) any(ismember(x,testtrig)),trigger));
-        
-        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s%s_%dfeats_%sto%s%s',subj,datasuffix,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
-        save(filename, 'acc','acctrain','cfgtmp','prev');
-        
-        filename = fullfile(save_dir, subj, sprintf('classgeneral_%s%s_%dfeats_%sto%s%s_shuf',subj,datasuffix,numfeat,horzcat(classes{:}),horzcat(testpos{:}),suffix));
-        save(filename, 'accshuf','accshuftrain','cfgtmp','prev');
+        cfgcv.time        = time;
+        cfgcv.twidth      = twidth;
+        cfgcv.trainwindow = trainwindow;
+        cfgcv.testtrigger = testtrig;
+        cfgcv.testlabel   = testpos;
+        cfgcv.vocab     = upos;
+        cfgcv.trialinfo = datasel.trialinfo;
+        cfgcv.previous  = datatmp.cfg;
+        if strcmp(numfeat,'all'), numfeat = length(out.out{1}.Mu);end
+        cfgcv.numfeat   = numfeat;
+                
+        switch classifier
+            case 'preps_naivebayes'
+                if dow2vcateg
+                    filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',subj,datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
+                elseif strcmp(dattype,'lcmv') && ~isempty(parcel_indx)
+                    filename = fullfile(save_dir, subj, dattype, 'searchlight',sprintf('nbayes_%s%s_%dfolds_%dfeats_%s_parcel%03d%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),parcel_indx,suffix));
+                else
+                filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                end
+                
+            case 'ridgeregression_sa'
+                filename = fullfile(save_dir, subj, dattype, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
+            case 'svm'
+                filename = fullfile(save_dir, subj, dattype, sprintf('svm_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+            case 'blogreg'
+                filename = fullfile(save_dir, subj, dattype, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+
+        end
+        save(filename, 'stat','statshuf','cfgcv','-v7.3');
         
         %% if do Hidden markov model as described in Vidaurre et al. 2018
     case 'tuda'

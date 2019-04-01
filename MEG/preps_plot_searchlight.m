@@ -1,13 +1,13 @@
 function preps_plot_searchlight(subj,filename)
 
 root_dir    = '/project/3011210.01/MEG/Classification';
-files       = dir(fullfile(root_dir,subj,filename));
+files       = dir(fullfile(root_dir,subj,filename1));
 
 %check if all parcels have been computed
 allp  = {files(:).name};
 for parcel_indx = 1:370
     if isempty(cell2mat(strfind(allp,sprintf('parcel%03d',parcel_indx))))
-        qsubfeval('preps_execute_pipeline','preps_decoding',{'subj',subj},{'classifier','preps_naivebayes'},{'mode','normal'},{'dattype','lcmv'},{'seltrig',{'NA', 'VA'}},{'clean_muscle',1},{'dopca',0 },{'toverlap',0.8},{'datasuffix','_lp01'},{'numfeat','all'},{'parcel_indx',parcel_indx},{'resample',1},'memreq',8*1024^3,'timreq',5*60*60,'batchid',sprintf('preps_searchlight_NAVA_%s_parcel%03d',subj,parcel_indx));
+        qsubfeval('preps_execute_pipeline','preps_decoding',{'subj',subj},{'classifier','preps_naivebayes'},{'mode','general'},{'dattype','lcmv'},{'mscca_concat',1},{'seltrig',[113 123 213 223 115 125 215 225]},{'clean_muscle',1},{'dopca',0 },{'toverlap',0.8},{'numfeat','all'},{'testtrig',[119 129 219 229]},{'testpos',{'VVFIN';'VVFIN';'NN';'NN'}},{'trainwindow',[0.35 0.45]},{'parcel_indx',parcel_indx},'memreq',12*1024^3,'timreq',3*60*60,'batchid',sprintf('general_%s_%03d',subj,parcel_indx));
     end
 end
 
@@ -54,27 +54,31 @@ else
     for parcel_indx = 1:length(files)
         parcel_indx
         load(fullfile(files(parcel_indx).folder,files(parcel_indx).name));
-        
-        stat        = cell2mat(stat);
-        stat        = struct2cell(stat);
-        statshuf    = cell2mat(statshuf);
-        statshuf    = struct2cell(statshuf);
         indxparc    = strfind(files(parcel_indx).name,'parcel');
         indx        = pindx(str2double(files(parcel_indx).name(indxparc+6:indxparc+8)));
         
-        acc(indx,:,:)       = cell2mat(squeeze(stat(1,:,:)));
-        accshuf(indx,:,:)   = cell2mat(squeeze(statshuf(1,:,:)));
+        if iscell(stat)
+            stat        = cell2mat(stat);
+            stat        = struct2cell(stat);
+            statshuf    = cell2mat(statshuf);
+            statshuf    = struct2cell(statshuf);
+            acc(indx,:,:)       = cell2mat(squeeze(stat(1,:,:)));
+            accshuf(indx,:,:)   = cell2mat(squeeze(statshuf(1,:,:)));
+        else
+            acc(indx,:)       = stat;
+            accshuf(indx,:,:)   = statshuf;
+        end
         
         if parcel_indx==1,
             acc(374,end)=0;
             accshuf(374,end,end)=0;
-        end
-        
+        end  
     end
+    
     taxis = round(cfgcv.time(1:nearest(cfgcv.time,cfgcv.time(end)-cfgcv.twidth/2))*1000);
     cfgcv.time = taxis;
     indsuffix = strfind(files(1).name,'parcel')-1;
-    filename = fullfile(files(1).folder,[files(1).name(1:indsuffix),'allparcels']);
+    filename = fullfile(files(1).folder,[files(1).name(1:indsuffix),'allparcels_general']);
     save(filename,'acc','accshuf','cfgcv');
     acc(acc==0) = nan;
     accshuf(accshuf==0) = nan;
@@ -87,7 +91,7 @@ else
     source.time           = taxis;
     source.dimord         = 'chan_time';
     source.pow            = nanmean(acc,3);
-    source.mask           = double(mean(acc,3)>0.5);
+    source.mask           = double(mean(acc,3)>0.51);
     
     source.pow            = source.pow.*source.mask;
     
