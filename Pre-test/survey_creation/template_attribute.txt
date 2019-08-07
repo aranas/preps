@@ -1,5 +1,0 @@
-<row>
-    <qid><![CDATA[enterquestionidhere]]></qid>
-    <attribute><![CDATA[hide_tip]]></attribute>
-    <value><![CDATA[1]]></value>
-   </row>
