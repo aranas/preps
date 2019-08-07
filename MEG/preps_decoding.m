@@ -15,11 +15,11 @@ if ~exist('classifier',         'var'), classifier  = '';                      e
 
 if ~exist('save_full',          'var'), save_full = false;                     end
 %parameters
-if ~exist('subj',           'var'), subj         = 'pilot-005';                end
+if ~exist('subj',           'var'), subj         = 'pilot-005';                end %should be 'all' for mscca
 if ~exist('suffix',         'var'), suffix       = '';                         end %might change later in code depending on selected options
 if ~exist('datasuffix',     'var'), datasuffix   = '';                         end %can be empty for 2hp or '0.1hp'
 if ~exist('twidth',         'var'), twidth       = 0.1;                        end %width of sliding time window in s
-if ~exist('toverlap',       'var'), toverlap     = 0.1;                        end %how much sliding time windows will overlap in %
+if ~exist('toverlap',       'var'), toverlap     = 0.8;                        end %how much sliding time windows will overlap in %
 if ~exist('time',           'var'), time         = 'all';                      end %total time to cover
 %how to treat data
 if ~exist('seltrig',        'var'), seltrig      = '';                         end %default selects all
@@ -47,7 +47,7 @@ end
 %classifier-specific parameters
 switch classifier
     
-    case {'preps_naivebayes','blogreg','svm'}
+    case {'preps_naivebayes','blogreg','svm','naive'}
         %needs classes - derive from seltrig
         if ~exist('statfun',    'var'), statfun = {'accuracy','confusion'};     end
         if ~exist('numfeat',    'var'), numfeat = 250;                          end
@@ -56,6 +56,8 @@ switch classifier
         if ~exist('statfun',    'var'), statfun = {'eval_correlation'};         end% could be eval_rank
         if ~exist('lambda',     'var'), lambda = [];                            end
         if ~exist('lambdaeval', 'var'), lambdaeval = 'mse';                     end
+    case 'lda'
+        if ~exist('statfun',    'var'), statfun = 'accuracy';     end
     otherwise
         warning('no known classifier is specified')
         return;
@@ -65,7 +67,7 @@ end
 switch mode
     case 'normal'
         if ~exist('repeats',    'var'), repeats = 50;                          end
-    
+        
     case 'general'%generalising over time
          if ~exist('folds',  'var'), folds= 20;end
          if ~exist('repeats',    'var'), repeats = 50; end
@@ -74,11 +76,14 @@ switch mode
          if ~exist('trainwindow','var'), trainwindow  = [0.3 0.4];              end
          if ~exist('testtrig',   'var'), error('labels for test samples need to be specified'); end 
          seltrig    = [seltrig;testtrig'];
+         if size(testpos,1)<size(testpos,2), testpos = testpos';                end
          pos        = vertcat(pos,testpos);
     case 'lc'
         if ~exist('repeats',    'var'), repeats = 50;                          end
     case 'tuda'
         if ~exist('repeats',    'var'), repeats = 50;                          end
+    case 'mvpatoolbox'
+        if ~exist('repeats',    'var'), repeats = 50;                          end 
     otherwise
         warning('no mode specified - nothing is computed')
         return;
@@ -102,8 +107,7 @@ switch dattype
         if ~exist('mscca_concat', 'var'), mscca_concat = 1; end
         suffix      = [suffix '_mscca' int2str(mscca_concat)];
         root_dir    = '/project/3011210.01/MEG/mscca';
-        files       = dir(root_dir);
-        files       = files(3:end);
+        files       = dir(fullfile(root_dir,'mscca_parcel*.mat'));
         if mscca_concat == 1 % concat subjects as features/predictors
             parcellabel = {};
             for f = 1:length(files)%for each parcel
@@ -119,10 +123,10 @@ switch dattype
             end
             data = comp;
             for t = 1:ntrials
-                data.trial{t}   = reshape(squeeze(parceldata(:,:,:,t)),[f*nchan 301]);
+                data.trial{t}   = reshape(squeeze(parceldata(:,:,:,t)),[f*nchan ntime]);
                 data.label      = parcellabel;
             end
-        elseif mscca_concat == 2
+        elseif mscca_concat == 2%trials from all subjects are concatenated, parcels are features (similar to haxby neuron paper)
             load atlas_subparc374_8k
             for f = 1:length(files)%for each parcel
                 load(fullfile(root_dir,files(f).name),'comp')
@@ -145,7 +149,56 @@ switch dattype
             data.time       = repmat(data.time,1,nchan);
             data.trialinfo  = repmat(data.trialinfo,nchan,1);
             data.label      = atlas.parcellationlabel;
-            data.label([1 2 188 189]) = []; 
+            data.label([1 2 188 189]) = [];
+        elseif mscca_concat == 3
+            str = unique(pos);
+            str = strcat(str{:});
+            filename = sprintf('/project/3011210.01/MEG/mscca/avgdata_%s.mat',str);
+            if isfile(filename)
+                load(filename)
+            else
+                load atlas_subparc374_8k
+                label = atlas.parcellationlabel;
+                label([1 2 188 189]) = [];
+                for f = 1:length(files)%for each parcel
+                    f
+                    load(fullfile(root_dir,files(f).name),'comp');
+                    cfg             = [];
+                    cfg.trials      = ismember(comp.trialinfo(:,1),seltrig);
+                    cfg.avgoverchan = 'yes';
+                    comp            = ft_selectdata(cfg,comp);
+                    if f==1
+                        ntrials = size(comp.trial,2);
+                        data = comp;
+                        data.trial = cell(1,size(comp.trial,2));
+                    end
+                    for t = 1:ntrials
+                        data.trial{t} = [data.trial{t}; comp.trial{t}];
+                    end
+                end
+                data.label = label;
+                save(filename,'data')
+            end
+        elseif mscca_concat == 4 %extract aligned data for each subject separately
+            load atlas_subparc374_8k
+            label = atlas.parcellationlabel;
+            label([1 2 188 189]) = [];
+            for f = 1:length(files)%for each parcel
+                f
+                load(fullfile(root_dir,files(f).name),'comp')
+                cfg             = [];
+                cfg.trials      = ismember(comp.trialinfo(:,1),seltrig);
+                cfg.channel     = comp.label(contains(comp.label,subj));
+                comp         = ft_selectdata(cfg,comp);
+                if f == 1
+                    data            = comp;
+                    data.trial      = cell(1,size(comp.trial,2));
+                end
+                for t = 1:size(comp.trial,2)
+                    data.trial{t} = [data.trial{t};comp.trial{t}]; 
+                end
+            end
+            data.label = label;
         end
     case 'simulate'
         fprintf('simulating channel time courses\n')
@@ -390,8 +443,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Set Configuration %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+cfgcv = [];
 if ~isempty(classifier)
-    cfgcv                   = [];
     cfgcv.method            = 'crossvalidate';
     cfgcv.mva               = classifier;
     cfgcv.statistic         = statfun;
@@ -436,19 +489,27 @@ switch classifier
         div                = divisors(size(labels,1));
         div                = div(mod(div,2)==0);
         if ~exist('nfolds','var'), cfgcv.nfolds = size(labels,1)/div(nearest(div,20)); end
+    case 'lda'
+        if ~exist('nfolds','var'), nfolds = 20; end
+        cfgcv.nfolds = nfolds;
 end
 fprintf('using %i folds for cross-validation\n',cfgcv.nfolds)
 % compute time for loop%FIXME how to treat time in tuda case?
 if strcmp(time,'all')
     begtim  = min(cellfun(@min,datasel.time));
     endtim  = min(cellfun(@max,datasel.time));
-else
-    begtim = time(1);
-    endtim = time(2);
-end
-endtim = endtim - (toverlap*twidth);
+    endtim = endtim - (toverlap*twidth);
 time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
     (twidth - toverlap * twidth)) + 1);
+elseif length(time) == 2
+    begtim = time(1);
+    endtim = time(2);
+    endtim = endtim - (toverlap*twidth);
+time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
+    (twidth - toverlap * twidth)) + 1);
+else
+    endtim = min(cellfun(@max,datasel.time));
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%% Loop over time & repeats %%%%%%%%%%%%%%%%%%%%%%%
@@ -553,10 +614,11 @@ switch mode
             cfgcv.param = param;
             cfgcv.paramshuf = paramshuf;
         end
-        if strcmp(numfeat,'all'), numfeat = length(out.out{1}.Mu);end
-        cfgcv.numfeat   = numfeat;
+
         switch classifier
             case 'preps_naivebayes'
+                if strcmp(numfeat,'all'), numfeat = length(out.out{1}.Mu);end
+                cfgcv.numfeat   = numfeat;
                 if dow2vcateg
                     filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',subj,datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
                 elseif strcmp(dattype,'lcmv') && ~isempty(parcel_indx)
@@ -722,7 +784,42 @@ switch mode
         cfgcv.trialinfo = datasel.trialinfo;
         filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
         save(filename, 'stat','statshuf','cfgcv');
+    
+    
+    case 'mvpatoolbox'
+        cfg = [];
+        cfg.trials = true(1,length(datasel.trial));
+        for i = 1:length(datasel.trial)
+            if any(isnan(datasel.trial{i}(:)))
+                cfg.trials(i) = false;
+            end
+        end
+        datatmp = ft_selectdata(cfg,datasel);
+        labels = labels(cfg.trials);
+        
+        rng('default');
+        stat = cell(1,nearest(time,endtim-twidth/2));
+        for  t = 1:nearest(time,endtim-twidth/2)
+            cfg = [];
+            cfg.latency       = [time(t) time(t)+twidth];
+            
+            cfg.avgovertime   = 'no';
+            cfg.mvpa.cattim   = 1;
+            cfg.method = 'mvpa';
+            cfg.mvpa.classifier = 'svm';%goes fast for lda, but takes forever with svm
+            cfg.mvpa.metric = 'accuracy';
+            cfg.mvpa.k = nfolds;
+            cfg.mvpa.repeat = 5;
+            cfg.mvpa.stratify = 1;
+            %cfg.timextime = 'yes';
+            cfg.design = labels';
+            stat{t} = ft_timelockstatistics(cfg,datatmp);
+        end
+        figure
+        hold on
+        for  t = 1:nearest(time,endtim-twidth/2)
+            mv_plot_result(stat{t}.mvpa,stat{t}.time)
+        end
 end
-
 
 

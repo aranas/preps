@@ -20,12 +20,23 @@ pindx = 1:length(atlas.parcellationlabel);
 pindx([1 2 188 189]) = []; %ignore medial wall parcels
 %parcel_indx = pindx(strcmp(atlas.parcellationlabel,'R_17_B05_01'));
 
-alltrc = zeros(length(files),900,3);
-for i = 1:length(files)
-    load(sprintf('%s/rsa/trc_parcel%d',root_dir,i))
-    alltrc(pindx(parcel_indx),:,:) = trc;
+allrho = zeros(length(files),900,3);
+allrhoshuf = zeros(length(files),900,3,50);
+for parcel_indx = 1:length(files)
+    load(sprintf('%s/rsa/trc_parcel%d',root_dir,parcel_indx))
+    allrho(pindx(parcel_indx),:,:) = rho;
+    allrhoshuf(pindx(parcel_indx),:,:,:) = rhoshuf;
 end
 %compute difference
-diff = alltrc(:,:,1) - alltrc(:,:,3);
+diff = allrho(:,:,1) - allrho(:,:,3);
+diffshuf = squeeze(allrhoshuf(:,:,1,:) - allrhoshuf(:,:,3,:));
 
-    
+source                = [];
+source.brainordinate  = atlas;
+source.label          = atlas.parcellationlabel;
+source.time           = time;
+source.dimord         = 'chan_time';
+source.pow            = diff - mean(diffshuf,3);
+cfgp                  = [];
+cfgp.funparameter     = 'pow';
+ft_sourcemovie(cfgp, source);

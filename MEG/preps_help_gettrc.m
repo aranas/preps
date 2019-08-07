@@ -42,35 +42,31 @@ out = preps_multisetcca_trc(comp,'output2','single_cross','dosmooth',19);
 reps = 50;
 rho = zeros(size(out.rho,2),3);
 rhoshuf = zeros(size(out.rho,2),3,reps);
+datn = 10;
 for rep = 1:reps
     rng(rep)
     trcrep = out;
     trcrep.rho = trcrep.rho(randperm(size(trcrep.rho,1)),:);
-    
     trc = reshape(trcrep.rho,[20,20,900]);
-    trc = trc - diag(ones(1,20));
-    trc(trc==0) = nan;
-    for t = 1:size(trc,3)
-        quadN = tril(squeeze(trc(1:10,1:10,t)));
-        quadV = tril(squeeze(trc(11:20,1:10,t)));
-        quadC = trc(1:10,11:20,t);
-        rhoshuf(t,1,rep) = nanmean(quadN(find(quadN)));
-        rhoshuf(t,2,rep) = nanmean(quadV(find(quadV)));
-        rhoshuf(t,3,rep) = mean(quadC(:));
-    end
+    dat = trc(1:10,1:10,:);
+    for j = 1:size(dat,3), dat(:,:,j) = dat(:,:,j)-diag(diag(dat(:,:,j))); end
+    rhoshuf(:,1,rep) = squeeze(sum(sum(dat)))./(datn.*(datn-1));
+    dat = trc(11:20,1:10,:);
+    for j = 1:size(dat,3), dat(:,:,j) = dat(:,:,j)-diag(diag(dat(:,:,j))); end
+    rhoshuf(:,2,rep) = squeeze(sum(sum(dat)))./(datn.*(datn-1));
+    rhoshuf(:,3,rep) = squeeze(mean(mean(trc(1:10,11:20,:))));
 end
 
 trc = reshape(out.rho,[20,20,900]);
-trc = trc - diag(ones(1,20));
-trc(trc==0) = nan;
-for t = 1:size(trc,3)
-    quadN = tril(squeeze(trc(1:10,1:10,t)));
-    quadV = tril(squeeze(trc(11:20,1:10,t)));
-    quadC = trc(1:10,11:20,t);
-    rho(t,1) = nanmean(quadN(find(quadN)));
-    rho(t,2) = nanmean(quadV(find(quadV)));
-    rho(t,3) = mean(quadC(:));
-end
+dat = trc(1:10,1:10,:);
+for j = 1:size(dat,3), dat(:,:,j) = dat(:,:,j)-diag(diag(dat(:,:,j))); end
+rho(:,1) = squeeze(sum(sum(dat)))./(datn.*(datn-1));
+dat = trc(11:20,1:10,:);
+for j = 1:size(dat,3), dat(:,:,j) = dat(:,:,j)-diag(diag(dat(:,:,j))); end
+rho(:,2) = squeeze(sum(sum(dat)))./(datn.*(datn-1));
+rho(:,3) = squeeze(mean(mean(trc(1:10,11:20,:))));
+
+
 time = out.time{1};
 save(sprintf('%s/rsa/trc_parcel%d',root_dir,parcel_indx),'rho','rhoshuf','time','-v7.3')
 

@@ -1,4 +1,4 @@
-function [trc, tlck] = mous_multisetcca_trc(data, varargin)
+function [trc, tlck] = preps_multisetcca_trc(data, varargin)
 
 output            = ft_getopt(varargin, 'output', 'rho');
 dosmooth          = ft_getopt(varargin, 'dosmooth', 0);
@@ -83,7 +83,7 @@ switch output2
             trc.rho(:,:,:) = nanmean(dat,1)./nanstd(dat,[],1);
         end
     case 'single_cross'
-        trc.rho = reshape(c,[],numel(tlck.time));
+        trc.rho = reshape(c,[],numel(tlck.time{1}));
         for k = 1:nchan
             for m = 1:nchan
                 label{k,m} = sprintf('%s_%s',tlck.label{k},tlck.label{m});

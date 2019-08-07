@@ -1,7 +1,8 @@
-function preps_check_mscca(parcel_indx)
+
 
 % this script is for testing the results of the mscca
 if ~exist('do_premscca',        'var'), do_premscca = false;            end
+if ~exist('parcel_indx',        'var'), parcel_indx = [];            end
 
 root_dir    = '/project/3011210.01/MEG';
 files       = dir(fullfile(root_dir,'mscca'));
@@ -12,11 +13,12 @@ load atlas_subparc374_8k
 pindx = 1:length(atlas.parcellationlabel);
 pindx([1 2 188 189]) = []; %ignore medial wall parcels
 %parcel_indx = pindx(strcmp(atlas.parcellationlabel,'R_17_B05_01'));
-alltrc = zeros(length(files),301);
-alltrcVA = zeros(length(files),900);
-alltrcNA = zeros(length(files),900);
-for parcel_indx = 1:length(files)
-    parcel_indx
+
+% alltrc = zeros(length(files),301);
+% alltrcVA = zeros(length(files),900);
+% alltrcNA = zeros(length(files),900);
+%for parcel_indx = 1:length(files)
+    
     load(fullfile(root_dir,'mscca',files(parcel_indx).name))
     
     %trc = preps_multisetcca_trc(comp,'output','Z_scaled');
@@ -110,9 +112,9 @@ for parcel_indx = 1:length(files)
     trcNA = preps_multisetcca_trc(compNA,'output','Z_scaled','dosmooth',19);
     
     %alltrc(pindx(parcel_indx),:) = trc.rho;
-    alltrcVA(pindx(parcel_indx),:) = trcVA.rho;
-    alltrcNA(pindx(parcel_indx),:) = trcNA.rho;
-end
+%     alltrcVA(pindx(parcel_indx),:) = trcVA.rho;
+%     alltrcNA(pindx(parcel_indx),:) = trcNA.rho;
+
 % rng('default')
 % tmptrc = zeros(500,10,10,900);
 % idVA = unique(compVA.trialinfo(:,2));
