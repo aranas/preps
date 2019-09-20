@@ -1,4 +1,4 @@
-function [acc, dist, correct_pos, incorrect_pos] = eval_correlation(cfg,obj)
+function [acc, dist, correct_pos, incorrect_pos] = eval_compare_correlation(cfg,obj)
 
 success = 0;
 fail    = 0;

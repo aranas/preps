@@ -4,111 +4,119 @@
 % {dml.standardizer dml.svm};
 % {dml.standardizer dml.blogreg};
 
-%% Set variables
+
+maincfg = [];
+maincfg.mode = 'normal';
+maincfg.classifier = 'ridgeregression_sa';
+maincfg.seltrig = {'NN','VVFIN','ADJA'};
+maincfg.dow2v = 1;
+maincfg.w2vdim = 5;
+maincfg.statfun = 'eval_correlation';
+
+%% Set options
 load preps_stimuli
 root_dir     = '/project/3011210.01/MEG/';
 save_dir     = '/project/3011210.01/MEG/Classification';
 
-%need to be specified!!
-if ~exist('mode',               'var'), mode  = '';                            end
-if ~exist('classifier',         'var'), classifier  = '';                      end
+%Specify choices in decoding pipeline
+if ~isfield(maincfg,'mode'),            maincfg.mode  = '';                end
+if ~isfield(maincfg,'classifier'),      maincfg.classifier  = '';          end
 
-if ~exist('save_full',          'var'), save_full = false;                     end
+if ~isfield(maincfg,'save_full'),       maincfg.save_full = false;         end
 %parameters
-if ~exist('subj',           'var'), subj         = 'pilot-005';                end %should be 'all' for mscca
-if ~exist('suffix',         'var'), suffix       = '';                         end %might change later in code depending on selected options
-if ~exist('datasuffix',     'var'), datasuffix   = '';                         end %can be empty for 2hp or '0.1hp'
-if ~exist('twidth',         'var'), twidth       = 0.1;                        end %width of sliding time window in s
-if ~exist('toverlap',       'var'), toverlap     = 0.8;                        end %how much sliding time windows will overlap in %
-if ~exist('time',           'var'), time         = 'all';                      end %total time to cover
+if ~isfield(maincfg,'subj'),            maincfg.subj = 'pilot-005';        end %should be 'all' for mscca
+if ~exist('suffix','var'),          suffix       = '';         end %might change later in code depending on selected options
+if ~isfield(maincfg,'datasuffix'),      maincfg.datasuffix   = '';         end %can be empty for 2hp or '0.1hp'
+if ~isfield(maincfg,'twidth'),          maincfg.twidth       = 0.1;        end %width of sliding time window in s
+if ~isfield(maincfg,'toverlap'),        maincfg.toverlap     = 0.8;        end %how much sliding time windows will overlap in %
+if ~isfield(maincfg,'time'),            maincfg.time         = 'all';      end %total time to cover
 %how to treat data
-if ~exist('seltrig',        'var'), seltrig      = '';                         end %default selects all
-if ~exist('dattype',        'var'), dattype      = 'sensor';                   end %which data to load for decoding. Can be sensor (default), lcmv or simulate
-if ~exist('dopca',          'var'), dopca        = false;                      end
-if ~exist('clean_muscle',   'var'), clean_muscle = false;                      end
-if ~exist('avgrpt',         'var'), avgrpt       = false;                      end
-if ~exist('resample',       'var'), resample     = false;                      end
+if ~isfield(maincfg,'seltrig'),         maincfg.seltrig      = '';         end %default selects all
+if ~isfield(maincfg,'dattype'),         maincfg.dattype      = 'sensor';   end %which data to load for decoding. Can be sensor (default), lcmv or simulate
+if ~isfield(maincfg,'dopca'),           maincfg.dopca        = false;      end
+if ~isfield(maincfg,'clean_muscle'),    maincfg.clean_muscle = false;      end
+if ~isfield(maincfg,'avgrpt'),          maincfg.avgrpt       = false;      end
+if ~isfield(maincfg,'resample'),        maincfg.resample     = false;      end
 %how to label data
-if ~exist('dopretest100',   'var'), dopretest100 = false;                      end
-if ~exist('doposttest',     'var'), doposttest   = false;                      end
-if ~exist('matchlength',    'var'), matchlength  = false;                      end
-if ~exist('dow2v',          'var'), dow2v        = false;                      end % if false (default) dependent variable will be part of speech label
-if ~exist('dow2vcateg',     'var'), dow2vcateg   = false;                      end
-if ~exist('ncluster',       'var'), ncluster     = 2;                          end
+if ~isfield(maincfg,'dopretest100'),    maincfg.dopretest100 = false;                      end
+if ~isfield(maincfg,'doposttest'),      maincfg.doposttest   = false;                      end
+if ~isfield(maincfg,'matchlength'),     maincfg.matchlength  = false;                      end
+if ~isfield(maincfg,'dow2v'),           maincfg.dow2v        = false;                      end % if false (default) dependent variable will be part of speech label
+if ~isfield(maincfg,'dow2vcateg'),      maincfg.dow2vcateg   = false;                      end
+if ~isfield(maincfg,'w2vdim'),          maincfg.w2vdim       = [];                         end %empty vector = do not reduce dimensionality, if number, then do reduce to specified number of dimensions
+if ~isfield(maincfg,'ncluster'),        maincfg.ncluster     = 2;                          end
 %how to treat time
-if ~exist('time_avg',       'var'), time_avg     = false;                      end
-if time_avg, suffix              = [suffix '_avg'];                            end
-if ~exist('time_concat',    'var'), time_concat  = false;                      end
-if time_concat, suffix              = [suffix '_concat'];                      end
+if ~isfield(maincfg,'time_avg'),        maincfg.time_avg     = false;                      end
+if maincfg.time_avg, suffix              = [suffix '_avg'];                            end
+if ~isfield(maincfg,'time_concat'),     maincfg.time_concat  = false;                      end
+if maincfg.time_concat, suffix              = [suffix '_concat'];                      end
 %preproc trigger infofile
-if ~exist('pos','var') || isempty(seltrig)
-[seltrig, pos] = preps_help_collecttrig(subj, seltrig);
-end
+[seltrig, pos] = preps_help_collecttrig(maincfg.subj, maincfg.seltrig);
 %classifier-specific parameters
-switch classifier
+switch maincfg.classifier
     
     case {'preps_naivebayes','blogreg','svm','naive'}
         %needs classes - derive from seltrig
-        if ~exist('statfun',    'var'), statfun = {'accuracy','confusion'};     end
-        if ~exist('numfeat',    'var'), numfeat = 250;                          end
+        if ~isfield(maincfg,'statfun'), maincfg.statfun = {'accuracy','confusion'};     end
+        if ~isfield(maincfg,'numfeat'), maincfg.numfeat = 250;                          end
         
     case 'ridgeregression_sa'
-        if ~exist('statfun',    'var'), statfun = {'eval_correlation'};         end% could be eval_rank
-        if ~exist('lambda',     'var'), lambda = [];                            end
-        if ~exist('lambdaeval', 'var'), lambdaeval = 'mse';                     end
+        if ~isfield(maincfg,'statfun'), maincfg.statfun = {'eval_compare_correlation'};         end% could be eval_compare_rank or eval_correlation
+        if ~isfield(maincfg,'lambda'),  maincfg.lambda = [];                            end
+        if ~isfield(maincfg,'lambdaeval'), maincfg.lambdaeval = 'mse';                     end
     case 'lda'
-        if ~exist('statfun',    'var'), statfun = 'accuracy';     end
+        if ~isfield(maincfg,'statfun'), maincfg.statfun = 'accuracy';     end
     otherwise
         warning('no known classifier is specified')
         return;
 end
 
 %mode-specific parameters
-switch mode
+switch maincfg.mode
     case 'normal'
-        if ~exist('repeats',    'var'), repeats = 50;                          end
+        if ~isfield(maincfg,'repeats'), maincfg.repeats = 50;                          end
         
     case 'general'%generalising over time
-         if ~exist('folds',  'var'), folds= 20;end
-         if ~exist('repeats',    'var'), repeats = 50; end
+         if ~isfield(maincfg,'folds'), maincfg.folds= 20;end
+         if ~isfield(maincfg,'repeats'), maincfg.repeats = 50; end
                 %specify training and testing time window/trials when generalising
                 %over time
-         if ~exist('trainwindow','var'), trainwindow  = [0.3 0.4];              end
-         if ~exist('testtrig',   'var'), error('labels for test samples need to be specified'); end 
-         seltrig    = [seltrig;testtrig'];
-         if size(testpos,1)<size(testpos,2), testpos = testpos';                end
-         pos        = vertcat(pos,testpos);
+         if ~isfield(maincfg,'trainwindow'), maincfg.trainwindow  = [0.3 0.4];              end
+         if ~isfield(maincfg,'testtrig'), error('labels for test samples need to be specified'); end 
+         seltrig    = [seltrig;maincfg.testtrig'];
+         if size(maincfg.testpos,1)<size(maincfg.testpos,2), maincfg.testpos = maincfg.testpos';                end
+         pos        = vertcat(pos,maincfg.testpos);
     case 'lc'
-        if ~exist('repeats',    'var'), repeats = 50;                          end
+        if ~isfield(maincfg,'repeats'), maincfg.repeats = 50;                          end
     case 'tuda'
-        if ~exist('repeats',    'var'), repeats = 50;                          end
+        if ~isfield(maincfg,'repeats'), maincfg.repeats = 50;                          end
     case 'mvpatoolbox'
-        if ~exist('repeats',    'var'), repeats = 50;                          end 
+        if ~isfield(maincfg,'repeats'), maincfg.repeats = 50;                          end 
     otherwise
         warning('no mode specified - nothing is computed')
         return;
 end
 
 %filenames
-lcmvfile        = fullfile(root_dir,strcat(subj,'_preps_lcmv_parc.mat'));
-channelfile     = fullfile(root_dir,sprintf('%s_dataclean%s.mat',subj, datasuffix));
-artfctfile      = fullfile(root_dir,strcat(subj,'_muscle'));
-subjn           = str2num(subj(end-2:end));
+lcmvfile        = fullfile(root_dir,strcat(maincfg.subj,'_preps_lcmv_parc.mat'));
+channelfile     = fullfile(root_dir,sprintf('%s_dataclean%s.mat',maincfg.subj, maincfg.datasuffix));
+artfctfile      = fullfile(root_dir,strcat(maincfg.subj,'_muscle'));
+subjn           = str2num(maincfg.subj(end-2:end));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% Load & Select data (Design matrix)%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-switch dattype
+switch maincfg.dattype
     case {'sensor', 'lcmv'} %if using channel level data
         fprintf('retrieving channel time courses\n')
         load(channelfile,'data')
     case 'mscca'
-        if ~exist('mscca_concat', 'var'), mscca_concat = 1; end
-        suffix      = [suffix '_mscca' int2str(mscca_concat)];
+        if ~isfield(maincfg,'mscca_concat'), maincfg.maincfg.mscca_concat = 1; end
+        suffix      = [suffix '_mscca' int2str(maincfg.mscca_concat)];
         root_dir    = '/project/3011210.01/MEG/mscca';
         files       = dir(fullfile(root_dir,'mscca_parcel*.mat'));
-        if mscca_concat == 1 % concat subjects as features/predictors
+        if maincfg.mscca_concat == 1 % concat subjects as features/predictors
             parcellabel = {};
             for f = 1:length(files)%for each parcel
                 f
@@ -126,7 +134,7 @@ switch dattype
                 data.trial{t}   = reshape(squeeze(parceldata(:,:,:,t)),[f*nchan ntime]);
                 data.label      = parcellabel;
             end
-        elseif mscca_concat == 2%trials from all subjects are concatenated, parcels are features (similar to haxby neuron paper)
+        elseif maincfg.mscca_concat == 2%trials from all subjects are concatenated, parcels are features (similar to haxby neuron paper)
             load atlas_subparc374_8k
             for f = 1:length(files)%for each parcel
                 load(fullfile(root_dir,files(f).name),'comp')
@@ -150,8 +158,8 @@ switch dattype
             data.trialinfo  = repmat(data.trialinfo,nchan,1);
             data.label      = atlas.parcellationlabel;
             data.label([1 2 188 189]) = [];
-        elseif mscca_concat == 3
-            str = unique(pos);
+        elseif maincfg.mscca_concat == 3
+            str = unique(maincfg.pos);
             str = strcat(str{:});
             filename = sprintf('/project/3011210.01/MEG/mscca/avgdata_%s.mat',str);
             if isfile(filename)
@@ -188,7 +196,7 @@ switch dattype
                 load(fullfile(root_dir,files(f).name),'comp')
                 cfg             = [];
                 cfg.trials      = ismember(comp.trialinfo(:,1),seltrig);
-                cfg.channel     = comp.label(contains(comp.label,subj));
+                cfg.channel     = comp.label(contains(comp.label,maincfg.subj));
                 comp         = ft_selectdata(cfg,comp);
                 if f == 1
                     data            = comp;
@@ -250,14 +258,14 @@ end
 
 sel = ones(length(data.trialinfo),1);
 
-if dopretest100 %only keep trials that scored high on pre-test
+if maincfg.dopretest100 %only keep trials that scored high on pre-test
     fprintf('selecting trials that scored higher than 90% on pre-test\n')
     accs        = [stimuli(1:200).acc];
     sel         = sel & ismember(data.trialinfo(:,2),find(accs>=0.9));
     suffix      = [suffix '_pretest100'];
 end
 
-if clean_muscle %reject trials with muscle artifacts
+if maincfg.clean_muscle %reject trials with muscle artifacts
     fprintf('rejecting trials with high frequency muscle noise\n')
     load(artfctfile);
     sel         = sel & ~ismember(data.trialinfo(:,3),noisy_trials(:,end));
@@ -265,7 +273,7 @@ if clean_muscle %reject trials with muscle artifacts
 end
 
 % make trial selection
-if ~strcmp(dattype,'simulate')
+if ~strcmp(maincfg.dattype,'simulate')
     sel             = sel & ismember(data.trialinfo(:,1),seltrig);
     cfg             = [];
     cfg.trials      = sel;
@@ -275,13 +283,14 @@ if ~strcmp(dattype,'simulate')
     for i = 1:length(datasel.trial)
         datasel.time{i}(1:tn) = datasel.time{1}(1:tn);
     end
+    clear sel tn i
 end
 %clear some memory
 clear data
 
-if strcmp(dattype,'lcmv')
-    if ~exist('parcel_indx',    'var'), parcel_indx = [];       end
-    if ~isempty(parcel_indx), num_comp = 5; else, num_comp = 1; end
+if strcmp(maincfg.dattype,'lcmv')
+    if ~isfield(maincfg,'parcel_indx'), maincfg.parcel_indx = [];       end
+    if ~isempty(maincfg.parcel_indx), num_comp = 5; else, num_comp = 1; end
     
     fprintf('retrieving source time courses\n')
     if ~exist(lcmvfile,'file') == 2 %if source data doesn't exist compute from scratch
@@ -291,7 +300,7 @@ if strcmp(dattype,'lcmv')
         cfg.trials  = ismember(data.trialinfo(:,1),cat(2,seltrig));
         data        = ft_selectdata(cfg,data);
         
-        [source_parc, filterlabel, source] = preps_lcmv(subj, data);
+        [source_parc, filterlabel, source] = preps_lcmv(maincfg.subj, data);
         save(lcmvfile,'source_parc','filterlabel','source','-v7.3')
     else% otherwise simply load
         load(lcmvfile);
@@ -307,11 +316,11 @@ if strcmp(dattype,'lcmv')
         
     end
     
-    datasel = preps_sensor2parcel(datasel,source_parc,num_comp,parcel_indx);
+    datasel = preps_sensor2parcel(datasel,source_parc,num_comp,maincfg.parcel_indx);
     clear source_parc source filterlabel
 end
 
-if dopca
+if maincfg.dopca
     fprintf('decomposing data into 60 principal components\n')
     cfgtmp                   = [];
     cfgtmp.demean            = 'yes';
@@ -321,7 +330,7 @@ if dopca
     datasel                  = ft_componentanalysis(cfgtmp, datasel);
 end
 
-if avgrpt
+if maincfg.avgrpt
     %doesn't work for all triggers defined
     indxreps = [];
     for i = 1:length(datasel.trialinfo)
@@ -370,7 +379,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% Create dependent variable %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if ~strcmp(dattype,'simulate')
+if ~strcmp(maincfg.dattype,'simulate')
     fprintf('retrieving trial labels based on part of speech\n')
     [~,loctrial]        = ismember(datasel.trialinfo(:,1),seltrig);
     [upos, ulabel , labels]  = unique(pos(loctrial));
@@ -378,7 +387,7 @@ else
     upos = {''};
 end
 
-if doposttest % relabel samples according to individual post tests;
+if maincfg.doposttest % relabel samples according to individual post tests;
     fprintf('relabeling trials according to individual post test\n')
     if length(upos)>2 
         warning('relabeling only makes sense when selected classes are VA & NA')
@@ -394,21 +403,26 @@ if doposttest % relabel samples according to individual post tests;
     suffix      = [suffix '_posttest'];
 end
 
-if dow2v  % replace categorical labels with w2v info
+if maincfg.dow2v  % replace categorical labels with w2v info
     [w2v,datasel,labels]   = preps_getw2v(datasel);
     suffix              = [suffix '_w2v'];
 end
 
-if dow2vcateg
-    [w2v,datasel,labels]   = preps_getw2v(datasel,'ncluster',ncluster);
+if maincfg.dow2vcateg
+    [w2v,datasel,labels]   = preps_getw2v(datasel,'ncluster',maincfg.ncluster);
     suffix                 = [suffix '_w2vcateg'];
     upos                   = {unique(labels)}; 
+end
+
+if ~isempty(maincfg.w2vdim)
+    labels_pca = pca(labels');
+    
 end
 
 %%%% Further subselections based on classes
 %make subselection to have same distribution of number of letters across
 %classes
-if matchlength
+if maincfg.matchlength
     ntrials = length(datasel.trialinfo);
     n = zeros(1,ntrials);
     for i = 1:ntrials
@@ -444,21 +458,21 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Set Configuration %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 cfgcv = [];
-if ~isempty(classifier)
+if ~isempty(maincfg.classifier)
     cfgcv.method            = 'crossvalidate';
-    cfgcv.mva               = classifier;
-    cfgcv.statistic         = statfun;
+    cfgcv.mva               = maincfg.classifier;
+    cfgcv.statistic         = maincfg.statfun;
     cfgcv.type              = 'nfold'; %'bloo' only with evenly distributed classes
     cfgcv.design            = labels;
 end
-switch classifier
+switch maincfg.classifier
     
     case 'preps_naivebayes'
         %needs classes - derive from seltrig
-        if ~strcmp(numfeat,'all'), cfgcv.numfeat = numfeat; end
+        if ~strcmp(maincfg.numfeat,'all'), cfgcv.numfeat = maincfg.numfeat; end
         cfgcv.poolsigma     = 0;
-        if ~exist('nfolds','var'), nfolds = 20; end
-        cfgcv.nfolds = nfolds;
+        if ~isfield(maincfg,'nfolds'), maincfg.nfolds = 20; end
+        cfgcv.nfolds = maincfg.nfolds;
         if length(unique(sum(labels==labels'))) ~= 1
             cfgcv.resample = 1;
         else
@@ -466,8 +480,8 @@ switch classifier
         end
     case 'blogreg'
         cfgcv.mva = {dml.standardizer dml.blogreg};
-        if ~exist('nfolds','var'), nfolds = 20; end
-        cfgcv.nfolds = nfolds;
+        if ~isfield(maincfg,'nfolds'), maincfg.nfolds = 20; end
+        cfgcv.nfolds = maincfg.nfolds;
         if length(unique(sum(labels==labels'))) ~= 1
             cfgcv.resample = 1;
         else
@@ -475,38 +489,38 @@ switch classifier
         end
     case 'svm'
         cfgcv.mva = {dml.standardizer dml.svm};
-        if ~exist('nfolds','var'), nfolds = 20; end
-        cfgcv.nfolds = nfolds;
+        if ~isfield(maincfg,'nfolds'), maincfg.nfolds = 20; end
+        cfgcv.nfolds = maincfg.nfolds;
         if length(unique(sum(labels==labels'))) ~= 1
             cfgcv.resample = 1;
         else
             cfgcv.resample = 0;
         end
     case 'ridgeregression_sa'
-        cfgcv.lambdaeval   = lambdaeval;
-        cfgcv.lambda       = lambda;
+        cfgcv.lambdaeval   = maincfg.lambdaeval;
+        cfgcv.lambda       = maincfg.lambda;
         cfgcv.resample     = 0;
         div                = divisors(size(labels,1));
         div                = div(mod(div,2)==0);
-        if ~exist('nfolds','var'), cfgcv.nfolds = size(labels,1)/div(nearest(div,20)); end
+        if ~isfield(maincfg,'nfolds'), cfgcv.nfolds = size(labels,1)/div(nearest(div,20)); end
     case 'lda'
-        if ~exist('nfolds','var'), nfolds = 20; end
-        cfgcv.nfolds = nfolds;
+        if ~isfield(maincfg,'nfolds'), maincfg.nfolds = 20; end
+        cfgcv.nfolds = maincfg.nfolds;
 end
 fprintf('using %i folds for cross-validation\n',cfgcv.nfolds)
 % compute time for loop%FIXME how to treat time in tuda case?
 if strcmp(time,'all')
     begtim  = min(cellfun(@min,datasel.time));
     endtim  = min(cellfun(@max,datasel.time));
-    endtim = endtim - (toverlap*twidth);
+    endtim = endtim - (maincfg.toverlap*maincfg.twidth);
 time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
     (twidth - toverlap * twidth)) + 1);
 elseif length(time) == 2
     begtim = time(1);
     endtim = time(2);
-    endtim = endtim - (toverlap*twidth);
+    endtim = endtim - (maincfg.toverlap*maincfg.twidth);
 time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
-    (twidth - toverlap * twidth)) + 1);
+    (maincfg.twidth - maincfg.toverlap * maincfg.twidth)) + 1);
 else
     endtim = min(cellfun(@max,datasel.time));
 end
@@ -514,7 +528,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%% Loop over time & repeats %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%% ft_timelockstatistics %%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(dattype,'sensor')
+if strcmp(maincfg.dattype,'sensor')
     cfg                   = [];
     cfg.keeptrials        = 'yes';
     cfg.vartrllength      = 1;
@@ -526,13 +540,13 @@ datatmp = datasel;
 fprintf('precomputing randomisations...\n')
 labels_perm = cell(repeats,1);
 
-if time_concat
-        ntime = diff(nearest(datasel.time,[0 twidth]))+1;
+if maincfg.time_concat
+        ntime = diff(nearest(datasel.time,[0 maincfg.twidth]))+1;
         labels  = repmat(labels, ntime,1);
 end
 
 rng(5);
-for rep = 1:repeats
+for rep = 1:maincfg.repeats
     if length(unique(labels))==2% if two classes do stratified permutation
         %FIXME: adapt for multiclass case.
         indx_1            = find(labels==1);
@@ -548,13 +562,13 @@ for rep = 1:repeats
     end
 end
 %% if compute accuracy
-switch mode    
+switch maincfg.mode    
     case 'normal'
         fprintf('train & test model looping over time\n')
-        stat         = cell(nearest(time,endtim-twidth/2),1);
-        statshuf     = cell(nearest(time,endtim-twidth/2),1);
-        param        = cell(nearest(time,endtim-twidth/2),repeats,1);
-        paramshuf    = cell(nearest(time,endtim-twidth/2),repeats,1);
+        stat         = cell(nearest(time,endtim-maincfg.twidth/2),1);
+        statshuf     = cell(nearest(time,endtim-maincfg.twidth/2),1);
+        param        = cell(nearest(time,endtim-maincfg.twidth/2),maincfg.repeats,1);
+        paramshuf    = cell(nearest(time,endtim-maincfg.twidth/2),maincfg.repeats,1);
         %remove cfg field for time & memory reasons
         if isfield(datasel,'elec')
          datasel = rmfield(datasel,{'cfg','elec','grad','sampleinfo'});
@@ -562,16 +576,16 @@ switch mode
         %loop over time
         %f = waitbar(0,'looping over time slices...');
 
-        for  t = 1:nearest(time,endtim-twidth/2)
-            fprintf('timeslice %u: %d to %d ms\n',t,round(time(t)*1000),round((time(t)+twidth)*1000))
+        for  t = 1:nearest(time,endtim-maincfg.twidth/2)
+            fprintf('timeslice %u: %d to %d ms\n',t,round(time(t)*1000),round((time(t)+maincfg.twidth)*1000))
             rng('default'); % ensure same 'random' folding behaviour for each time slice.
             %waitbar(t/nearest(time,endtim-twidth),f,sprintf('timeslice %u: %d to %d ms\n repetition %d',t,round(time(t)*1000),round((time(t)+twidth)*1000),0));
             % with time dimension
             if time_avg
-                cfgcv.latency       = [time(t) time(t)+twidth];
+                cfgcv.latency       = [time(t) time(t)+maincfg.twidth];
                 cfgcv.avgovertime   = 'yes'; 
             elseif time_concat
-                seltime             = nearest(datasel.time,[time(t) time(t)+twidth]);
+                seltime             = nearest(datasel.time,[time(t) time(t)+maincfg.twidth]);
                
                 [n,ncomp,ntime]     = size(datasel.trial(:,:,seltime(1):seltime(2)));
                 datatmp.trial       = reshape(permute(datasel.trial(:,:,seltime(1):seltime(2)) ,[1 3 2]),[n*ntime ncomp]);
@@ -580,10 +594,10 @@ switch mode
                 cfgcv.design        = labels;
                 %labels_perm         = cellfun(@(x) repmat(x, ntime,1),labels_perm,'UniformOutput',false); 
             else
-                cfgcv.latency           = [time(t) time(t)+twidth];
+                cfgcv.latency           = [time(t) time(t)+maincfg.twidth];
             end
             %loop over repetitions
-            for rep = 1:repeats
+            for rep = 1:maincfg.repeats
                 %waitbar(t/nearest(time,endtim-twidth)+(0.01*rep),f,sprintf('timeslice %u: %d to %d ms\n repetition %d',t,round(time(t)*1000),round((time(t)+twidth)*1000),rep));
                 out                = ft_timelockstatistics(cfgcv,datatmp);
                 
@@ -605,7 +619,7 @@ switch mode
         
         %%save results to file including timesteps
         cfgcv.time      = time;
-        cfgcv.twidth    = twidth;
+        cfgcv.twidth    = maincfg.twidth;
         cfgcv.vocab     = upos;
         cfgcv.trialinfo = datasel.trialinfo;
         cfgcv.previous  = datatmp.cfg;
@@ -615,176 +629,28 @@ switch mode
             cfgcv.paramshuf = paramshuf;
         end
 
-        switch classifier
+        switch maincfg.classifier
             case 'preps_naivebayes'
-                if strcmp(numfeat,'all'), numfeat = length(out.out{1}.Mu);end
-                cfgcv.numfeat   = numfeat;
+                if strcmp(maincfg.numfeat,'all'), maincfg.numfeat = length(out.out{1}.Mu);end
+                cfgcv.numfeat   = maincfg.numfeat;
                 if dow2vcateg
-                    filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',subj,datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
+                    filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
                 elseif strcmp(dattype,'lcmv') && ~isempty(parcel_indx)
-                    filename = fullfile(save_dir, subj, dattype, 'searchlight',sprintf('nbayes_%s%s_%dfolds_%dfeats_%s_parcel%03d%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),parcel_indx,suffix));
+                    filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, 'searchlight',sprintf('nbayes_%s%s_%dfolds_%dfeats_%s_parcel%03d%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),parcel_indx,suffix));
                 else
-                filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
                 end
                 
             case 'ridgeregression_sa'
-                filename = fullfile(save_dir, subj, dattype, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
             case 'svm'
-                filename = fullfile(save_dir, subj, dattype, sprintf('svm_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('svm_%s%s_%dfolds_%dfeats_%s%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
             case 'blogreg'
-                filename = fullfile(save_dir, subj, dattype, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
 
         end
         save(filename, 'stat','statshuf','cfgcv','-v7.3');
-        
-    case 'lc'
-        N         = length(labels);
-        grid_smp  = [2:4:N-N/20];
-        
-        %% Loop over time & repeats
-        acctest                   = zeros(length(tsteps),length(grid_smp));
-        acctrain                  = zeros(length(tsteps),length(grid_smp));
-        for t = 1:(length(time)-1)
-            cfgt            = [];
-            cfgt.latency    = [time(t) time(t)+twidth];
-            datatmp         = ft_selectdata(cfgt,datasel);
-            rng('default'); % ensure same 'random' behaviour for each time slice.
-            parfor nsmp = 1:size(grid_smp,2)
-                cfgtmp             = cfgcv; %need to assign variable within parfor loop
-                cfgtmp.max_smp     = grid_smp(nsmp);
-                out                = ft_timelockstatistics(cfgtmp,datatmp);
-                acctest(t,nsmp)    = out.statistic.accuracy;
-                acctrain(t,nsmp)   = out.trainacc.statistic.accuracy;
-            end
-        end
-        %%save results to file including timesteps
-        cfgcv.timeinfo = time;
-        cfgcv.twidth   = twidth;
-        filename = fullfile(save_dir, subj, sprintf('classlc_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,folds,numfeat,horzcat(classes{:}),suffix));
-        save(filename, 'acctest','acctrain','cfgcv');
-        
-        %% if do generalize over time
-    case 'general'
-        
-        suffix              = [suffix '_general'];
-        %select time window to be trained on
-        cfgt             = [];
-        cfgt.trials       = ~ismember(datasel.trialinfo(:,1),testtrig);
-        cfgt.latency     = trainwindow;
-        data_train       = ft_selectdata(cfgt,datasel);
-        
-        for t = 1:nearest(time,endtim-twidth/2)
-            cfgt              = [];
-            cfgt.trials       = ismember(datasel.trialinfo(:,1),testtrig);
-            cfgt.latency      = [time(t) time(t)+twidth];
-            data_test        = ft_selectdata(cfgt,datasel);
-            %data_test.time   = data_train.time;
-            
-            cfgt              = [];
-            datatmp           = ft_appenddata(cfgt,data_train,data_test);
-            %recover original trial order
-             [~,idx]           = sort(datatmp.trialinfo(:,end));
-             datatmp.trial     = datatmp.trial(idx);
-             datatmp.trialinfo = datatmp.trialinfo(idx,:);
-             datatmp.time      = repmat({datatmp.time{1}},[1,size(datatmp.time,2)]);
-             
-            %set parameters
-            cfgtmp            = cfgcv;
-            cfgtmp.type       = 'split';
-            cfgtmp.max_smp    = sum(~ismember(datatmp.trialinfo(:,1),testtrig));
-            cfgtmp.testfolds  = {find(ismember(datatmp.trialinfo(:,1),testtrig))};
-            
-            out             = ft_timelockstatistics(cfgtmp,datatmp);
-            stat(t)         = out.statistic.accuracy;
-            acctrain(t)     = out.trainacc.statistic.accuracy;
-            
-            parfor rep = 1:repeats
-                cfginner            = cfgtmp;
-                cfginner.design     = labels_perm{rep};
-                
-                outshuf             = ft_timelockstatistics(cfginner,datatmp);
-                statshuf(t,rep)     = outshuf.statistic.accuracy;
-                accshuftrain(t,rep) = outshuf.trainacc.statistic.accuracy;
-            end
-        end
-        %%save results to file including timesteps
-        cfgcv.time        = time;
-        cfgcv.twidth      = twidth;
-        cfgcv.trainwindow = trainwindow;
-        cfgcv.testtrigger = testtrig;
-        cfgcv.testlabel   = testpos;
-        cfgcv.vocab     = upos;
-        cfgcv.trialinfo = datasel.trialinfo;
-        cfgcv.previous  = datatmp.cfg;
-        if strcmp(numfeat,'all'), numfeat = length(out.out{1}.Mu);end
-        cfgcv.numfeat   = numfeat;
-                
-        switch classifier
-            case 'preps_naivebayes'
-                if dow2vcateg
-                    filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',subj,datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
-                elseif strcmp(dattype,'lcmv') && ~isempty(parcel_indx)
-                    filename = fullfile(save_dir, subj, dattype, 'searchlight',sprintf('nbayes_%s%s_%dfolds_%dfeats_%s_parcel%03d%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),parcel_indx,suffix));
-                else
-                filename = fullfile(save_dir, subj, dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
-                end
-                
-            case 'ridgeregression_sa'
-                filename = fullfile(save_dir, subj, dattype, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',subj,datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
-            case 'svm'
-                filename = fullfile(save_dir, subj, dattype, sprintf('svm_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
-            case 'blogreg'
-                filename = fullfile(save_dir, subj, dattype, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
-
-        end
-        save(filename, 'stat','statshuf','cfgcv','-v7.3');
-        
-        %% if do Hidden markov model as described in Vidaurre et al. 2018
-    case 'tuda'
-        for  t = 1:nearest(time,endtim-twidth)
-            fprintf('timeslice %u: %d to %d ms\n',t,round(time(t)*1000),round((time(t)+twidth)*1000))
-            rng('default'); % ensure same 'random' folding behaviour for each time slice.
-            cfgt = [];
-            cfgt.latency           = [time(t) time(t)+twidth];
-            datasel2    = ft_selectdata(cfgt,datasel);
-            
-            K                       = 4;
-            [N p ttrial]            = size(datasel2.trial);
-            datatmp                 = reshape(permute(datasel2.trial,[3 1 2]),[ttrial*N p]);
-            datatmp(any(isnan(datatmp),2),:) = [];
-            T                       = repmat(length(datasel2.time),[N 1]);
-            
-            options.K               = K;
-            options.parallel_trials = 1;
-            [tuda,Gamma]            = tudatrain (datatmp,labels,T,options);
-            
-            cfgcv.Gamma             = Gamma;
-            for rep = 1:repeats
-                out                     = ft_timelockstatistics(cfgcv,datasel2);
-                
-                
-                cfgtmp              = cfgcv;
-                cfgtmp.design       = labels_perm{rep};
-                outshuf             = ft_timelockstatistics(cfgtmp,datasel2);
-                
-                stat{t,rep}        = out.statistic;
-                statshuf{t,rep}    = outshuf.statistic;
-                
-                if ~isfield(out,'out')
-                end
-            end
-        end
-        
-        suffix = [suffix '_tuda'];
-        %%save results to file including timesteps
-        cfgcv.time      = time;
-        cfgcv.twidth    = twidth;
-        cfgcv.vocab     = upos;
-        cfgcv.Gamma     = Gamma;
-        cfgcv.trialinfo = datasel.trialinfo;
-        filename = fullfile(save_dir, subj, sprintf('classacc_%s%s_%dfolds_%dfeats_%s%s',subj,datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
-        save(filename, 'stat','statshuf','cfgcv');
-    
+  
     
     case 'mvpatoolbox'
         cfg = [];

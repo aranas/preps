@@ -1,4 +1,4 @@
-function rankacc = eval_rank(cfg,obj)
+function rankacc = eval_compare_rank(cfg,obj)
 % This script compares decoded vectors against all true vectors (by means
 % of correlation) and computes the rank of the correct stimulus
 % corresponding to each prediction. Ranks are then averaged across all
