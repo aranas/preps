@@ -1,17 +1,9 @@
 %% Binary classifier on some MEG data file and corresponding labels
 % Classifiers available are:
 % preps_naivebayes
+% ridgeregression_sa
 % {dml.standardizer dml.svm};
 % {dml.standardizer dml.blogreg};
-
-
-maincfg = [];
-maincfg.mode = 'normal';
-maincfg.classifier = 'ridgeregression_sa';
-maincfg.seltrig = {'NN','VVFIN','ADJA'};
-maincfg.dow2v = 1;
-maincfg.w2vdim = 5;
-maincfg.statfun = 'eval_correlation';
 
 %% Set options
 load preps_stimuli
@@ -382,7 +374,8 @@ end
 if ~strcmp(maincfg.dattype,'simulate')
     fprintf('retrieving trial labels based on part of speech\n')
     [~,loctrial]        = ismember(datasel.trialinfo(:,1),seltrig);
-    [upos, ulabel , labels]  = unique(pos(loctrial));
+    [upos, ~ , labels]  = unique(pos(loctrial));
+    clear loctrial
 else
     upos = {''};
 end
@@ -409,14 +402,30 @@ if maincfg.dow2v  % replace categorical labels with w2v info
 end
 
 if maincfg.dow2vcateg
-    [w2v,datasel,labels]   = preps_getw2v(datasel,'ncluster',maincfg.ncluster);
+    [~,~,labels]   = preps_getw2v(datasel,'ncluster',maincfg.ncluster);
     suffix                 = [suffix '_w2vcateg'];
     upos                   = {unique(labels)}; 
 end
 
 if ~isempty(maincfg.w2vdim)
-    labels_pca = pca(labels');
+    % compute data cross-covariance matrix
+    labels = bsxfun(@minus,labels,mean(labels)); %mean-center columns
     
+    C = (labels'*labels)./(size(labels,1)-1);
+    
+    % eigenvalue decomposition (EVD)
+    [V,D] = eig(C);
+    
+    % sort eigenvectors in descending order of eigenvalues
+    d = cat(2,(1:1:size(labels,2))',diag(D));
+    d = sortrows(d, -2);
+    
+    % return the desired number of principal components  
+    unmixing = V(:,d(1:maincfg.w2vdim,1))';
+    labels = unmixing*labels';
+    labels = labels';
+    clear C D V d unmixing
+   
 end
 
 %%%% Further subselections based on classes
@@ -502,20 +511,20 @@ switch maincfg.classifier
         cfgcv.resample     = 0;
         div                = divisors(size(labels,1));
         div                = div(mod(div,2)==0);
-        if ~isfield(maincfg,'nfolds'), cfgcv.nfolds = size(labels,1)/div(nearest(div,20)); end
+        if ~isfield(maincfg,'nfolds'), maincfg.nfolds = size(labels,1)/div(nearest(div,100)); end
     case 'lda'
         if ~isfield(maincfg,'nfolds'), maincfg.nfolds = 20; end
         cfgcv.nfolds = maincfg.nfolds;
 end
-fprintf('using %i folds for cross-validation\n',cfgcv.nfolds)
+fprintf('using %i folds for cross-validation\n',maincfg.nfolds)
 % compute time for loop%FIXME how to treat time in tuda case?
-if strcmp(time,'all')
+if strcmp(maincfg.time,'all')
     begtim  = min(cellfun(@min,datasel.time));
     endtim  = min(cellfun(@max,datasel.time));
     endtim = endtim - (maincfg.toverlap*maincfg.twidth);
 time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
-    (twidth - toverlap * twidth)) + 1);
-elseif length(time) == 2
+    (maincfg.twidth - maincfg.toverlap * maincfg.twidth)) + 1);
+elseif length(maincfg.time) == 2
     begtim = time(1);
     endtim = time(2);
     endtim = endtim - (maincfg.toverlap*maincfg.twidth);
@@ -538,7 +547,7 @@ end
 datatmp = datasel;
 %permute labels
 fprintf('precomputing randomisations...\n')
-labels_perm = cell(repeats,1);
+labels_perm = cell(maincfg.repeats,1);
 
 if maincfg.time_concat
         ntime = diff(nearest(datasel.time,[0 maincfg.twidth]))+1;
@@ -571,7 +580,7 @@ switch maincfg.mode
         paramshuf    = cell(nearest(time,endtim-maincfg.twidth/2),maincfg.repeats,1);
         %remove cfg field for time & memory reasons
         if isfield(datasel,'elec')
-         datasel = rmfield(datasel,{'cfg','elec','grad','sampleinfo'});
+         datasel = rmfield(datasel,{'cfg','elec','grad'});
         end
         %loop over time
         %f = waitbar(0,'looping over time slices...');
@@ -581,10 +590,10 @@ switch maincfg.mode
             rng('default'); % ensure same 'random' folding behaviour for each time slice.
             %waitbar(t/nearest(time,endtim-twidth),f,sprintf('timeslice %u: %d to %d ms\n repetition %d',t,round(time(t)*1000),round((time(t)+twidth)*1000),0));
             % with time dimension
-            if time_avg
+            if maincfg.time_avg
                 cfgcv.latency       = [time(t) time(t)+maincfg.twidth];
                 cfgcv.avgovertime   = 'yes'; 
-            elseif time_concat
+            elseif maincfg.time_concat
                 seltime             = nearest(datasel.time,[time(t) time(t)+maincfg.twidth]);
                
                 [n,ncomp,ntime]     = size(datasel.trial(:,:,seltime(1):seltime(2)));
@@ -608,7 +617,7 @@ switch maincfg.mode
                 stat{t,rep}        = out.statistic;
                 statshuf{t,rep}    = outshuf.statistic;
                 
-                if save_full
+                if maincfg.save_full
                     nout                    = size(out.out,1);
                     param(t,rep,1:nout)     = out.out;
                     paramshuf(t,rep,1:nout) = outshuf.out;
@@ -624,7 +633,7 @@ switch maincfg.mode
         cfgcv.trialinfo = datasel.trialinfo;
         cfgcv.previous  = datatmp.cfg;
         cfgcv.previous  = rmfield(cfgcv.previous,'previous');
-        if save_full
+        if maincfg.save_full
             cfgcv.param = param;
             cfgcv.paramshuf = paramshuf;
         end
@@ -634,19 +643,19 @@ switch maincfg.mode
                 if strcmp(maincfg.numfeat,'all'), maincfg.numfeat = length(out.out{1}.Mu);end
                 cfgcv.numfeat   = maincfg.numfeat;
                 if dow2vcateg
-                    filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,length(upos{:}),suffix));
+                    filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%dcluster%s',maincfg.subj,maincfg.datasuffix,maincfg.nfolds,numfeat,length(upos{:}),suffix));
                 elseif strcmp(dattype,'lcmv') && ~isempty(parcel_indx)
-                    filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, 'searchlight',sprintf('nbayes_%s%s_%dfolds_%dfeats_%s_parcel%03d%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),parcel_indx,suffix));
+                    filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, 'searchlight',sprintf('nbayes_%s%s_%dfolds_%dfeats_%s_parcel%03d%s',maincfg.subj,maincfg.datasuffix,maincfg.nfolds,numfeat,horzcat(upos{:}),parcel_indx,suffix));
                 else
-                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('nbayes_%s%s_%dfolds_%dfeats_%s%s',maincfg.subj,maincfg.datasuffix,maincfg.nfolds,numfeat,horzcat(upos{:}),suffix));
                 end
                 
             case 'ridgeregression_sa'
-                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,cfgcv.lambda,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('regress_%s%s_%dfolds_lambda%d_%s%s',maincfg.subj,maincfg.datasuffix,maincfg.nfolds,maincfg.lambda,horzcat(upos{:}),suffix));
             case 'svm'
-                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('svm_%s%s_%dfolds_%dfeats_%s%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('svm_%s%s_%dfolds_%dfeats_%s%s',maincfg.subj,maincfg.datasuffix,maincfg.nfolds,numfeat,horzcat(upos{:}),suffix));
             case 'blogreg'
-                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',maincfg.subj,maincfg.datasuffix,cfgcv.nfolds,numfeat,horzcat(upos{:}),suffix));
+                filename = fullfile(save_dir, maincfg.subj, maincfg.dattype, sprintf('blogreg_%s%s_%dfolds_%dfeats_%s%s',maincfg.subj,maincfg.datasuffix,maincfg.nfolds,numfeat,horzcat(upos{:}),suffix));
 
         end
         save(filename, 'stat','statshuf','cfgcv','-v7.3');

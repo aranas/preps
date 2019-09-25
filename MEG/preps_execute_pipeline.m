@@ -6,7 +6,11 @@ function preps_execute_pipeline(pipelinename, varargin)
 
 if numel(varargin)>0
   for k = 1:numel(varargin)
-    eval([varargin{k}{1},'=varargin{k}{2}']);
+    if numel(varargin{k})==1
+        eval(varargin{k}{1});
+    else
+        eval([varargin{k}{1},'=varargin{k}{2}']);
+    end
   end
 end
 eval(pipelinename);
