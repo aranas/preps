@@ -1,7 +1,7 @@
 %In this script I inspect correlations between word2vec embedding vectors 
 
 %load example dataset
-load('H:/language/sopara/Prepositionalphrases/preps/Stimuli/preps_w2v')
+load('/home/language/sopara/Projects/Prepositionalphrases/preps/Stimuli/preps_w2v.mat')
 
 ind_noun = [];
 ind_verb = [];
@@ -29,3 +29,5 @@ imagesc(corr(feat_sort'))
 %dimensionality reduction
 [coefs, s]  = pca(feat_sort);
 low_data        = s*coefs(1:100,:)';
+
+
