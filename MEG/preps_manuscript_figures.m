@@ -270,6 +270,23 @@ for st = 1:length(time)-1
     end
 end
 
+%collect generalize
+rootdir = fullfile('/project','3011210.01','MEG','Classification');
+
+for nsub = 1:10
+    subj = sprintf('sub-%.3d',nsub);
+    for st = 1:length(time)-1
+        fname = dir(sprintf(fullfile(rootdir,'%s','sensor','nbayes_%s_lp01_20folds*__pca_%i_general.mat'),subj,subj,st));
+        load(fullfile(fname.folder,fname.name))
+        stat = struct2cell(cell2mat(stat));
+        statshuf = struct2cell(cell2mat(statshuf));
+        acc(st,:,nsub) = cell2mat(squeeze(stat(1,:,:)));
+        accshuf(st,:,:,nsub) = cell2mat(squeeze(statshuf(1,:,:)));
+    end
+end
+cfgcv.trainwind = time(1:end-1);
+save(fullfile(rootdir,'groupresults','NNVVFIN_generalize.mat'),'cfgcv','acc','accshuf');
+
 % source space
 clear all
 
@@ -679,47 +696,28 @@ set(ax,'FontSize',25)
 print(gcf,fullfile(savedir,'plot4_NAVA.eps'),'-depsc','-painters')
 
 %% Generalize Nouns vs Verbs
-plotcfg = {[17]};
-taxis = round(time{plotcfg{1}(1)}*1000);
+clear all
+savedir = fullfile('/project','3011210.01','MEG','figures','final');
+rootdir = fullfile('/project','3011210.01','MEG','Classification');
+load(fullfile(rootdir,'groupresults','NNVVFIN_generalize.mat'))
 
-%plot permutation distribution
-maccshuf = mean(reshape(accshuf{plotcfg{1}(1)},length(taxis),[]),2);
-accshufbounds = std(reshape(accshuf{plotcfg{1}(1)},length(taxis),[]),[],2);
-figure('units','normalized','outerposition',[0 0 1 1]); hold on;
-hl = [];
-hl(1)= boundedline(taxis, maccshuf, accshufbounds, ...
-    'alpha','cmap',cmap(end,:));
+taxis1 = round(cfgcv.trainwind*1000);
+taxis2 = round(cfgcv.time*1000);
+[t1,t2,nrep,nsub] = size(accshuf);
 
-%plot data
-for l = 1:length(plotcfg{1})
-    datid = plotcfg{1}(l);
-    
-    macc = mean(acc{datid},2);
-    accbounds = std(acc{datid},[],2);
-    
-    hl(1+l) = boundedline(taxis, macc, accbounds, ...
-        'alpha','cmap',cmap(l,:));
-end
+%stats
+a = cat(3,reshape(acc,[t1*t2,nsub]),permute(reshape(accshuf,[t1*t2,nrep,nsub]),[1,3,2]));
+[results, params] = prevalenceCore(a);
 
-%add legend & title
-title('Accuracy for classification of nouns vs. verbs')
-xlabel(sprintf('time in ms (center of %d ms sliding window)',cfg{plotcfg{1}(l)}.twidth*1000))
-ax = gca;
-L = [];
-L(1) = plot(nan,nan,'.','MarkerEdgeColor',cmap(1,:),'MarkerSize',40,'Parent',ax);
-L(2) = plot(nan,nan,'.','MarkerEdgeColor',cmap(2,:),'MarkerSize',40,'Parent',ax);
-L(3) = plot(nan,nan,'.','MarkerEdgeColor',cmap(end,:),'MarkerSize',40,'Parent',ax);
-hl(end+1) = legend(L,{'Noun attached vs Verb attached','attachment label according to post-test','permuted class labels'},'Location','best');
-
-%format
-ylim([0.4 0.65])
-xlim([-200 1900])
-for h = 1:length(hl)
-    set(hl(h),'Linewidth',5)
-end
-set(hl(end),'FontSize',25)
-set(ax,'FontSize',25)
-
+macc = flipud(mean(acc,3));
+figure;imagesc(macc)
+caxis([0.4 0.6])
+colorbar
+set(gca, 'XTick',[1:round(t2/5):t2], 'XTickLabel', taxis2(1:round(t2/5):end))
+set(gca, 'YTick',[1:round(t1/5):t1], 'YTickLabel', flip(taxis1(1:round(t1/5):end)))
+title('Generalizing Noun-Verb Classifier to attachment labels.')
+xlabel('Training time from onset final noun (in ms)')
+ylabel('Testing time from onset Noun/Verb (in ms)')
 print(gcf,fullfile(savedir,'plot_general.eps'),'-depsc','-painters')
 
 %% Plot 5 - Searchlight approach in source space
