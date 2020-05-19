@@ -489,8 +489,8 @@ elseif length(maincfg.time) == 2
 time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
     (maincfg.twidth - maincfg.toverlap * maincfg.twidth)) + 1);
 elseif length(maincfg.time) == 1
-    time = [maincfg.time maincfg.time + maincfg.twidth];
-    endtim = time(end);
+    time = [maincfg.time];
+    endtim = time + maincfg.twidth;
 else
     endtim = min(cellfun(@max,datasel.time));
     time = datasel.time{1};
