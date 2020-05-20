@@ -177,36 +177,24 @@ for st = 1:length(time)
     end
 end
 
-%resend failed blogreg jobs
+%collect blogreg per subject
 rootdir = fullfile('/project','3011210.01','MEG','Classification');
 
 for nsub = 1:10
+    nsub
     subj = sprintf('sub-%.3d',nsub);
+    allstat = {};
+    allstatshuf = {};
     for st = 1:length(time)
         fname = dir(sprintf(fullfile(rootdir,'%s','sensor','blogreg_%s_lp01_20folds_*feats_NNVVFIN_pca_%i.mat'),subj,subj,st));
-        if isempty(fname)
-            maincfg.time = [time(st)];
-            suffix = sprintf('_pca_%i',st);
-            maincfg.subj = sprintf('sub-%.3d',nsub);
-            qsubfeval('preps_execute_pipeline','preps_decoding',{'maincfg',maincfg},{'suffix',suffix},...
-                'memreq',(1024^3)*10,'timreq',60*60*20,'batchid',sprintf('preps_blogreg_timeslice%i_%s',st,maincfg.subj))
-        end
-    end
-end
-
-%collect blogreg
-rootdir = fullfile('/project','3011210.01','MEG','Classification');
-
-for nsub = 1:10
-    subj = sprintf('sub-%.3d',nsub);
-    st = 1;
-    while st <= length(time)
-        fname = dir(sprintf(fullfile(rootdir,'%s','sensor','blogreg_%s_lp01_20folds_*feats_NNVVFIN_pca_%i.mat'),subj,subj,st));
         load(fullfile(fname.folder,fname.name))
-        
-        
-        st = st+3;
+        allstat{st} = stat{1};
+        allstatshuf = [allstatshuf; vertcat(statshuf(:))'];       
     end
+    stat = allstat;
+    statshuf = allstatshuf;
+    cfgcv.time = time;
+    save(sprintf(fullfile(rootdir,'%s','sensor','blogreg_%s_lp01_20folds_1860feat_NNVVFIN_pca_all.mat'),subj,subj),'stat','statshuf','cfgcv');
 end
 
 
@@ -368,6 +356,58 @@ for nsub = 1:10
         'memreq',(1024^3)*10,'timreq',60*60*10,'batchid',sprintf('preps_NAVA_%s',maincfg.subj))
 end
 
+maincfg.classifier = 'blogreg';
+begtim = -0.2;
+endtim = 2.1;
+maincfg.toverlap = 0.5;
+endtim = endtim - (maincfg.toverlap*maincfg.twidth);
+time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
+    (maincfg.twidth - maincfg.toverlap * maincfg.twidth)) + 1);
+for st = 1:length(time)
+    
+    maincfg.time = [time(st)];
+
+    suffix = sprintf('_pca_%i',st);
+    for nsub = 1:10
+        maincfg.subj = sprintf('sub-%.3d',nsub);
+        qsubfeval('preps_execute_pipeline','preps_decoding',{'maincfg',maincfg},{'suffix',suffix},...
+            'memreq',(1024^3)*10,'timreq',60*60*20,'batchid',sprintf('preps_blogreg_NAVA_t%i_%s',st,maincfg.subj))
+    end
+end
+
+% Send jobs for w2v ridge regression
+clear all
+maincfg = [];
+maincfg.mode = 'normal';
+maincfg.classifier = 'ridgeregression_sa';
+maincfg.statistic = {'eval_correlation'};
+maincfg.dow2v = 1;
+maincfg.seltrig = [115,125,215,225,113,123,213,223,118,128,218,228,119,129,219,229];
+maincfg.type = 'nfold';
+maincfg.lambdaeval= 'mse';
+maincfg.lambdas = [10 10*exp(2) 10*exp(4) 10*exp(6)]';
+maincfg.resample = 0;
+maincfg.twidth = 0.1;
+maincfg.toverlap = 0.5;
+maincfg.repeats = 50;
+
+begtim = -0.2;
+endtim = 0.8;
+endtim = endtim - (maincfg.toverlap*maincfg.twidth);
+time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
+    (maincfg.twidth - maincfg.toverlap * maincfg.twidth)) + 1);
+
+for st = 1:length(time)-1
+    maincfg.trainwindow = [time(st) time(st)+maincfg.twidth];
+    suffix = sprintf('_pca_%i',st);
+    for nsub = 1:10
+        maincfg.subj = sprintf('sub-%.3d',nsub);
+        qsubfeval('preps_execute_pipeline','preps_decoding',{'maincfg',maincfg},{'suffix',suffix},...
+        'memreq',(1024^3)*10,'timreq',60*60*10,'batchid',sprintf('preps_NAVAw2v_%s_t%i',maincfg.subj,st))
+    end
+end
+
+
 %% collect results for different parameter settings
 clear all
 rootdir = fullfile('/project','3011210.01','MEG','Classification');
@@ -390,9 +430,9 @@ fnames = {'nbayes_%s_lp01_20folds_27*feats_NNVVFIN.mat'... %1) all time points, 
     'nbayes_%s_lp01_20folds_60feats_NNVVFIN_pca_allms.mat'...         %12) allT, timexsensor,pca
     'nbayes_%s_lp01_20folds_1500feats_NNVVFIN_pca_filler.mat'...      %13) Nouns vs Verbs word position control
     'nbayes_%s_lp01_20folds_1860feats_NAVA_pca.mat'...                %14) Noun-attached vs Verb-attached 
-    'nbayes_%s_lp01_20folds_1860feats_NAVA_pca_posttest.mat'};%...       %15) NA vs VA after relabeling according to individual posttest
-    %'svm_%s_lp01_20folds_420feats_NNVVFIN_pca.mat'...             %16)Noun vs Verbs with SVM classifier
-    %'nbayes_%s_lp01_20folds_1860feats_NNVVFIN100-200__pca_general.mat'};   %17) generalize NOuns vs Verbs to final word
+    'nbayes_%s_lp01_20folds_1860feats_NAVA_pca_posttest.mat'...       %15) NA vs VA after relabeling according to individual posttest
+    'svm_%s_lp01_20folds_1500feats_NNVVFIN_pca.mat'...                 %16)Noun vs Verbs with SVM classifier
+        'blogreg_%s_lp01_20folds_1860feat_NNVVFIN_pca_all.mat'};
 
 for nsub = 1:10
     subj = sprintf('sub-%.3d',nsub);
@@ -514,7 +554,7 @@ print(gcf,fullfile(savedir,'plot2.eps'),'-depsc','-painters')
 
 
 %% Plot3
-plotcfg = {[6,13]};
+plotcfg = {[6,17]};
 taxis = round(time{plotcfg{1}(1)}*1000);
 %stat
 
@@ -589,19 +629,39 @@ set(ax,'FontSize',25)
 
 print(gcf,fullfile(savedir,'plot3.eps'),'-depsc','-painters')
 
-%% Plot X - different classifier methods (bayes vs svm vs blogreg
-plotcfg = {[6,16]};
+%% Plot X - different classifier methods (bayes vs svm vs blogreg)
+plotcfg = {[6,16,17]};
 taxis = round(time{plotcfg{1}(1)}*1000);
 
 %%Stats
-id = plotcfg{1};
-for i = 1:length(id)
-a = cat(3,acc{id(i)},permute(accshuf{id(i)},[1,3,2]));
-[results{i}, params{i}] = prevalenceCore(a);
+dat.dimord = 'chan_time';
+dat.label = {'all'};
+dat.time = time{plotcfg{1}(1)};
+for nsub = 1:10
+    acc_NV{nsub} = dat;
+    acc_NV{nsub}.avg = acc{plotcfg{1}(1)}(:,nsub)';
+    acc_pos{nsub} = dat;
+    acc_pos{nsub}.avg = acc{plotcfg{1}(3)}(:,nsub)';  
 end
 
+cfgs = [];
+cfgs.method = 'montecarlo';
+cfgs.neighbours = [];
+cfgs.statistic = 'ft_statfun_depsamplesT';
+cfgs.correctm = 'cluster';
+cfgs.correcttail = 'prob';
+cfgs.clusteralpha = 0.05;
+cfgs.clusterstatistic = 'maxsum';
+cfgs.alpha = 0.025;
+cfgs.numrandomization = 'all';
+cfgs.design(1,1:2*nsub) = [ones(1,nsub) 2*ones(1,nsub)];
+cfgs.design(2,1:2*nsub) = [1:nsub 1:nsub];
+cfgs.ivar = 1;
+cfgs.uvar = 2;
+stat = ft_timelockstatistics(cfgs,acc_NV{:},acc_pos{:});
+
 %save stats
-save(fullfile(rootdir,'groupresults','sensor_svmblogreg.mat'),'results','params')
+save(fullfile(rootdir,'groupresults','sensor_stats_blogreg.mat'),'results','params')
 
 %plot permutation distribution
 maccshuf = mean(reshape(accshuf{plotcfg{1}(1)},length(taxis),[]),2);
@@ -621,12 +681,11 @@ for l = 1:length(plotcfg{1})
     hl(1+l) = boundedline(taxis, macc, accbounds, ...
         'alpha','cmap',cmap(l,:));
     
-    %Plot significance indicator
-    idx_sig = double(results{l}.pcMN<0.05);
-    idx_sig(idx_sig==0) = NaN;
-    plot(taxis,(0.5-0.06*l)*idx_sig,'*','MarkerEdgeColor',cmap_sig(end-l,:),'MarkerSize',10)  
 end
-
+%Plot significance indicator
+idx_sig = double(stat.mask);
+idx_sig(idx_sig==0) = NaN;
+plot(taxis,(0.5-0.06)*idx_sig,'-k','LineWidth',5)
 
 %add legend & title
 title('Accuracy for classification of nouns vs. verbs')
@@ -635,13 +694,14 @@ ax = gca;
 L = [];
 L(1) = plot(nan,nan,'.','MarkerEdgeColor',cmap(1,:),'MarkerSize',40,'Parent',ax);
 L(2) = plot(nan,nan,'.','MarkerEdgeColor',cmap(2,:),'MarkerSize',40,'Parent',ax);
-L(3) = plot(nan,nan,'.','MarkerEdgeColor',cmap(end,:),'MarkerSize',40,'Parent',ax);
-L(4) = plot(nan,nan,'*','MarkerEdgeColor',cmap_sig(end-1,:),'MarkerSize',20,'Parent',ax);
-L(5) = plot(nan,nan,'*','MarkerEdgeColor',cmap_sig(end-2,:),'MarkerSize',20,'Parent',ax);
-hl(end+1) = legend(L,{'Gaussian Naive Bayes','Support Vector Machines','permuted class labels','significance GNB','significance SVM'},'Location','best');
+L(3) = plot(nan,nan,'.','MarkerEdgeColor',cmap(3,:),'MarkerSize',40,'Parent',ax);
+L(4) = plot(nan,nan,'.','MarkerEdgeColor',cmap(end,:),'MarkerSize',40,'Parent',ax);
+L(5) = plot(nan,nan,'-k','LineWidth',5,'Parent',ax);
+
+hl(end+1) = legend(L,{'Gaussian Naive Bayes','Support Vector Machines', 'Logistic Regression','permuted class labels','significance Logreg vs. GNB'},'Location','best');
 
 %format
-ylim([0.35 0.8])
+ylim([0.4 0.8])
 xlim([-200 700])
 for h = 1:length(hl)
     set(hl(h),'Linewidth',5)
@@ -649,7 +709,7 @@ end
 set(hl(end),'FontSize',25)
 set(ax,'FontSize',25)
 
-print(gcf,fullfile(savedir,'plotSVM.eps'),'-depsc','-painters')
+print(gcf,fullfile(savedir,'plotSVMLogreg.eps'),'-depsc','-painters')
 
 %% Plot4: decoding accuracy for NA/VA
 plotcfg = {[14,15]};

@@ -469,7 +469,12 @@ switch maincfg.classifier
         cfgcv.resample     = 0;
         div                = finddivisor(size(labels,1));
         div                = div(mod(div,2)==0);
-        if ~isfield(maincfg,'nfolds'), maincfg.nfolds = size(labels,1)/div(nearest(div,100)); end
+        if ~isfield(maincfg,'nfolds')
+            cfgcv.nfolds = size(labels,1)/div(nearest(div,12));
+            maincfg.nfolds = cfgcv.nfolds;
+        else
+            cfgcv.nfolds = maincfg.nfolds;
+        end
     case 'lda'
         if ~isfield(maincfg,'nfolds'), maincfg.nfolds = 20; end
         cfgcv.nfolds = maincfg.nfolds;
