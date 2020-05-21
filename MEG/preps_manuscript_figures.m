@@ -356,24 +356,45 @@ for nsub = 1:10
         'memreq',(1024^3)*10,'timreq',60*60*10,'batchid',sprintf('preps_NAVA_%s',maincfg.subj))
 end
 
-maincfg.classifier = 'blogreg';
-begtim = -0.2;
-endtim = 2.1;
-maincfg.toverlap = 0.5;
-endtim = endtim - (maincfg.toverlap*maincfg.twidth);
-time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
-    (maincfg.twidth - maincfg.toverlap * maincfg.twidth)) + 1);
-for st = 1:length(time)
-    
-    maincfg.time = [time(st)];
+% maincfg.classifier = 'blogreg';
+% begtim = -0.2;
+% endtim = 2.1;
+% maincfg.toverlap = 0.5;
+% endtim = endtim - (maincfg.toverlap*maincfg.twidth);
+% time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
+%     (maincfg.twidth - maincfg.toverlap * maincfg.twidth)) + 1);
+% for st = 1:length(time)
+%     
+%     maincfg.time = [time(st)];
+% 
+%     suffix = sprintf('_pca_%i',st);
+%     for nsub = 1:10
+%         maincfg.subj = sprintf('sub-%.3d',nsub);
+%         qsubfeval('preps_execute_pipeline','preps_decoding',{'maincfg',maincfg},{'suffix',suffix},...
+%             'memreq',(1024^3)*10,'timreq',60*60*20,'batchid',sprintf('preps_blogreg_NAVA_t%i_%s',st,maincfg.subj))
+%     end
+% end
 
-    suffix = sprintf('_pca_%i',st);
-    for nsub = 1:10
-        maincfg.subj = sprintf('sub-%.3d',nsub);
-        qsubfeval('preps_execute_pipeline','preps_decoding',{'maincfg',maincfg},{'suffix',suffix},...
-            'memreq',(1024^3)*10,'timreq',60*60*20,'batchid',sprintf('preps_blogreg_NAVA_t%i_%s',st,maincfg.subj))
-    end
-end
+%collect blogreg per subject
+% rootdir = fullfile('/project','3011210.01','MEG','Classification');
+% 
+% for nsub = 1:10
+%     nsub
+%     subj = sprintf('sub-%.3d',nsub);
+%     allstat = {};
+%     allstatshuf = {};
+%     for st = 1:length(time)
+%         fname = dir(sprintf(fullfile(rootdir,'%s','sensor','blogreg_%s_lp01_20folds_*feats_NAVA_pca_%i.mat'),subj,subj,st));
+%         load(fullfile(fname.folder,fname.name))
+%         allstat{st} = stat{1};
+%         allstatshuf = [allstatshuf; vertcat(statshuf(:))'];       
+%     end
+%     stat = allstat;
+%     statshuf = allstatshuf;
+%     cfgcv.time = time;
+%     save(sprintf(fullfile(rootdir,'%s','sensor','blogreg_%s_lp01_20folds_1860feat_NAVA_pca_all.mat'),subj,subj),'stat','statshuf','cfgcv');
+% end
+
 
 % Send jobs for w2v ridge regression
 clear all
