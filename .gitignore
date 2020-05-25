@@ -5,3 +5,4 @@ shuffle_with_distance.sh
 */.RData
 local/*
 *~
+.Rproj.user
