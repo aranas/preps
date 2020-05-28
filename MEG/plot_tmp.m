@@ -8,13 +8,13 @@ x = vertcat(stat{:});
 rho = reshape(x(:,1),[m n]);
 rho = reshape(cell2mat(rho),[m z n]);
 rhoall(sub,:,:) = mean(rho,3);
-%bounds(sub,:,:) = std(rho,[],3);
+bounds(sub,:,:) = std(rho,[],3);
 
 x = vertcat(statshuf{:});
 rhoshuf = reshape(x(:,1),[m n]);
 rhoshuf = reshape(cell2mat(rhoshuf),[m z n]);
 rhoshufall(sub,:,:,:) = rhoshuf;
-%shufbounds(sub,:,:) = std(rhoshuf,[],3);
+shufbounds(sub,:,:) = std(rhoshuf,[],3);
 end
 
 rho = squeeze(mean(rhoall));

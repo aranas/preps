@@ -24,7 +24,7 @@ for index_1 = 1 : k % for each fold
     foo = K(Train, Train); % covariance of training set
     bar = Y(Train, :);
     
-    parfor index_2 = 1 : n %for each lambda
+    for index_2 = 1 : n %for each lambda
         
         N(:, :, index_2) = (foo + lambda(index_2) * I) \ bar; % (XX' + Lambda*I) \ Y ---> 1st part of solution for beta weights, where: Betas = X_train'(X_trainX_train' + Lambda*I) \ Y_train
         betatmp(:,:,index_2) = x_train(Train,:)'*((foo + lambda(index_2) * I) \ bar);

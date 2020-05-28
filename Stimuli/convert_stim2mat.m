@@ -147,10 +147,10 @@ save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat
 load preps_stimuli
 datadir          = '/project/3011210.01/raw/';
 files              = dir(strcat(datadir,'sub*'));
+sub_num = length(files);
 
 
-
-for sub = 1:length(files)
+for sub = 1:sub_num
     dirname = fullfile(datadir,files(sub).name);
     filename=fullfile(dirname,sprintf('ses-beh01/results-survey2%0.2d_reduced.csv',sub));
     fid = fopen(filename);
@@ -167,13 +167,41 @@ end
 
 for i = 1:200 % only for first 200 stimuli, ignoring fillers
     ind = find(strcmp(strrep(stimuli(i).sent_string{1},' ','_'),sortedI));
-    for sub = 1:length(files)
+    for sub = 1:sub_num
     stimuli(i).post_test(sub).attachment = post_test{sub}{ind};
     end
 end
 save('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_stimuli.mat','stimuli')
-%FIXME: double check if assigned values are correct
 
+% Check average accuracy per item/condition, but also check average
+% accuracy per subject per condition
+items_num = length(stimuli)/cond_num;
+
+beh = zeros(2,items_num,sub_num); 
+for cond = 1:2
+    cond_idx = find([stimuli.condition]==cond);
+    for i = 1:length(cond_idx)
+        if strcmp(stimuli(cond_idx(i)).attachment{1},'NA')
+            beh(cond,i,:) = strcmp({stimuli(cond_idx(i)).post_test.attachment},'Nomen');
+        elseif strcmp(stimuli(cond_idx(i)).attachment{1},'VA')
+            beh(cond,i,:) = strcmp({stimuli(cond_idx(i)).post_test.attachment},'Verb');
+        end
+    end    
+end
+figure;imagesc(squeeze(beh(2,:,:)))
+% Average accuracy per condition
+mean(sum(beh,3)/10,2)
+mean(sum(beh,2)/100,1)
+% save posttest results to text file
+fid = fopen('post_test_mat.txt','w');
+for cond = 1:size(beh,1)
+    for sub = 1:size(beh,3)
+        for item = 1:size(beh,2)
+            fprintf(fid,'%i\t%i\t%i\n',cond,sub,beh(cond,item,sub));
+        end
+    end
+end
+fclose(fid);
 %% adding w2v info directly to stimulus mat file
 load preps_stimuli
 load('/home/language/sopara/Prepositionalphrases/preps/Stimuli/preps_w2v.mat')
