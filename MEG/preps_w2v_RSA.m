@@ -9,12 +9,16 @@ clear all
 %parameters
 do_source = true;
 datasuffix  = '_lp01';
+doaverage = false;
 %seltrig contains the selection of trigger values for both brain data and
-%any amount of models to be tested, such that seltrig{1} = brain data and
-%seltrig{2:n} = triggers for model comparison.
-all_seltrig     = {[112,115,122,125,212,215,222,225,113,123,213,223,118,128,218,228]};
-toverlap = 0.2;
+%any amount of models to be tested, such that seltrig{n} = brain data and
+%seltrig{1:n-1} = triggers for model comparison.
+all_seltrig     = {[113,123,213,223],[115,125,215,225]...%verb mode, noun model
+   [119,129,219,229]};
+toverlap = 0.8;
 twidth = 0.1;
+begtim = 0;
+endtim = 2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%% For each subject compute & save %%%%%%%%%%%%%%%%%%%%%
@@ -23,7 +27,7 @@ twidth = 0.1;
 jobid = {};
 for nsub = 1:10
     subj = sprintf('sub-%.3d',nsub);%map to full source space
-    
+    suffix = '_overlap80';
     %% Load/select data & embeddings
     
     root_dir    = '/project/3011210.01/MEG';
@@ -42,8 +46,8 @@ for nsub = 1:10
         
     end
     clear data
-    upos = uniqueStrCell(pos{1});
-    suffix = strcat(upos{:});
+    upos = uniqueStrCell(pos{end});
+    suffix = [strcat(upos{:}) suffix];
     
     %convert to source data
     if do_source
@@ -57,65 +61,29 @@ for nsub = 1:10
         clear source_parc source filterlabel
     end
     
-    %select word embeddings corresponding to selected trials
-    load preps_stimuli
-    embd = [];
-    PoS = [];
-    wids = [];
-    words = {};
-    wrd2trl = cell(length(datasel{end}.trialinfo),1);
-    for i = 1:max(length(datasel)-1,1)
-        for w = 1:length(datasel{i}.trialinfo)
-            wid = datasel{i}.trialinfo(w,2);
-            wnum = num2str(datasel{i}.trialinfo(w,1));
-            wnum = str2double(wnum(3));
-            if ~isempty(stimuli(wid).words(wnum).w2v)
-                if ~any(ismember(words,stimuli(wid).words(wnum).lemma))
-                    words = [words stimuli(wid).words(wnum).lemma];
-                    embd = [embd; stimuli(wid).words(wnum).w2v];
-                    PoS = [PoS wnum];
-                    wids = [wids wid];
-                end
-                id = find(ismember(words,stimuli(wid).words(wnum).lemma));
-                wrd2trl{id} = [wrd2trl{id} w];
-            end
-        end
-        all_pos{i} = PoS;
-        all_wids{i} = wids;
-        
-        %model RDM based on embeddings
-        model_RDM = squareform(pdist(zscore(embd')','euclidean'));
-        %figure;imagesc(model_RDM)
-        model.rdm{i} = model_RDM;
-        upos = uniqueStrCell(pos{i});
-        model.name{i} = strcat(upos{:});
+    if ~all(datasel{1}.trialinfo(:,2) == datasel{2}.trialinfo(:,2))
+        warning('sentence ids in the different trial selections do NOT correspond! ')
+        return
     end
-    clear stimuli model_RDM
     
-    nword = length(words);
-    [nparc, nt] = size(datasel{end}.trial{1});
-    % Average over repeated words
-    brain_perword = zeros(nword,nparc,nt);
-    for w = 1:length(words)
-        trlsel = datasel{end}.trial(wrd2trl{w});
-        brain_perword(w,:,:) = mean(cat(3,trlsel{:}),3);
-    end
-    clear trlsel
+    [brain_perword, model, all_pos, all_wids, all_embd] = select_embeddings(datasel,pos,doaverage);
+    
     %% Create similarity matrices for data and Correlate with models  
     %neural RDM per parcel (searchlight across time) & correlate
-    begtim = datasel{end}.time{1}(1);
-    endtim = datasel{end}.time{1}(end);
+    if ~exist('begtim','var'), begtim = datasel{end}.time{end}(1); end
+    if ~exist('endtim','var'), endtim = datasel{end}.time{end}(end); end
     endtim = endtim - twidth;
     time = linspace(begtim, endtim, round(abs(begtim-endtim) ./ ...
         (twidth - toverlap * twidth)) + 1);
     
     for t = 1:length(time)
-        begtim = nearest(datasel{end}.time{1},time(t));
-        endtim = nearest(datasel{end}.time{1},time(t)+twidth);
-        data = permute(brain_perword(:,:,begtim:endtim),[1,3,2]);
+        btim = nearest(datasel{end}.time{1},time(t));
+        etim = nearest(datasel{end}.time{1},time(t)+twidth);
+        data = permute(brain_perword(:,:,btim:etim),[1,3,2]);
         
         jobid{nsub,t} = qsubfeval('preps_rsa_correlate',data,'euclidean',model,'spearman',[],1,...
             'memreq',(1024^3)*5,'timreq',60*30,'batchid',sprintf('preps_rsa_t%i_%s_%s',t,subj,suffix));
+        
     end
     allinfo{nsub}.pos = all_pos;
     allinfo{nsub}.wid = all_wids;
@@ -150,7 +118,7 @@ load atlas_subparc374_8k
 mapped_rho = [];
 for nsub = 1:10
     subj = sprintf('sub-%.3d',nsub);%map to full source space
-    load(fullfile(root_dir,'RSA','w2v',sprintf('%s_ADJANNVVFIN_rho.mat',subj)))
+    load(fullfile(root_dir,'RSA','w2v',sprintf('%s_ADJANNVVFIN_overlap80_rho.mat',subj)))
     
     pindx = 1:length(atlas.parcellationlabel);
     pindx([1 2 188 189]) = []; %ignore medial wall parcels
@@ -163,10 +131,12 @@ for nsub = 1:10
 end
 for i = 1:size(mapped_rho,1)
 avg_rho{i} = squeeze(mean(squeeze(mapped_rho(1,:,:,:))));
+std_rho{i} = squeeze(std(squeeze(mapped_rho(1,:,:,:))));
 end
 
 mapped_rho(:,:,[1 2 188 189],:) = nan;
 %% Stats
+savedir = fullfile('/project','3011210.01','MEG','figures','final');
 Nsub = 10;
 modeli = 1;
 load(fullfile('/project/3011210.01/anatomy',subj,strcat(subj,'_sourcemodel.mat')));
@@ -206,13 +176,14 @@ stat = ft_timelockstatistics(cfg,all_sources{:},all_bsl{:});
 
 %% Visualize
 %for exploration
-source.pow = avg_rho{modeli}.*stat.mask; 
+source.pow = avg_rho{modeli};
+source.std = std_rho{modeli};
+source.mask = double(stat.posclusterslabelmat==1);
 
-cfgp                  = [];
-cfgp.funparameter     = 'pow';
-%cfgp.maskparameter    = source.mask;
-ft_sourcemovie(cfgp, source);
-
+% cfgp                  = [];
+% cfgp.funparameter     = 'pow';
+% cfgp.maskparameter    = 'mask';
+% ft_sourcemovie(cfgp, source);
 
 % create the 'upsampling matrix', to map parcels onto the vertices of the
 % cortical sheet
@@ -225,8 +196,33 @@ for k = 1:numel(atlas.parcellationlabel)
 end
 P = sparse(x,y,ones(numel(x),1),size(atlas.pos,1),numel(atlas.parcellationlabel));
 
+rsamap = brewermap(20,'YlOrRd');
+figure;
+rgbplot(rsamap)
+hold on
+colormap(rsamap)
+ax = gca;
+ax.CLim = [0 0.01];
+colorbar('Ticks',[0 0.005 0.01])
+export_fig(fullfile(savedir,'colorbar_rsa'),'-eps');
 
-%figure;ft_plot_mesh(atlas,'vertexcolor',P*squeeze(mapped_rho');
-lighting gouraud; material dull;
-view([-90 0])
-camlight;
+taxis = round(time*1000);
+[a,b] = find(stat.mask);
+sig_tim = unique(b);
+for i = sig_tim(1):3:sig_tim(end)
+    tmpstat = stat.mask(:,i);
+    roi = unique(cellfun(@(str) str(1:4), atlas.parcellationlabel(tmpstat), 'UniformOutput',false));
+    figure('units','normalized','outerposition',[0 0 1 1]);
+    ft_plot_mesh(atlas,'vertexcolor',P*source.pow(:,i), ...
+        'clim', [0 0.01],...
+        'facealpha', P*tmpstat, ...
+        'colormap',rsamap, ...
+        'maskstyle', 'colormix');
+    lighting gouraud; material dull;
+    view([-90 0]);
+    camlight;
+    set(gcf,'color','w')
+    title(sprintf('Areas %s encoding word semantics around %i',horzcat(roi{:}),taxis(i+1)),'Interpreter','none');
+    export_fig(fullfile(savedir,sprintf('RSA_semantics_%i',taxis(i+1))),'-png','-transparent','-m5');  
+end
+
