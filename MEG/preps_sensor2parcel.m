@@ -14,14 +14,15 @@ if isempty(varargin{1})
         
     end
     ncomp = parcel_indx;
+    parceldata.label   = source.label(1:ncomp);
 else
     parcel_indx = varargin{1};
     indx       = 1:min(ncomp,size(source.F{parcel_indx},1));
     parceldata.trial = source.F{parcel_indx}(indx,a)*cellrowselect(data.trial,b);
     ncomp = size(indx,2);
+    parceldata.label   = source.label(parcel_indx);
 end
 
-parceldata.label   = source.label(1:ncomp);
 cfg                = [];
 cfg.demean         = 'yes';
 cfg.baselinewindow = [-0.2 0];

@@ -2,7 +2,7 @@
 %% MRI PREPROCESSING, HEADMODEL, SOURCEMODEL
 
 %% Specify variables
-if ~exist('subject',         'var'), subject         = 'sub-001';  end
+if ~exist('subject',         'var'), subject         = 'sub-005';  end
 if ~exist('do_dicom2ctf', 'var'), do_dicom2ctf = false;  end
 if ~exist('do_freesurfer','var'), do_freesurfer = false;  end
 if ~exist('do_groupjobs','var'), do_groupjobs = false;  end

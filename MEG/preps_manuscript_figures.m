@@ -662,7 +662,7 @@ for nsub = 1:10
     acc_NV{nsub} = dat;
     acc_NV{nsub}.avg = acc{plotcfg{1}(1)}(:,nsub)';
     acc_pos{nsub} = dat;
-    acc_pos{nsub}.avg = acc{plotcfg{1}(3)}(:,nsub)';  
+    acc_pos{nsub}.avg = acc{plotcfg{1}(2)}(:,nsub)';  
 end
 
 cfgs = [];
@@ -1017,5 +1017,40 @@ figure;
 cfg = [];
 cfg.layout = 'CTF275_helmet.mat';
 ft_topoplotER(cfg,GA)
+
+%% Plot ridge regression results
+
+clear all
+rootdir = fullfile('/project','3011210.01','MEG','Classification');
+savedir = fullfile('/project','3011210.01','MEG','figures','final');
+
+cmap = brewermap(6,'Pastel1'); %for plotting lines
+cmap_sig = brewermap(4,'OrRd'); %for plotting significance
+
+fnames = {'regress_%s_41folds_lambda7_ADJANNVVFIN_cleaned_w2v.mat'...
+    'ridge_%s_41folds_lambda7_ADJANNVVFIN_rank_cleaned_w2v.mat'};
+%FIX: not computed for all subjects yet
+for nsub = 1:10
+    subj = sprintf('sub-%.3d',nsub);
+    %the exact number of features in file name can vary as some subjects
+    %had fewer sensors recorded (due to broken MEG sensors)
+    for i = 1:length(fnames)
+        filename = dir(sprintf(fullfile(rootdir,'%s','sensor',fnames{i}),subj,subj)); 
+        load(fullfile(filename.folder,filename.name))
+        stat = cellfun(@(a) a(1,1),stat(:,1));
+        statshuf = cellfun(@(a) a(1,1),statshuf);
+        cfg{i} = cfgcv;
+        acc{i}(:,nsub) = cell2mat(stat);
+        accshuf{i}(:,:,nsub) = cell2mat(statshuf);
+        time{i} = cfgcv.time;
+    end
+end
+
+
+
+
+
+
+
 
 
